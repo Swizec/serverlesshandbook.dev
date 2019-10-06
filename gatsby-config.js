@@ -36,7 +36,9 @@ module.exports = {
                         resolve: 'gatsby-remark-images',
                         options: {
                             showCaptions: true,
-                            withWebp: true
+                            withWebp: true,
+                            maxWidth: 590,
+                            linkImagesToOriginal: true
                         }
                     },
                     {
@@ -69,6 +71,17 @@ module.exports = {
                         },
                     },
                 ]
+            }
+        },
+        {
+            resolve: 'gatsby-plugin-slug-field',
+            options: {
+                filter: {
+                    internal: {
+                        type: 'MarkdownRemark'
+                    }
+                },
+                source: node => node.frontmatter.title
             }
         },
         `gatsby-transformer-sharp`,
