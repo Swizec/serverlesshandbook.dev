@@ -24,7 +24,15 @@ module.exports = {
         {
             resolve: 'gatsby-transformer-remark',
             options: {
-                plugins: [{
+                plugins: [
+                    'gatsby-remark-youtube',
+                    {
+                        resolve: 'gatsby-remark-giphy',
+                        options: {
+                            giphyApiKey: process.env.GIPHY_API_KEY,
+                        },
+                    },
+                    {
                         resolve: 'gatsby-remark-images',
                         options: {
                             showCaptions: true,

@@ -1,0 +1,9 @@
+{
+  "name": "gatsby-remark-youtube",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "unist-util-select": "^2.0.2"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "gatsby-remark-giphy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@agentofuser/remark-giphy": "^1.0.1"
+  }
+}
