@@ -11,7 +11,7 @@ const path = require("path")
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
-  const chapterTempalte = path.resolve("./src/templates/chapter.js")
+  const chapterTemplate = path.resolve("./src/templates/chapter.js")
 
   const chapters = await graphql(`
     {
@@ -19,6 +19,9 @@ exports.createPages = async ({ graphql, actions }) => {
         nodes {
           frontmatter {
             title
+          }
+          fields {
+            slug
           }
         }
       }
@@ -29,5 +32,17 @@ exports.createPages = async ({ graphql, actions }) => {
     throw chapters.errors
   }
 
-  console.log(chapters.data.allMarkdownRemark.edges)
+  chapters.data.allMarkdownRemark.nodes.forEach(node => {
+    createPage({
+      path: node.fields.slug,
+      component: chapterTemplate,
+      context: {
+        slug: node.fields.slug,
+      },
+    })
+  })
+}
+
+exports.onCreateNode = ({ node, actions, getNode }) => {
+  const { createNodeField } = actions
 }

@@ -1,5 +1,7 @@
 ---
 title: Demo page
+lastUpdated: "2019-10-06"
+description: A demo page
 ---
 
 # Testing markdown processing
