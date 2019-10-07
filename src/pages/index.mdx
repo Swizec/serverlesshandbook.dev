@@ -1,12 +1,6 @@
-import { Box, Flex, Button } from 'rebass'
-import {
-  Banner,
-  NavGrid,
-  Container,
-  Grid,
-  LogoGrid,
-} from '..'
-import Logo from '../components/logo'
+import { Box, Flex, Button } from "rebass"
+import { Banner, NavGrid, Container, Grid, LogoGrid } from ".."
+import Logo from "../components/logo"
 
 <Banner>
 <Box mt={5} />
@@ -14,11 +8,13 @@ import Logo from '../components/logo'
 <Logo text='' size={192} />
 <div>
 
-# Rebass <br /> React primitive UI components<br />built with Styled System
+<h1 style={{fontSize: '3em'}}>
+Serverless Handbook <br /><small style={{fontSize: '0.5em'}}>for frontend engineers</small>
+</h1>
 
-```sh
-npm i rebass
-```
+Secretly this is going to be a resource teaching frontend engineers everything they need to know to dive into backend
+
+<a className="gumroad-button" href="https://gum.co/qdNn?wanted=true" data-gumroad-single-product="true" target="_blank">{`get access for \$0+`}</a>
 
 </div>
 </LogoGrid>
@@ -47,20 +43,6 @@ npm i rebass
 
 <Container py={5}>
 
-[![stars][]][github]
-[![build status][]][travis]
-[![downloads][]][npm]
-[![coverage][]][codecov]
-
-[stars]: https://flat.badgen.net/github/stars/rebassjs/rebass?color=33e
-[github]: https://github.com/rebassjs/rebass
-[build status]: https://flat.badgen.net/travis/rebassjs/rebass/master?color=33e
-[travis]: https://travis-ci.org/rebassjs/rebass
-[downloads]: https://flat.badgen.net/npm/dm/rebass?color=33e
-[npm]: https://npmjs.com/package/rebass
-[coverage]: https://flat.badgen.net/codecov/c/github/rebassjs/rebass?color=33e
-[codecov]: https://codecov.io/github/rebassjs/rebass
-
 <Grid py={5} sx={{ fontWeight: 'bold' }}>
 
 - Start your design system without boiling the ocean
@@ -74,19 +56,6 @@ npm i rebass
 - Minimal footprint
 
 </Grid>
-
-```jsx live=true
-<Flex
-  alignItems='center'
-  px={3}
-  py={4}
-  bg='muted'>
-  <Heading>Hello</Heading>
-  <Box mx='auto' />
-  <Button>Beep</Button>
-  <Button ml={2} variant='secondary'>Boop</Button>
-</Flex>
-```
 
 <Grid width={448} py={5}>
 
@@ -110,14 +79,11 @@ npm i rebass
 
 ## Get Started
 
-<Button as='a'
-  variant='big'
-  href='/getting-started'>
-  Read the docs
+<Button as="a" variant="big" href="/getting-started">
+  Read the handbook
 </Button>
 
 </Container>
-
 
 [styled system]: https://styled-system.com
 [theme ui]: https://theme-ui.com
