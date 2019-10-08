@@ -8,6 +8,7 @@ import Header from "./header"
 import Footer from "./footer"
 import Nav from "./nav"
 import EditLink from "./edit-link"
+import Paywall from "./paywall"
 
 const Sidebar = props => (
   <Flex>
@@ -49,6 +50,7 @@ const Sidebar = props => (
       }}
     >
       {props.children}
+      <Paywall />
       <EditLink my={5}>Edit this page on GitHub</EditLink>
       <Nav
         pathname={props.location.pathname}

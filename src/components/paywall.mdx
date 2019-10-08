@@ -1,0 +1,64 @@
+import { Box, Flex, Button } from "rebass"
+
+<Box sx={{
+          mb: 4,
+          border: t => `1px solid ${t.colors.muted}`,
+          borderRadius: 2,
+          variant: "styles.pre"
+        }}>
+
+Hi,👋
+
+Serverless Handbook is still a work in progress. I'm writing chapters as fast as I can with the goal of delivering a chapter per week :)
+
+<Box width={[1, 1, 1 / 2]} sx={{ margin: "0 auto" }}>
+  <Box
+    sx={{
+      width: "100%",
+      height: 0,
+      paddingBottom: 900 / 16 + "%",
+      position: "relative",
+      overflow: "hidden",
+      "& > iframe": {
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        border: 0,
+      },
+    }}
+  >
+    <iframe
+      width="100%"
+      height="100%"
+      src="https://www.youtube.com/embed/zwi2mxGJgIc"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </Box>
+</Box>
+
+I spent a lot of time digging through the internet learning Serverless. Random StackOverflow answers, even comments, GitHub issues, sporadic blogs ... everyone assumes you've been a backend engineer for 20 years. It's a mess.
+
+With Serverless Handbook my goal is to create the resource I wish I had.
+
+If you're new to serverless, or completely new to backend, Serverless Handbook is for you. We'll cover everything from the basic definitions of queues and lambdas and databases, to optimizing for cost, building robust architectures for scale, and cost optimization.
+
+Opt-in for \$0+ and I'll send you chapters as soon as they're ready :)
+
+<Box sx={{ textAlign: "center" }}>
+  <a
+    className="gumroad-button"
+    href="https://gum.co/qdNn?wanted=true"
+    data-gumroad-single-product="true"
+    target="_blank"
+  >{`start learning for \$0+`}</a>
+</Box>
+
+Cheers,<br/>
+~Swizec
+
+</Box>
