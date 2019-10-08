@@ -5039,6 +5039,18 @@ gatsby-plugin-catch-links@^2.1.2:
     "@babel/runtime" "^7.6.2"
     escape-string-regexp "^1.0.5"
 
+gatsby-plugin-facebook-pixel@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-facebook-pixel/-/gatsby-plugin-facebook-pixel-1.0.3.tgz#d3cab36fa61803e9d412f36847775d383325dfdf"
+  integrity sha512-IM4e+5FkpLUCV/69tU+GFXVAs0EJXBfM/BARO/6SaMqalLfj1fj4ZXUyC8kHy3RiTMuw+y8g2mdkBMZqj7RyWQ==
+
+gatsby-plugin-google-analytics@^2.1.20:
+  version "2.1.20"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-google-analytics/-/gatsby-plugin-google-analytics-2.1.20.tgz#2718353b42de2bf4486af7a85fb1773ed6833aee"
+  integrity sha512-zbgnhYmu1CcenY4j3rZV3aIZlB1XERp7WCfC2OiV4x36Sm2xF1CZCfFJ6XvVcX7e+/7KcJexIq5FBTE8J6RH3A==
+  dependencies:
+    "@babel/runtime" "^7.6.2"
+
 gatsby-plugin-mdx@^1.0.22:
   version "1.0.47"
   resolved "https://registry.yarnpkg.com/gatsby-plugin-mdx/-/gatsby-plugin-mdx-1.0.47.tgz#dd58b0fd04b63eb68bd3a42a6833bccc1537e324"
@@ -5099,6 +5111,11 @@ gatsby-plugin-react-helmet@^3.1.3:
   integrity sha512-xv3FlZGDPscXkm0jwZJvcwe50T4EcU7t8TnCsf7FC7YBzfil7FQ2k5YUB8LaG4DNEM5Vl35WKS5ad/5eSkmGIA==
   dependencies:
     "@babel/runtime" "^7.6.2"
+
+gatsby-plugin-simple-analytics@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-simple-analytics/-/gatsby-plugin-simple-analytics-1.0.1.tgz#3f4f24c69bd3f0416248bfafbd97b958affe68e4"
+  integrity sha512-jUYiPCC8VPoiXMUDA+TZy+CxxeJ7CHMfF5k6SoCacCA55QB5RrprIbdJAHIdj+RpT8Zfx8YFSDC4n1S4R3/ikg==
 
 gatsby-plugin-theme-ui@^0.2.26:
   version "0.2.43"
