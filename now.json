@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "scope": "swizec",
+    "name": "serverlesshandbook-staging",
+    "alias": "serverlesshandbook.dev",
+    "routes": [{
+        "src": "^/(.*).html",
+        "headers": {
+            "cache-control": "public,max-age=0,must-revalidate"
+        },
+        "dest": "$1.html"
+    }],
+    "builds": [{
+        "src": "package.json",
+        "use": "@now/static-build",
+        "config": {
+            "distDir": "public"
+        }
+    }]
+}

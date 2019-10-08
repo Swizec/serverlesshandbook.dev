@@ -19,10 +19,15 @@ export default props => {
           "a resource teaching frontend engineers everything they need to know to dive into backend"
         }
       />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:site" content="@jxnblk" />
+      <meta name="twitter:card" content="summary_large" />
+      <meta name="twitter:site" content="@swizec" />
       <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={pkg.description} />
+      <meta
+        name="twitter:description"
+        content={
+          "a resource teaching frontend engineers everything they need to know to dive into backend"
+        }
+      />
       <meta
         name="twitter:image"
         content="https://serverlesshandbook.dev/card.png"
