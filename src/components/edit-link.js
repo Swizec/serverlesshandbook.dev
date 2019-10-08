@@ -1,15 +1,16 @@
-import React from 'react'
-import { Location } from '@reach/router'
-import { Link } from 'rebass'
+import React from "react"
+import { Location } from "@reach/router"
+import { Link } from "rebass"
 
-const base = 'https://github.com/rebassjs/rebass/edit/master/packages/docs/src/pages'
+const base =
+  "https://github.com/Swizec/serverless-handbook/tree/master/src/pages"
 
-const getHREF = (location) => {
-  if (location.pathname === '/') return false
-  return base + location.pathname.replace(/\/+$/, '') + '.mdx'
+const getHREF = location => {
+  if (location.pathname === "/") return false
+  return base + location.pathname.replace(/\/+$/, "") + ".mdx"
 }
 
-export default props =>
+export default props => (
   <Location
     children={({ location }) => {
       const href = getHREF(location)
@@ -20,11 +21,12 @@ export default props =>
           {...props}
           href={href}
           sx={{
-            display: 'inline-block',
-            color: 'inherit',
+            display: "inline-block",
+            color: "inherit",
             fontSize: 1,
           }}
         />
       )
     }}
   />
+)
