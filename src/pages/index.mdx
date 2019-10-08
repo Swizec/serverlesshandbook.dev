@@ -22,7 +22,7 @@ Secretly this is going to be a resource teaching frontend engineers everything t
 <NavGrid>
 
 - [Getting Started](/getting-started)
-- [Props](/props)
+- [Serverless Pros & Cons](/serverless-pros-cons)
 - [Theming](/theming)
 - [Variants](/variants)
 - [Extending](/extending)
@@ -88,14 +88,14 @@ Secretly this is going to be a resource teaching frontend engineers everything t
 
 </Grid>
 
-<Box sx={{ textAlign: "center" }}>
-  <a
-    className="gumroad-button"
-    href="https://gum.co/qdNn?wanted=true"
-    data-gumroad-single-product="true"
-    target="_blank"
-  >{`start learning serverless tech for \$0+`}</a>
-</Box>
+<Button
+  as="a"
+  variant="big"
+  href="https://gum.co/qdNn?wanted=true"
+  sx={{ margin: "0 auto" }}
+>
+  {`start learning serverless tech for \$0+`}
+</Button>
 
 <Grid width={448} py={5}>
 
@@ -119,12 +119,7 @@ Secretly this is going to be a resource teaching frontend engineers everything t
 
 ## Get Started
 
-<Button
-  as="a"
-  variant="big"
-  href="https://gum.co/qdNn?wanted=true"
-  className="gumroad-button"
->
+<Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
   {`Read Serverless Handbook for \$0+`}
 </Button>
 
