@@ -1,6 +1,7 @@
 import { Box, Flex, Button } from "rebass"
 import { Banner, NavGrid, Container, Grid, LogoGrid } from ".."
 import Logo from "../components/logo"
+import GumroadButton from "../components/GumroadButton"
 
 <Banner>
 <Box mt={5} />
@@ -14,7 +15,14 @@ Serverless Handbook <br /><small style={{fontSize: '0.5em'}}>for frontend engine
 
 Secretly this is going to be a resource teaching frontend engineers everything they need to know to dive into backend
 
-<a className="gumroad-button" href="https://gum.co/qdNn?wanted=true" data-gumroad-single-product="true" target="_blank">{`start learning for \$0+`}</a>
+<GumroadButton>
+  <a
+    className="gumroad-button"
+    href="https://gum.co/qdNn?wanted=true"
+    data-gumroad-single-product="true"
+    target="_blank"
+  >{`start learning for \$0+`}</a>
+</GumroadButton>
 
 </div>
 </LogoGrid>
@@ -92,9 +100,11 @@ Secretly this is going to be a resource teaching frontend engineers everything t
 </Grid>
 
 <Box sx={{ textAlign: "center" }}>
-  <Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
-    {`start learning serverless tech for \$0+`}
-  </Button>
+  <GumroadButton>
+    <Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
+      {`start learning serverless tech for \$0+`}
+    </Button>
+  </GumroadButton>
 </Box>
 
 <Grid width={448} py={5}>
@@ -119,11 +129,10 @@ Secretly this is going to be a resource teaching frontend engineers everything t
 
 ## Get Started
 
-<Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
-  {`Read Serverless Handbook for \$0+`}
-</Button>
+<GumroadButton>
+  <Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
+    {`Read Serverless Handbook for \$0+`}
+  </Button>
+</GumroadButton>
 
 </Container>
-
-[styled system]: https://styled-system.com
-[theme ui]: https://theme-ui.com

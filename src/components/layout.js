@@ -9,58 +9,66 @@ import Footer from "./footer"
 import Nav from "./nav"
 import EditLink from "./edit-link"
 import Paywall from "./paywall"
+import QuickThanks from "./quickthanks"
 
-const Sidebar = props => (
-  <Flex>
-    <Box
-      as={Sidenav}
-      ref={props.nav}
-      open={props.open}
-      onClick={e => {
-        props.setMenu(false)
-      }}
-      onBlur={e => {
-        props.setMenu(false)
-      }}
-      onFocus={e => {
-        props.setMenu(true)
-      }}
-      sx={{
-        width: [256, 256, 320],
-        flex: "none",
-        px: 3,
-        mt: [64, 0],
-        pb: 3,
-        "li > ul > li > a": {
-          pl: "24px",
-        },
-      }}
-    >
-      <Nav />
-    </Box>
-    <Box
-      sx={{
-        width: "100%",
-        minWidth: 0,
-        maxWidth: 768,
-        minHeight: "calc(100vh - 64px)",
-        mx: "auto",
-        px: [3, 4],
-        pb: 5,
-      }}
-    >
-      {props.children}
-      <Paywall />
-      <EditLink my={5}>Edit this page on GitHub</EditLink>
-      <Nav
-        pathname={props.location.pathname}
-        components={{
-          wrapper: Pagination,
+const Sidebar = props => {
+  const showPaywall =
+    typeof window === "undefined" ||
+    !window.localStorage.getItem("unlock_handbook") ||
+    !window.localStorage.getItem("sale_id")
+
+  return (
+    <Flex>
+      <Box
+        as={Sidenav}
+        ref={props.nav}
+        open={props.open}
+        onClick={e => {
+          props.setMenu(false)
         }}
-      />
-    </Box>
-  </Flex>
-)
+        onBlur={e => {
+          props.setMenu(false)
+        }}
+        onFocus={e => {
+          props.setMenu(true)
+        }}
+        sx={{
+          width: [256, 256, 320],
+          flex: "none",
+          px: 3,
+          mt: [64, 0],
+          pb: 3,
+          "li > ul > li > a": {
+            pl: "24px",
+          },
+        }}
+      >
+        <Nav />
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          minWidth: 0,
+          maxWidth: 768,
+          minHeight: "calc(100vh - 64px)",
+          mx: "auto",
+          px: [3, 4],
+          pb: 5,
+        }}
+      >
+        {props.children}
+        {showPaywall ? <Paywall /> : <QuickThanks />}
+        <EditLink my={5}>Edit this page on GitHub</EditLink>
+        <Nav
+          pathname={props.location.pathname}
+          components={{
+            wrapper: Pagination,
+          }}
+        />
+      </Box>
+    </Flex>
+  )
+}
 
 export default props => {
   const fullwidth = props.location.pathname === "/"
