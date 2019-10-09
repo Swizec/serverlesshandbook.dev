@@ -3,9 +3,9 @@ import { Box, Button } from "rebass"
 
 const GumroadButton = ({ children }) => {
   const showPaywall =
-    typeof window === "undefined" ||
-    !window.localStorage.getItem("unlock_handbook") ||
-    !window.localStorage.getItem("sale_id")
+    typeof window !== "undefined" &&
+    (!window.localStorage.getItem("unlock_handbook") ||
+      !window.localStorage.getItem("sale_id"))
 
   return showPaywall ? (
     children

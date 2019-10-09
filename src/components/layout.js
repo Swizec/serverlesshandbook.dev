@@ -13,9 +13,9 @@ import QuickThanks from "./quickthanks"
 
 const Sidebar = props => {
   const showPaywall =
-    typeof window === "undefined" ||
-    !window.localStorage.getItem("unlock_handbook") ||
-    !window.localStorage.getItem("sale_id")
+    typeof window !== "undefined" &&
+    (!window.localStorage.getItem("unlock_handbook") ||
+      !window.localStorage.getItem("sale_id"))
 
   return (
     <Flex>
