@@ -1,7 +1,36 @@
 export const title = "Thanks ❤️"
+import { Box } from "rebass"
 import Typeform from "../components/typeform.js"
 
 # Thank you for supporting Serverless Handbook ❤️
+
+<Box
+  sx={{
+    width: "100%",
+    height: 0,
+    paddingBottom: 900 / 16 + "%",
+    position: "relative",
+    overflow: "hidden",
+    "& > iframe": {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      bottom: 0,
+      left: 0,
+      border: 0,
+    },
+  }}
+>
+  <iframe
+    width="100%"
+    height="100%"
+    src="https://www.youtube.com/embed/uruePC5l6FE"
+    frameborder="0"
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+  ></iframe>
+</Box>
 
 Hey thanks again for supporting Serverless Handbook. I really appreciate it and I hope it helps you on your journey.
 
