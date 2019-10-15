@@ -1,11 +1,123 @@
 export const title = "Getting Started"
 import { Giphy } from "../components/giphy"
 
-# Getting Started
+# Getting Started with Serverless
 
-Creating your first serverless application can be quite intimidating. You type "serverless" into Google and immediately get hit with millions of results all assuming you know what you're doing.
+Creating your first serverless application can be quite intimidating. Type "serverless" into Google and you get hit with millions of results all assuming you know what you're doing.
 
-There's Serverless the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, you've heard something about lambdas, and Netlify and Zeit and ...
+There's Serverless, the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, your friends mentioned something about lambda functions, then there's Netlify and Zeit and maybe Heroku and apparently Microsoft does serverless now too?
 
 <Giphy search="overwhelmed" />
 
+That's why I'm creating Serverless Handbook. It's the resource I wish I had :)
+
+Let's start with a glossary then dive into building your first serverless service. An app that says Hello 👋
+
+## What is serverless anyway
+
+Serverless is other people's servers running your code. The logical next step to "cloud".
+
+A little history:
+
+### First we all had servers. 
+
+You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run in your basement. Or in my case your bedroom. 
+
+Yes my high school bedroom was very warm in the summer but it had a server and a static IP address. I was the coolest kid in class. 😎
+
+An [IP address](https://en.wikipedia.org/wiki/IP_address) is how computers find each other on the internet, by the way.
+
+With a static IP address, you can tell [DNS](https://en.wikipedia.org/wiki/Domain_Name_System) servers how to find your server with a domain. Once you have a domain, people can type it into the URL bar and find your server.
+
+But a domain doesn't give you a website or a webapp.
+
+For that, you still need to configure Apache or Nginx, set up a reverse proxy to talk to your application, run your application at all times, ensure that it's running and ... yeah it gets out of hand fast. Just to put up a simple website.
+
+### Then came collocation
+
+Collocation was a solution for the bedroom or basement problem. What happens if your house catches fire? What about when power goes out? Or your mom trips on the power cable and unplugs the computer?
+
+Residential hosting isn't very reliable. The internet is lower tier than business internet, power too. And there's nobody taking care of your server when your on vacation.
+
+Your site might go down for a week before you even notice.
+
+With collocation you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and some physical security. You deal with configuration, maintenance, and replacing hard drives when they fail.
+
+Yes computers break all the time. It's on you to keep it running.
+
+### Then came virtualization
+
+Collocation was great for physical problems, but when you realize how bored your computer gets running a website that gets 50 visitors per day ... oof.
+
+What if we could run multiple servers on the same machine? And if you can make them isolated, use different configurations, maybe even different operating systems ...
+
+[Virtualization](https://en.wikipedia.org/wiki/Virtual_private_server) and later [containerization](https://en.wikipedia.org/wiki/OS-level_virtualisation) was the solution to that problem.
+
+You could find a VPS (virtual private server) provider, fire up a whole computer, configure your DNS, and your Apache, and your application, and all the rest and you had a website all without ever touching a physical computer. Wonderful!
+
+But what if it scales?
+
+### The cloud is born
+
+Early VPS was a lot like The Cloud already. You had computers running on the internet without touching hardware.
+
+Where VPS fell short was scale.
+
+Once your traffic started to grow, you'd soon need more servers to handle the load. A single server can only handle so many connections, can only run so many application cycles, etc.
+
+But how do you ensure all your servers are the same? How do you spin them up fast enough when new traffic spikes on Black Friday?
+
+You deal with it by hand.
+
+Set up a server, make sure it works. Create a new server. Copy all your configuration. Create scripts for common tasks and often spend hours making sure everything's just right.
+
+Repeat for each new server.
+
+Cloud solves this problem with automation and containers. Usually [docker containers](https://en.wikipedia.org/wiki/Docker_(software)), nowadays [kubernetes](https://en.wikipedia.org/wiki/Kubernetes)'s ease of use is winning.
+
+With cloud providers you often get a dashboard showing all your servers. You pick a base container with pre-configured defaults, tweak some things to your liking, save as a new container.
+
+Now you can scale at the press of a button.
+
+Oh we need 10 servers? Click click click. done
+
+You can even automate some of the scaling. See traffic rising, quickly spin up some servers, tear them down when traffic subsides.
+
+### Platform as a Service
+
+A variation on The Cloud was and still is the [PaaS](https://en.wikipedia.org/wiki/Platform_as_a_service) movement – platform as a service.
+
+PaaS lets you use somebody else's cloud so you can focus on your code. They take care of configuring your dockers and kubernetes, they set up your apache or nginx and handle configuring your database and such.
+
+You build the application server, the platform handles most of the rest.
+
+`git push` to deploy and voila, a webapp. 
+
+PaaS still gives you plenty of rope, however. With most providers you can drop down a few levels of abstraction and take control of some configuration. This can be good or bad.
+
+Frustratingly, you often still have to deal with your own DNS configuration, [CDN services](https://en.wikipedia.org/wiki/Content_delivery_network), and other quasi frontend technologies. The platform worries about servers only.
+
+### Serverless is born
+
+[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) comes as the next logical step after PaaS and Cloud. Once you have a system that can use containers to automatically scale and tear down based on demand, you're very close to serverless.
+
+The main innovation are *extremely tiny* containers, small enough to be spun up and torn down every couple of seconds. They can be so small because the code they run is:
+
+1. Very small
+2. Extremely standardized
+
+A serverless "server" often runs just a single function responding to a single API endpoint. Request comes in, your server wakes up, runs for a few milliseconds, and goes back to bed.
+
+The platform takes care of optimization, configuration, and everything else. You get an input and you return an output. Just like a function.
+
+Your servers are never idling because they only live as long as the request they're serving.
+
+Most providers offer *some* reuse to optimize speed. If it takes 100ms to spin up a server and you're getting requests faster than that, might as well leave it up, right :)
+
+Biggest benefit of this approach?
+
+**Metered pricing.** No more wasting money on idling servers waiting for requests. Pay for just the time you get useful work done.
+
+## Serverless providers
+
+## Build your first serverless backend
