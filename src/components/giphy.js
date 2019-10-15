@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react"
-import { GiphyFetch } from "@giphy/js-fetch-api"
+import fetch from "isomorphic-fetch"
+
+const API_KEY = "BbjXTpBIYN0GwoBCRpPLUCF08EPJ6PUp"
 
 export const Giphy = ({ search }) => {
   const [src, setSrc] = useState(null)
 
   useEffect(() => {
     ;(async () => {
-      const gf = new GiphyFetch("BbjXTpBIYN0GwoBCRpPLUCF08EPJ6PUp")
+      const url = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${search}&limit=1&sort=relevant&lang=en`
 
-      const { data: gifs } = await gf.search(search, {
-        sort: "relevant",
-        limit: 1,
-        lang: "en",
-      })
+      const { data: gifs } = await fetch(url).then(res => res.json())
 
       setSrc(gifs[0].images.looping.mp4)
     })()

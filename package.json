@@ -13,7 +13,6 @@
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
     },
     "dependencies": {
-        "@giphy/js-fetch-api": "^1.4.0",
         "@jxnblk/react-live": "^2.1.2-1",
         "@mdx-js/mdx": "^1.1.4",
         "@mdx-js/react": "^1.1.4",
@@ -35,6 +34,7 @@
         "gatsby-plugin-react-helmet": "^3.1.3",
         "gatsby-plugin-simple-analytics": "^1.0.1",
         "gatsby-plugin-theme-ui": "^0.2.26",
+        "isomorphic-fetch": "^2.2.1",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
         "react-helmet": "^5.2.1",
