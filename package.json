@@ -13,6 +13,7 @@
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
     },
     "dependencies": {
+        "@giphy/js-fetch-api": "^1.4.0",
         "@jxnblk/react-live": "^2.1.2-1",
         "@mdx-js/mdx": "^1.1.4",
         "@mdx-js/react": "^1.1.4",
