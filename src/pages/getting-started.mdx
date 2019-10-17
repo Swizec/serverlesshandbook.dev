@@ -19,6 +19,8 @@ That's why I'm creating Serverless Handbook. It's the resource I wish I had :)
 
 Let's start with a little background so you get a better understanding of what serverless is and what it isn't. Then you're gonna build your first serverless backend – an app that says Hello 👋
 
+Don't want the intro? [Jump straight to your first app](/getting-started#your-first-serverless-backend)
+
 ## What is serverless anyway
 
 > Serverless is other people's servers running your code.
@@ -51,93 +53,246 @@ Collocation was a solution for the bedroom or basement problem. What happens if 
 
 Residential hosting isn't very reliable.
 
-Your internet is lower tier than a business would get, it's less reliable and when something goes wrong you're lowest in the queue. Same goes for other utilities like power – a power company thinks nothing of shutting off at night for maintenance. But that kills your server.
+Your internet is lower tier than a business would get – less reliable, more volatile, and if the company needs to do maintenance they think nothing of shutting it off during non-peak hours. Guess what, your server needs solid internet 24/7.
 
-And if you go on vacation, nobody's there to take care of your server. Your site might go down for a week before you even notice.
+When you go on vacation, nobody's there to take care of your server. Your site might go down for a week before you even notice.
 
 With collocation you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and some physical security. You often buy a more reliable computer as well.
 
-You are still left to deal with configuration, maintenance, and replacing hard drives when they fail. Computers break all the time. A large data center might have to replace a hard drive every few minutes just because a typical drive lasts about 4 years and when you have thousands, well, stats are not in your favor.
+You're still left to deal with configuration, maintenance, and replacing hard drives when they fail. 
+
+PS: Computers break all the time. A large data center might have to replace a hard drive every few minutes just because a typical drive lasts about 4 years and when you have thousands, the stats are not in your favor.
 
 It's on you to keep everything running.
 
 ### Then came virtualization
 
-![A data center](../images/photo-1558494949-ef010cbdcc31.jpeg)
+Collocation solved physical problems, but not the fact that your servers are bored to tears.
 
-Collocation was solved most physical problems.
+A typical server runs at maybe 30% utilization. Meaning 70% of the time you are wasting your money.
 
-Then you look at utilization on your server and realize how bored it gets running a website that gets 50 visitors per day ...
+Reasons for low utilization vary. Some of it is keeping the hardware happy and thermally content, some of it is over-provisioning so you have spare capacity in case of spikes. Sometimes your site just isn't as popular as you'd like.
 
-What if we could run multiple servers on the same machine? And if you can make them isolated, use different configurations, maybe even different operating systems ...
+What if we could run multiple servers on the same machine?
 
-[Virtualization](https://en.wikipedia.org/wiki/Virtual_private_server) and later [containerization](https://en.wikipedia.org/wiki/OS-level_virtualisation) was the solution to that problem.
+<Giphy search="magnificent idea" />
 
-You could find a VPS (virtual private server) provider, fire up a whole computer, configure your DNS, and your Apache, and your application, and all the rest and you had a website all without ever touching a physical computer. Wonderful!
+The first type of virtualization was pretty basic: [virtual hosts](https://en.wikipedia.org/wiki/Virtual_hosting) let us host multiple websites on the same machine. A domain maps to a specific application on your computer, your web server figures out the mapping, and voila sites can share resources.
 
-But what if it scales?
+Worked pretty great but caused problems. Since websites are so close together on the same computer, you could hack one site to gain access to another. They'd sometimes starve each other for resources and so on.
+
+Real [virtualization](https://en.wikipedia.org/wiki/Virtual_private_server) and later [containerization](https://en.wikipedia.org/wiki/OS-level_virtualisation) were the solution to that problem. Rather than host multiple websites on the same machine, you can host *multiple whole computers* on the same machine. It's like having many brains.
+
+The VPS – virtual private server – was born. Providers of "ssh access" were crazy popular in the 2000's. Pay a few bucks a month and you too can get a real live server on the internet. No hardware setup required.
+
+You're on the hook for software setup and you share the same machine with who knows how many other users.
+
+So what if your site scales?
 
 ### The cloud is born
 
-Early VPS was a lot like The Cloud already. You had computers running on the internet without touching hardware.
+![A data center](../images/photo-1558494949-ef010cbdcc31.jpeg)
+
+Early VPS was a lot like The Cloud already. Computers running on the internet without touching hardware.
 
 Where VPS fell short was scale.
 
-Once your traffic started to grow, you'd soon need more servers to handle the load. A single server can only handle so many connections, can only run so many application cycles, etc.
+Once your traffic started to grow, you'd soon need more servers to handle the load. A single server can only handle so many connections, so many application cycles, so much data, etc.
 
-But how do you ensure all your servers are the same? How do you spin them up fast enough when new traffic spikes on Black Friday?
+But how do you ensure all your servers are the same? How do you spin them up fast enough when traffic spikes on Black Friday?
 
 You deal with it by hand.
 
-Set up a server, make sure it works. Create a new server. Copy all your configuration. Create scripts for common tasks and often spend hours making sure everything's just right.
+Set up a server, make sure it works. Create a new server. Copy your configuration. Create scripts for common tasks and spend hours making sure everything's just right.
 
 Repeat for each new server.
 
 Cloud solves this problem with automation and containers. Usually [docker containers](<https://en.wikipedia.org/wiki/Docker_(software)>), nowadays [kubernetes](https://en.wikipedia.org/wiki/Kubernetes)'s ease of use is winning.
 
-With cloud providers you often get a dashboard showing all your servers. You pick a base container with pre-configured defaults, tweak some things to your liking, save as a new container.
+To set up a new server you often start with a core image from your cloud provider. Has some basic setup and common defaults. You add your tweaks and create a new image.
 
-Now you can scale at the press of a button.
+The cloud then gives you easy controls to create as many instances of that server as you'd like. Press a button and a server shows up. ✨
 
-Oh we need 10 servers? Click click click. done
-
-You can even automate some of the scaling. See traffic rising, quickly spin up some servers, tear them down when traffic subsides.
+Sometimes you can even make it scale automatically. Scripts notice traffic rising and quickly spin up some servers. When the traffic subsides, those same scripts can tear the servers back down.
 
 ### Platform as a Service
 
 A variation on The Cloud was and still is the [PaaS](https://en.wikipedia.org/wiki/Platform_as_a_service) movement – platform as a service.
 
-PaaS lets you use somebody else's cloud so you can focus on your code. They take care of configuring your dockers and kubernetes, they set up your apache or nginx and handle configuring your database and such.
-
-You build the application server, the platform handles most of the rest.
+The idea behind PaaS is that you pay somebody else to deal with cloud stuff and you focus on your code. They configure your servers and your dockers and your kubernetes and make sure everything plays together. You build the application.
 
 `git push` to deploy and voila, a webapp.
 
-PaaS still gives you plenty of rope, however. With most providers you can drop down a few levels of abstraction and take control of some configuration. This can be good or bad.
+With most PaaS providers you can drop down a few levels if you want. They provide escape hatches to perform low level configuration, let you mess around with databases, and break things.
 
-Frustratingly, you often still have to deal with your own DNS configuration, [CDN services](https://en.wikipedia.org/wiki/Content_delivery_network), and other quasi frontend technologies. The platform worries about servers only.
+While PaaS takes care of your servers, you often still have to take care of the "frontend". Set up your domains and DNS config, make your application run just right so the platform is happy, configure your own [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), deal with static files, and so on.
+
+The platform does only servers.
 
 ### Serverless is born
 
-[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) comes as the next logical step after PaaS and Cloud. Once you have a system that can use containers to automatically scale and tear down based on demand, you're very close to serverless.
+[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) comes as the logical step after PaaS. Once you have a system that can use containers to automatically scale and tear down based on demand, use idiomatic configuration for replicability, and painless deploys ... that's almost serverless already.
 
-The main innovation are _extremely tiny_ containers, small enough to be spun up and torn down every couple of seconds. They can be so small because the code they run is:
+Serverless's main innovation are _extremely tiny_ containers and the ecosystem of services working together. Server containers are small enough to spin up and tear down every few seconds, and the ecosystem provides all ancillary services you need like static file hosting, queues, and databases.
+
+Server containers can be so small because the code they run is:
 
 1. Very small
 2. Extremely standardized
+3. Does very little
 
-A serverless "server" often runs just a single function responding to a single API endpoint. Request comes in, your server wakes up, runs for a few milliseconds, and goes back to bed.
+A serverless "server" is often just a single function responding to a single API endpoint. Request comes in, server wakes up, runs for a few milliseconds, and goes back to bed.
 
-The platform takes care of optimization, configuration, and everything else. You get an input and you return an output. Just like a function.
+The platform takes care of optimization, configuration, and everything else. You get an input and return an output. Just like a function.
 
 Your servers are never idling because they only live as long as the request they're serving.
 
-Most providers offer _some_ reuse to optimize speed. If it takes 100ms to spin up a server and you're getting requests faster than that, might as well leave it up, right :)
+Most providers offer _some_ reuse to optimize for load times. If it takes 100ms to spin up a server and you're getting requests every 10ms you might as well use the same server :)
 
 Biggest benefit of this approach?
 
 **Metered pricing.** No more wasting money on idling servers waiting for requests. Pay for just the time you get useful work done.
 
-## Serverless providers
+## Your first serverless backend
 
-## Build your first serverless backend
+In the next few minutes you're going to build your first serverless backend. A small service that says Hello 👋
+
+We're going to use open source technologies and deploy on AWS Lambda. You can learn about other providers in the [Serverless Flavors](/serverless-flavors) chapter.
+
+You'll need a computer set up for JavaScript development: Have nodejs installed, a code editor, and a terminal.
+
+### Setup your computer
+
+When working with serverless I like to use the open source [Serverless](https://github.com/serverless/serverless) framework for configuration. We'll talk more about why in the [Good serverless dev experience](/serverless-dx) chapter.
+
+With the serverless framework we're going to configure our servers using YAML files. Write some config and the framework figures out the rest.
+
+Install it globally:
+
+```sh
+npm install -g serverless
+```
+
+You'll need AWS credentials as well. 
+
+I recommend following [serverless's guide on AWS setup](https://serverless.com/framework/docs/providers/aws/guide/credentials/). It walks you through the necessary steps on your Amazon account and some terminal commands you'll have to run.
+
+### Create a tiny project
+
+There are no special initializers for serverless projects yet. So to start a serverless project, you create a directory and add a configuration file.
+
+<video src="../images/start-serverless.mp4" muted autoplay controls width="100%" />
+
+```sh
+mkdir hello-world
+cd hello-world
+touch serverless.yml
+touch handler.js
+```
+
+You now have a project with 2 files:
+
+- serverless.yml for configuration
+- handler.js for server code
+
+In the future we'll write backends using TypeScript, but one thing at a time :)
+
+### Configure your first server
+
+As mentioned, configuration for your server goes in `serverless.yml`. We're going to tell the Serverless framework that we want to use AWS, run nodejs, and that this is a dev project.
+
+Then we'll tell it where to find our code.
+
+```yaml
+# serverless.yml
+
+service: hello-world
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+```
+
+We're calling our service `hello-world` and specifying details about our provider. The `stage` helps us tell the difference between development, QA, and production deployments. More on that in the [Dev, QA, and prod](/dev-qa-prod) chapter.
+
+Now let's tell our server how to run some code.
+
+```yaml
+# serverless.yml
+
+service: hello-world
+
+provider:
+    name: aws
+    runtime: nodejs10.x
+    stage: dev
+
+functions:
+    hello:
+        handler: ./handler.hello
+        events:
+            - http:
+	              path: hello
+	              method: GET
+	              cors: true
+```
+
+We started a `functions` section. Each entry here represents its own tiny server – a serverless lambda. Together, they represent the `hello-world` service.
+
+The `hello` lambda calls an exported `hello` function inside our `handler.js` file whenever a GET request hits `/hello`.
+
+All that from just these few lines of code 👌
+
+PS: enabling [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) lets you call this function from other websites. Like your frontend app.
+
+### Write your first backend function
+
+Backend functions in a serverless environment look a lot like the JavaScript functions you're used to. They accept some arguments and return a response.
+
+Add a hello function to `handler.js`
+
+```javascript
+// handler.js
+
+exports.hello = async (event) => {
+    return {
+        statusCode: 200,
+        body: "Hello 👋"
+    }
+}
+```
+
+It's an async function that accepts some triggering event and returns a response. A success status with a `Hello 👋` body.
+
+That's it. You just wrote some backend code.
+
+### Deploy your first serverless backend
+
+To deploy, we run `serverless deploy`.
+
+<video src="../images/deploy-serverless.mp4" muted autoplay controls width="100%" />
+
+And your server is up.
+
+You get a URL to hit your lambda and some debugging output so you know what's going on. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser it's gonna say `Hello 👋`
+
+I'll keep it up because I'm not paying for it if nobody clicks. And even when they do, current AWS pricing gives me 1,000,000 clicks for free 😛
+
+### What you got
+
+A lot happened behind the scenes to make this work. The Serverless framework talked to AWS and configured many things.
+
+![](../images/hello-world-lambda.png)
+
+- **API Gateway** to proxy requests from the internet to your function
+- **Lambda** to run your code. This is a tiny container that wakes up when called.
+- **CloudWatch logs** to collect logs from your code. Helps with debugging.
+
+All those get configured for you. No UI to click through, no config to forget about next time, nothing your friends have to set up to deploy the same code.
+
+![](../images/hello-world.png)
+
+Exciting stuff.
+
+Next, we're going to talk about some pros & cons of using serverless in your next project.
