@@ -21,7 +21,7 @@ Let's start with a little background so you get a better understanding of what s
 
 ## What is serverless anyway
 
-> Serverless is other people's servers running your code. 
+> Serverless is other people's servers running your code.
 
 The logical next step to platform as a service, which came from The Cloud, which came from virtual private servers, which came from collocation, which came from a computer on your desk running a web server. 🤯
 
@@ -31,7 +31,7 @@ A little history:
 
 ![The world's first web server, a NeXT Computer](../images/First_Web_Server.jpg)
 
-You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run in your basement. Or in my case your bedroom. 
+You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run in your basement. Or in my case your bedroom.
 
 Yes my high school bedroom was very warm in the summer but it had a server and a static IP address. I was the coolest kid in class. 😎
 
@@ -49,13 +49,13 @@ For that, you still need to configure Apache or Nginx, set up a reverse proxy to
 
 Collocation was a solution for the bedroom or basement problem. What happens if your house catches fire? What about when power goes out? Or your mom trips on the power cable and unplugs your computer?
 
-Residential hosting isn't very reliable. 
+Residential hosting isn't very reliable.
 
-Your internet is lower tier than a business would get, it's less reliable and when something goes wrong you're lowest in the queue. Same goes for other utilities like power – a power company thinks nothing of shutting off at night for maintenance. But that kills your server. 
+Your internet is lower tier than a business would get, it's less reliable and when something goes wrong you're lowest in the queue. Same goes for other utilities like power – a power company thinks nothing of shutting off at night for maintenance. But that kills your server.
 
 And if you go on vacation, nobody's there to take care of your server. Your site might go down for a week before you even notice.
 
-With collocation you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and some physical security. You often buy a more reliable computer as well. 
+With collocation you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and some physical security. You often buy a more reliable computer as well.
 
 You are still left to deal with configuration, maintenance, and replacing hard drives when they fail. Computers break all the time. A large data center might have to replace a hard drive every few minutes just because a typical drive lasts about 4 years and when you have thousands, well, stats are not in your favor.
 
@@ -65,7 +65,7 @@ It's on you to keep everything running.
 
 ![A data center](../images/photo-1558494949-ef010cbdcc31.jpeg)
 
-Collocation was solved most physical problems. 
+Collocation was solved most physical problems.
 
 Then you look at utilization on your server and realize how bored it gets running a website that gets 50 visitors per day ...
 
@@ -93,7 +93,7 @@ Set up a server, make sure it works. Create a new server. Copy all your configur
 
 Repeat for each new server.
 
-Cloud solves this problem with automation and containers. Usually [docker containers](https://en.wikipedia.org/wiki/Docker_(software)), nowadays [kubernetes](https://en.wikipedia.org/wiki/Kubernetes)'s ease of use is winning.
+Cloud solves this problem with automation and containers. Usually [docker containers](<https://en.wikipedia.org/wiki/Docker_(software)>), nowadays [kubernetes](https://en.wikipedia.org/wiki/Kubernetes)'s ease of use is winning.
 
 With cloud providers you often get a dashboard showing all your servers. You pick a base container with pre-configured defaults, tweak some things to your liking, save as a new container.
 
@@ -111,7 +111,7 @@ PaaS lets you use somebody else's cloud so you can focus on your code. They take
 
 You build the application server, the platform handles most of the rest.
 
-`git push` to deploy and voila, a webapp. 
+`git push` to deploy and voila, a webapp.
 
 PaaS still gives you plenty of rope, however. With most providers you can drop down a few levels of abstraction and take control of some configuration. This can be good or bad.
 
@@ -121,7 +121,7 @@ Frustratingly, you often still have to deal with your own DNS configuration, [CD
 
 [Serverless](https://en.wikipedia.org/wiki/Serverless_computing) comes as the next logical step after PaaS and Cloud. Once you have a system that can use containers to automatically scale and tear down based on demand, you're very close to serverless.
 
-The main innovation are *extremely tiny* containers, small enough to be spun up and torn down every couple of seconds. They can be so small because the code they run is:
+The main innovation are _extremely tiny_ containers, small enough to be spun up and torn down every couple of seconds. They can be so small because the code they run is:
 
 1. Very small
 2. Extremely standardized
@@ -132,7 +132,7 @@ The platform takes care of optimization, configuration, and everything else. You
 
 Your servers are never idling because they only live as long as the request they're serving.
 
-Most providers offer *some* reuse to optimize speed. If it takes 100ms to spin up a server and you're getting requests faster than that, might as well leave it up, right :)
+Most providers offer _some_ reuse to optimize speed. If it takes 100ms to spin up a server and you're getting requests faster than that, might as well leave it up, right :)
 
 Biggest benefit of this approach?
 

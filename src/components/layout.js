@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { Global } from "@emotion/core"
 import { Box, Flex } from "rebass"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
@@ -8,8 +8,44 @@ import Header from "./header"
 import Footer from "./footer"
 import Nav from "./nav"
 import EditLink from "./edit-link"
-import Paywall from "./paywall"
+import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
+
+const Paywall = ({ floating }) => {
+  useEffect(() => {
+    if (typeof window !== "undefined" && floating) {
+      const overlay = document.createElement("div")
+      const main = document.querySelector("main#content")
+      const copy = document.querySelector("#paywall-copy")
+
+      const style = `
+                background-image: linear-gradient(rgba(2, 0, 36, 0) 0%, rgba(255, 255, 255, 0.95) 15%, rgb(255, 255, 255, 0.99) 40%, rgb(255, 255, 255, 0.99) 100%);
+                width: 100%;
+                top: 0px;
+                bottom: 0px;
+                position: absolute;
+            `
+      overlay.style = style
+
+      main.style = "position: relative;"
+      main.appendChild(overlay)
+
+      const dimensions = main.getBoundingClientRect()
+
+      copy.style = `
+        position: absolute;
+        top: ${Math.round(dimensions.height * 0.25)}px;
+        width: ${Math.round(dimensions.width)}px;
+      `
+    }
+  }, [])
+
+  return (
+    <Box id="paywall-copy">
+      <PaywallCopy />
+    </Box>
+  )
+}
 
 const Sidebar = props => {
   const showPaywall =
@@ -57,7 +93,14 @@ const Sidebar = props => {
         }}
       >
         {props.children}
-        {showPaywall ? <Paywall /> : <QuickThanks />}
+        {showPaywall ? (
+          <>
+            <Paywall floating />
+            <Paywall />
+          </>
+        ) : (
+          <QuickThanks />
+        )}
         <EditLink my={5}>Edit this page on GitHub</EditLink>
         <Nav
           pathname={props.location.pathname}
