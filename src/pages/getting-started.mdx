@@ -3,23 +3,33 @@ import { Giphy } from "../components/giphy"
 
 # Getting Started with Serverless
 
-Creating your first serverless application can be quite intimidating. Type "serverless" into Google and you get hit with millions of results all assuming you know what you're doing.
+Hello friend ❤️
+
+> I'm happy you're giving serverless a try. It's one of the most exciting inflection points in web development since React introduced us to components.
+
+I know creating your first serverless application can be quite intimidating. Type "serverless" into Google and you're hit with millions of results all assuming you know what you're doing.
 
 There's Serverless, the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, your friends mentioned something about lambda functions, then there's Netlify and Zeit and maybe Heroku and apparently Microsoft does serverless now too?
+
+It's all one big mess.
 
 <Giphy search="overwhelmed" />
 
 That's why I'm creating Serverless Handbook. It's the resource I wish I had :)
 
-Let's start with a glossary then dive into building your first serverless service. An app that says Hello 👋
+Let's start with a little background so you get a better understanding of what serverless is and what it isn't. Then you're gonna build your first serverless backend – an app that says Hello 👋
 
 ## What is serverless anyway
 
-Serverless is other people's servers running your code. The logical next step to "cloud".
+> Serverless is other people's servers running your code. 
+
+The logical next step to platform as a service, which came from The Cloud, which came from virtual private servers, which came from collocation, which came from a computer on your desk running a web server. 🤯
 
 A little history:
 
-### First we all had servers. 
+### First we all had servers.
+
+![The world's first web server, a NeXT Computer](../images/First_Web_Server.jpg)
 
 You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run in your basement. Or in my case your bedroom. 
 
@@ -35,19 +45,29 @@ For that, you still need to configure Apache or Nginx, set up a reverse proxy to
 
 ### Then came collocation
 
-Collocation was a solution for the bedroom or basement problem. What happens if your house catches fire? What about when power goes out? Or your mom trips on the power cable and unplugs the computer?
+![A collocation server rack](../images/Rack001.png)
 
-Residential hosting isn't very reliable. The internet is lower tier than business internet, power too. And there's nobody taking care of your server when your on vacation.
+Collocation was a solution for the bedroom or basement problem. What happens if your house catches fire? What about when power goes out? Or your mom trips on the power cable and unplugs your computer?
 
-Your site might go down for a week before you even notice.
+Residential hosting isn't very reliable. 
 
-With collocation you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and some physical security. You deal with configuration, maintenance, and replacing hard drives when they fail.
+Your internet is lower tier than a business would get, it's less reliable and when something goes wrong you're lowest in the queue. Same goes for other utilities like power – a power company thinks nothing of shutting off at night for maintenance. But that kills your server. 
 
-Yes computers break all the time. It's on you to keep it running.
+And if you go on vacation, nobody's there to take care of your server. Your site might go down for a week before you even notice.
+
+With collocation you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and some physical security. You often buy a more reliable computer as well. 
+
+You are still left to deal with configuration, maintenance, and replacing hard drives when they fail. Computers break all the time. A large data center might have to replace a hard drive every few minutes just because a typical drive lasts about 4 years and when you have thousands, well, stats are not in your favor.
+
+It's on you to keep everything running.
 
 ### Then came virtualization
 
-Collocation was great for physical problems, but when you realize how bored your computer gets running a website that gets 50 visitors per day ... oof.
+![A data center](../images/photo-1558494949-ef010cbdcc31.jpeg)
+
+Collocation was solved most physical problems. 
+
+Then you look at utilization on your server and realize how bored it gets running a website that gets 50 visitors per day ...
 
 What if we could run multiple servers on the same machine? And if you can make them isolated, use different configurations, maybe even different operating systems ...
 
