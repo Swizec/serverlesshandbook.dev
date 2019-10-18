@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useLayoutEffect } from "react"
 import { Global } from "@emotion/core"
 import { Box, Flex } from "rebass"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
@@ -12,7 +12,7 @@ import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
 
 const Paywall = ({ floating }) => {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined" && floating) {
       const overlay = document.createElement("div")
       const main = document.querySelector("main#content")
