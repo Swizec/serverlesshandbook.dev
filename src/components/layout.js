@@ -12,6 +12,8 @@ import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
 
 const Paywall = ({ floating }) => {
+  const copyDiv = useRef(null)
+
   useLayoutEffect(() => {
     if (typeof window !== "undefined" && floating) {
       window.requestAnimationFrame(() => {
@@ -33,17 +35,17 @@ const Paywall = ({ floating }) => {
 
         const dimensions = main.getBoundingClientRect()
 
-        copy.style = `
-        position: absolute;
-        top: ${Math.round(dimensions.height * 0.25)}px;
-        width: ${Math.round(dimensions.width)}px;
+        copyDiv.current.style = `
+            position: absolute;
+            top: ${Math.round(dimensions.height * 0.25)}px;
+            width: ${Math.round(dimensions.width)}px;
       `
       })
     }
   }, [])
 
   return (
-    <Box id="paywall-copy">
+    <Box id="paywall-copy" ref={copyDiv}>
       <PaywallCopy />
     </Box>
   )
