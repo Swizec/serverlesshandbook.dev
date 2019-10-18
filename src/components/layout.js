@@ -37,7 +37,7 @@ const Paywall = ({ floating }) => {
 
         copyDiv.current.style = `
             position: absolute;
-            top: ${Math.round(dimensions.height * 0.25)}px;
+            top: ${Math.round(dimensions.height * 0.2)}px;
             width: ${Math.round(dimensions.width)}px;
       `
       })
