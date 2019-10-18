@@ -12,11 +12,7 @@ export const Giphy = ({ search }) => {
 
       const { data: gifs } = await fetch(url).then(res => res.json())
 
-      setSrc([
-        { src: gifs[0].images.looping.mp4, type: "video/mp4" },
-        { src: gifs[0].images.preview_webp, type: "image/webp" },
-        { src: gifs[0].images.downsized_large, type: "image/gif" },
-      ])
+      setSrc([{ src: gifs[0].images.looping.mp4, type: "video/mp4" }])
     })()
   }, [search])
 
@@ -28,8 +24,8 @@ export const Giphy = ({ search }) => {
     <div
       dangerouslySetInnerHTML={{
         __html: `
-        <video controls autoplay loop muted>
-            ${srcHTML}
+        <video controls autoplay loop muted playsinline>
+            ${srcHTML.join("\n")}
         </video>
     `,
       }}

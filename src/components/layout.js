@@ -14,29 +14,31 @@ import QuickThanks from "./quickthanks"
 const Paywall = ({ floating }) => {
   useLayoutEffect(() => {
     if (typeof window !== "undefined" && floating) {
-      const overlay = document.createElement("div")
-      const main = document.querySelector("main#content")
-      const copy = document.querySelector("#paywall-copy")
+      window.requestAnimationFrame(() => {
+        const overlay = document.createElement("div")
+        const main = document.querySelector("main#content")
+        const copy = document.querySelector("#paywall-copy")
 
-      const style = `
+        const style = `
                 background-image: linear-gradient(rgba(2, 0, 36, 0) 0%, rgba(255, 255, 255, 0.95) 15%, rgb(255, 255, 255, 0.99) 40%, rgb(255, 255, 255, 0.99) 100%);
                 width: 100%;
                 top: 0px;
                 bottom: 0px;
                 position: absolute;
             `
-      overlay.style = style
+        overlay.style = style
 
-      main.style = "position: relative;"
-      main.appendChild(overlay)
+        main.style = "position: relative;"
+        main.appendChild(overlay)
 
-      const dimensions = main.getBoundingClientRect()
+        const dimensions = main.getBoundingClientRect()
 
-      copy.style = `
+        copy.style = `
         position: absolute;
         top: ${Math.round(dimensions.height * 0.25)}px;
         width: ${Math.round(dimensions.width)}px;
       `
+      })
     }
   }, [])
 
