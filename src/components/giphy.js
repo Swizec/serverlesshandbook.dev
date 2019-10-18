@@ -4,7 +4,7 @@ import fetch from "isomorphic-fetch"
 const API_KEY = "BbjXTpBIYN0GwoBCRpPLUCF08EPJ6PUp"
 
 export const Giphy = ({ search }) => {
-  const [src, setSrc] = useState(null)
+  const [src, setSrc] = useState([])
 
   useEffect(() => {
     ;(async () => {
@@ -12,19 +12,27 @@ export const Giphy = ({ search }) => {
 
       const { data: gifs } = await fetch(url).then(res => res.json())
 
-      setSrc(gifs[0].images.looping.mp4)
+      setSrc([
+        { src: gifs[0].images.looping.mp4, type: "video/mp4" },
+        { src: gifs[0].images.preview_webp, type: "image/webp" },
+        { src: gifs[0].images.downsized_large, type: "image/gif" },
+      ])
     })()
   }, [search])
 
-  return src ? (
+  const srcHTML = src.map(
+    ({ src, type }) => `<source src=${src} type=${type} />`
+  )
+
+  return (
     <div
       dangerouslySetInnerHTML={{
         __html: `
         <video controls autoplay loop muted>
-            <source src="${src}" type="video/mp4" />
+            ${srcHTML}
         </video>
     `,
       }}
     />
-  ) : null
+  )
 }
