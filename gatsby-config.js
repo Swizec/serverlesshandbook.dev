@@ -56,6 +56,19 @@ module.exports = {
                 pixelId: '2634718133254322'
             }
         },
-        'gatsby-plugin-simple-analytics'
+        'gatsby-plugin-simple-analytics',
+        {
+            resolve: 'gatsby-plugin-manifest',
+            options: {
+                name: "Serverless Handbook",
+                short_name: "Serverless Handbook",
+                description: 'a resource teaching frontend engineers everything they need to know to dive into backend',
+                start_url: "/",
+                background_color: '#fff',
+                theme_color: '#FF002B',
+                display: 'standalone'
+            }
+        },
+        'gatsby-plugin-offline'
     ],
 }
