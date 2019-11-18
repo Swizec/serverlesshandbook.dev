@@ -140,8 +140,10 @@ export default merge(preset, {
         blockquote: {
             p: 0,
             mx: 0,
-            fontWeight: 'bold',
+            p: '1em',
+            color: '#6a737d',
             fontSize: 3,
+            borderLeft: '.25em solid #dfe2e5'
         },
         h1: {
             variant: 'text.heading',
