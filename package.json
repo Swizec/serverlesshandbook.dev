@@ -13,6 +13,7 @@
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
     },
     "dependencies": {
+        "@andrioid/gatsby-plugin-social-card": "^0.5.6",
         "@jxnblk/react-live": "^2.1.2-1",
         "@mdx-js/mdx": "^1.1.4",
         "@mdx-js/react": "^1.1.4",
@@ -27,6 +28,7 @@
         "countries-list": "^2.4.3",
         "deepmerge": "^4.0.0",
         "gatsby": "^2.13.48",
+        "gatsby-cli": "^2.8.12",
         "gatsby-plugin-catch-links": "^2.1.2",
         "gatsby-plugin-facebook-pixel": "^1.0.3",
         "gatsby-plugin-google-analytics": "^2.1.20",
@@ -40,7 +42,9 @@
         "gatsby-remark-copy-linked-files": "^2.1.28",
         "gatsby-remark-images": "^3.1.28",
         "gatsby-remark-relative-images": "^0.2.3",
+        "gatsby-remark-social-cards": "^0.4.1",
         "gatsby-source-filesystem": "^2.1.33",
+        "gatsby-transformer-remark": "^2.6.37",
         "gatsby-transformer-sharp": "^2.2.23",
         "isomorphic-fetch": "^2.2.1",
         "react": "^16.8.6",
