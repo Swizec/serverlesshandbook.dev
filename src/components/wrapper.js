@@ -1,7 +1,6 @@
 import React from "react"
 import { Styled } from "theme-ui"
 import { Link } from "gatsby"
-import { Helmet } from "react-helmet"
 import Head from './head'
 import { Box, Flex } from "rebass"
 import { globalHistory } from "@reach/router"

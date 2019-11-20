@@ -138,7 +138,6 @@ export default merge(preset, {
             borderRadius: 4,
         },
         blockquote: {
-            p: 0,
             mx: 0,
             p: '1em',
             color: '#6a737d',
@@ -182,6 +181,12 @@ export default merge(preset, {
             textAlign: 'left',
             borderBottom: t => `1px solid ${t.colors.muted}`,
         },
+        p: {
+            img: {
+                maxWidth: '100%',
+                margin: 'auto auto',
+            }
+        }
     },
     forms: {
         label: {

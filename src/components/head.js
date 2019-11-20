@@ -6,9 +6,6 @@ export default props => {
   const description = props.description || "a resource teaching frontend engineers everything they need to know to dive into backend"
   const image       = props.image || "https://serverlesshandbook.dev/card.png"
 
-  console.info(image);
-
-
   return (
     <Helmet
       htmlAttributes={{

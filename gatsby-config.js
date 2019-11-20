@@ -27,6 +27,7 @@ module.exports = {
               linkImagestoOriginal: false,
               showCaptions: ["title", "alt"],
               withWebp: true,
+              wrapperStyle: 'text-align: center; font-style: italic',
               tracedSVG: {
                 color: `lightgray`,
                 optTolerance: 0.4,
