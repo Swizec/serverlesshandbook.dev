@@ -3,10 +3,6 @@ const remarkPlugins = [
 ]
 
 module.exports = {
-    siteMetadata: {
-        title: "Serverless Handbook",
-        siteUrl: "https://serverlesshandbook.dev", // no trailing slash!
-    },
     plugins: [{
             resolve: 'gatsby-source-filesystem',
             options: {
@@ -73,6 +69,6 @@ module.exports = {
                 display: 'standalone'
             }
         },
-        'gatsby-plugin-offline',
+        'gatsby-plugin-offline'
     ],
 }
