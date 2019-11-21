@@ -11,6 +11,9 @@ import EditLink from "./edit-link"
 import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
 
+import Reactions from './reactions'
+
+
 const Paywall = ({ floating }) => {
   const copyDiv = useRef(null)
 
@@ -155,6 +158,7 @@ export default props => {
       {!fullwidth ? (
         <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
           <main id="content">{props.children}</main>
+          <Reactions />
         </Sidebar>
       ) : (
         <main id="content">{props.children}</main>
