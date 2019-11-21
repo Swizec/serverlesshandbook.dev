@@ -17,7 +17,7 @@ import Reactions from './reactions'
 const Paywall = ({ floating }) => {
   const copyDiv = useRef(null)
 
-  useLayoutEffect((floating) => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined" && floating) {
 
       if (
@@ -57,11 +57,11 @@ const Paywall = ({ floating }) => {
           position: absolute;
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
-          ${document !== undefined && document.body.scrollHeight < 4000 && 'display: none' }
+          ${typeof document !== 'undefined' && document.body.scrollHeight < 4000 && 'display: none' }
       `
       })
     }
-  }, [floating])
+  }, [])
 
   return (
     <Box id="paywall-copy" ref={copyDiv}>
@@ -116,6 +116,7 @@ const Sidebar = props => {
         }}
       >
         {props.children}
+        <Reactions />
         {showPaywall ? (
           <>
             <Paywall floating />
@@ -158,7 +159,6 @@ export default props => {
       {!fullwidth ? (
         <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
           <main id="content">{props.children}</main>
-          <Reactions />
         </Sidebar>
       ) : (
         <main id="content">{props.children}</main>

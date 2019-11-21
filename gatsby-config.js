@@ -85,6 +85,7 @@ module.exports = {
         background_color: "#fff",
         theme_color: "#FF002B",
         display: "standalone",
+        icon: "./static/icon.png"
       },
     },
     "gatsby-plugin-offline",
