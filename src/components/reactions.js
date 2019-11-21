@@ -25,7 +25,7 @@ const SocialButton = styled.a`
   padding: 5px;
 `;
 
-const url = window !== null && window.location.href;
+const url = typeof window !== "undefined" && window.location.href;
 const tweetUrl = `https://twitter.com/intent/tweet?text=${url}`;
 const fbShareUrl = `https://www.facebook.com/sharer?u=${url}`;
 

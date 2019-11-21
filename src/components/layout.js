@@ -17,7 +17,7 @@ import Reactions from './reactions'
 const Paywall = ({ floating }) => {
   const copyDiv = useRef(null)
 
-  useLayoutEffect(() => {
+  useLayoutEffect((floating) => {
     if (typeof window !== "undefined" && floating) {
 
       if (
@@ -61,7 +61,7 @@ const Paywall = ({ floating }) => {
       `
       })
     }
-  }, [])
+  }, [floating])
 
   return (
     <Box id="paywall-copy" ref={copyDiv}>
