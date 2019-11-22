@@ -2,6 +2,42 @@ import { Box, Flex, Button } from "rebass"
 import { Banner, NavGrid, Container, Grid, LogoGrid } from ".."
 import Logo from "../components/logo"
 import GumroadButton from "../components/GumroadButton"
+import Avatar from '../components/avatar'
+import { graphql, } from "gatsby"
+
+export const pageQuery =
+  graphql`
+    query {
+      man1: file(relativePath: { eq: "man1.png" }) {
+        childImageSharp {
+          fluid(maxWidth: 120, maxHeight: 120) {
+            ...GatsbyImageSharpFluid
+          }
+        }
+      },
+      man2: file(relativePath: { eq: "man2.png" }) {
+        childImageSharp {
+          fluid(maxWidth: 120, maxHeight: 120) {
+            ...GatsbyImageSharpFluid
+          }
+        }
+      },
+      man3: file(relativePath: { eq: "man3.png" }) {
+        childImageSharp {
+          fluid(maxWidth: 120, maxHeight: 120) {
+            ...GatsbyImageSharpFluid
+          }
+        }
+      },
+      woman1: file(relativePath: { eq: "woman1.png" }) {
+        childImageSharp {
+          fluid(maxWidth: 120, maxHeight: 120) {
+            ...GatsbyImageSharpFluid
+          }
+        }
+      }
+    }
+  `
 
 <Banner>
 <Box mt={5} />
@@ -113,17 +149,25 @@ Secretly this is going to be a resource teaching frontend engineers everything t
 
   - dado90
 
+  - <Avatar img={props.data.man1.childImageSharp.fluid.src} />
+
 - > “I'm a React Dev, I wanted to get a boost further”
 
   - Samer
+
+  - <Avatar img={props.data.woman1.childImageSharp.fluid.src} />
 
 - > “I want to learn the full process of building a web app from start to finish using React and Serverless Technologies (could it be with AWS?)”
 
   - Ricardo Respo
 
+  - <Avatar img={props.data.man2.childImageSharp.fluid.src} />
+
 - > “I'm interested in the JAM stack and in AWS Serverless, but all of the examples for tutorials I found are boring.”
 
   - Rui
+
+  - <Avatar img={props.data.man3.childImageSharp.fluid.src} />
 
 </Grid>
 

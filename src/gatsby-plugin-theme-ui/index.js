@@ -138,10 +138,11 @@ export default merge(preset, {
             borderRadius: 4,
         },
         blockquote: {
-            p: 0,
             mx: 0,
-            fontWeight: 'bold',
+            p: '1em',
+            color: '#6a737d',
             fontSize: 3,
+            borderLeft: '.25em solid #dfe2e5'
         },
         h1: {
             variant: 'text.heading',
@@ -180,6 +181,12 @@ export default merge(preset, {
             textAlign: 'left',
             borderBottom: t => `1px solid ${t.colors.muted}`,
         },
+        p: {
+            img: {
+                maxWidth: '100%',
+                margin: 'auto auto',
+            }
+        }
     },
     forms: {
         label: {

@@ -27,6 +27,7 @@ module.exports = {
               linkImagestoOriginal: false,
               showCaptions: ["title", "alt"],
               withWebp: true,
+              wrapperStyle: 'text-align: center; font-style: italic',
               tracedSVG: {
                 color: `lightgray`,
                 optTolerance: 0.4,
@@ -84,6 +85,7 @@ module.exports = {
         background_color: "#fff",
         theme_color: "#FF002B",
         display: "standalone",
+        icon: "./static/icon.png"
       },
     },
     "gatsby-plugin-offline",

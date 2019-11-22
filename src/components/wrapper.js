@@ -1,7 +1,7 @@
 import React from "react"
 import { Styled } from "theme-ui"
 import { Link } from "gatsby"
-import { Helmet } from "react-helmet"
+import Head from './head'
 import { Box, Flex } from "rebass"
 import { globalHistory } from "@reach/router"
 
@@ -30,7 +30,7 @@ export const Breadcrumbs = ({ title }) => {
   )
 }
 
-export const wrapper = ({ title, ...props }) => {
+export const wrapper = ({ title, description, image, ...props }) => {
   const children = React.Children.toArray(props.children).reduce(
     (acc, child) => {
       const type = child.props.mdxType
@@ -43,9 +43,11 @@ export const wrapper = ({ title, ...props }) => {
   return (
     <>
       {title && (
-        <Helmet>
-          <title>{title} | Serverless Handbook</title>
-        </Helmet>
+        <Head 
+          title={title} 
+          description={description}
+          image={image}
+        />
       )}
       {children}
     </>

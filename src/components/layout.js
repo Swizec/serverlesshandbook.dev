@@ -11,23 +11,41 @@ import EditLink from "./edit-link"
 import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
 
+import Reactions from './reactions'
+
+
 const Paywall = ({ floating }) => {
   const copyDiv = useRef(null)
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined" && floating) {
+
+      if (
+        !window.localStorage.getItem("unlock_handbook") ||
+        !window.localStorage.getItem("sale_id")
+      ) {
+        const children = [].slice.call(document.getElementById('content').children);
+     
+        let isLocked = false;
+        for (const child of children) {
+          if (child.id === 'lock') isLocked = true;
+          if (isLocked === true ) {
+            child.style.display = 'none';
+          }
+        }
+      }
+
       window.requestAnimationFrame(() => {
         const overlay = document.createElement("div")
         const main = document.querySelector("main#content")
-        const copy = document.querySelector("#paywall-copy")
 
         const style = `
-                background-image: linear-gradient(rgba(2, 0, 36, 0) 0%, rgba(255, 255, 255, 0.95) 15%, rgb(255, 255, 255, 0.99) 40%, rgb(255, 255, 255, 0.99) 100%);
-                width: 100%;
-                top: 0px;
-                bottom: 0px;
-                position: absolute;
-            `
+          background-image: linear-gradient(rgba(2, 0, 36, 0) 0%,  rgb(255, 255, 255, 0.99) 100%);
+          width: 100%;
+          top: 0px;
+          bottom: 0px;
+          position: absolute;
+        `
         overlay.style = style
 
         main.style = "position: relative;"
@@ -36,9 +54,10 @@ const Paywall = ({ floating }) => {
         const dimensions = main.getBoundingClientRect()
 
         copyDiv.current.style = `
-            position: absolute;
-            top: ${Math.round(dimensions.height * 0.2)}px;
-            width: ${Math.round(dimensions.width)}px;
+          position: absolute;
+          top: ${Math.round(dimensions.height * 0.2)}px;
+          width: ${Math.round(dimensions.width)}px;
+          ${typeof document !== 'undefined' && document.body.scrollHeight < 4000 && 'display: none' }
       `
       })
     }
@@ -97,6 +116,7 @@ const Sidebar = props => {
         }}
       >
         {props.children}
+        <Reactions />
         {showPaywall ? (
           <>
             <Paywall floating />

@@ -32,7 +32,7 @@ export const Giphy = ({ search, id }) => {
     <div
       dangerouslySetInnerHTML={{
         __html: `
-        <video controls autoplay loop muted playsinline>
+        <video style="margin: auto auto; display: block; max-width: 100%" controls autoplay loop muted playsinline>
             ${srcHTML.join("\n")}
         </video>
     `,

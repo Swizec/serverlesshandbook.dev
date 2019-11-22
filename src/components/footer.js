@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Flex, Link } from "rebass"
+import { Box, Link } from "rebass"
 
 export default props => (
   <Box as="footer" py={5} color="background" bg="text">
@@ -10,10 +10,10 @@ export default props => (
         px: 3,
       }}
     >
-      Built by{" "}
-      <a href="https://swizec.com" style={{ color: "white" }}>
+      Built by
+      <Link href="https://swizec.com" variant="nav" style={{ textDecoration: "underline" }}>
         Swizec
-      </a>{" "}
+      </Link>
       with ❤️
       <Link href="/" variant="nav">
         Serverless Handbook
