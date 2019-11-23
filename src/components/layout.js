@@ -40,7 +40,7 @@ const Paywall = ({ floating }) => {
         const main = document.querySelector("main#content")
 
         const style = `
-          background-image: linear-gradient(rgba(2, 0, 36, 0) 0%,  rgb(255, 255, 255, 0.99) 100%);
+          background-image: linear-gradient(rgba(2, 0, 36, 0) 60%,  rgb(255, 255, 255, 1) 100%);
           width: 100%;
           top: 0px;
           bottom: 0px;
@@ -57,7 +57,7 @@ const Paywall = ({ floating }) => {
           position: absolute;
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
-          ${typeof document !== 'undefined' && document.body.scrollHeight < 4000 && 'display: none' }
+          ${typeof document !== 'undefined' && document.body.scrollHeight < 6000 && 'display: none' }
       `
       })
     }
@@ -116,7 +116,11 @@ const Sidebar = props => {
         }}
       >
         {props.children}
-        <Reactions />
+        {
+          showPaywall === false
+            && <Reactions />
+
+        }
         {showPaywall ? (
           <>
             <Paywall floating />
