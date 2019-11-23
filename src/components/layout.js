@@ -119,7 +119,6 @@ const Sidebar = props => {
         {
           showPaywall === false
             && <Reactions />
-
         }
         {showPaywall ? (
           <>
