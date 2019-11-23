@@ -22,7 +22,7 @@ export default props => {
       <meta name="twitter:creator"     content="@swizec" />
       <meta name="twitter:title"       content={props.title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image"       content={image} />
+      <meta name="twitter:image:src"   content={image} />
 
       <meta property="og:title"        content={props.title} />
       <meta property="og:type"         content="article" />
