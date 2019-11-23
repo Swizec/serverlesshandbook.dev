@@ -5,10 +5,10 @@ const Typeform = () => {
   useEffect(() => {
     // Taken from typeform
     ;(function() {
-      var qs,
+      var /*qs,*/
         js,
         q,
-        s,
+        // s,
         d = document,
         gi = d.getElementById,
         ce = d.createElement,

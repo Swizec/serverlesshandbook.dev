@@ -11,7 +11,7 @@ const GumroadButton = ({ children }) => {
     children
   ) : (
     <Box>
-      <p>Thanks for your support ❤️</p>
+      <p>Thanks for your support <span role="img" aria-label="heart">❤</span></p>
       <Button as="a" href="/getting-started">
         Get Started
       </Button>

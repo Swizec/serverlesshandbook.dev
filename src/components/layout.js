@@ -40,7 +40,7 @@ const Paywall = ({ floating }) => {
         const main = document.querySelector("main#content")
 
         const style = `
-          background-image: linear-gradient(rgba(2, 0, 36, 0) 60%,  rgb(255, 255, 255, 1) 100%);
+          background-image: linear-gradient(rgba(255, 255, 255, 0) 60%,  rgb(255, 255, 255, 1) 100%);
           width: 100%;
           top: 0px;
           bottom: 0px;
@@ -61,7 +61,7 @@ const Paywall = ({ floating }) => {
       `
       })
     }
-  }, [])
+  }, [floating])
 
   return (
     <Box id="paywall-copy" ref={copyDiv}>

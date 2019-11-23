@@ -9,7 +9,7 @@ const breadcrumbRoutes = ["guides", "recipes"]
 
 export const Breadcrumbs = ({ title }) => {
   const { location } = globalHistory
-  const [n, base, path] = location.pathname.split("/")
+  const [, base, path] = location.pathname.split("/")
   if (!breadcrumbRoutes.includes(base)) return false
   if (!path) return false
 

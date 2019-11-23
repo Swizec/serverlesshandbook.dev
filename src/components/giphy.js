@@ -22,7 +22,7 @@ export const Giphy = ({ search, id }) => {
         setSrc([{ src: data.images.looping.mp4, type: "video/mp4" }])
       }
     })()
-  }, [search])
+  }, [search, id])
 
   const srcHTML = src.map(
     ({ src, type }) => `<source src=${src} type=${type} />`

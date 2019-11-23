@@ -1,5 +1,5 @@
 import React from "react"
-import styled from "@emotion/styled"
+// import styled from "@emotion/styled"
 import {
   LiveProvider,
   LivePreview,
@@ -11,7 +11,7 @@ import Prism from "@theme-ui/prism"
 import * as Rebass from "rebass"
 import * as RebassForms from "@rebass/forms"
 import * as RebassLayout from "@rebass/layout"
-import { Flex, Box } from "rebass"
+import { Box } from "rebass"
 import { countries } from "countries-list"
 
 const scope = {
@@ -76,7 +76,7 @@ const Err = props => (
 )
 
 export default ({ className, ...props }) => {
-  const lang = "jsx"
+  // const lang = "jsx"
 
   if (props.preview) {
     const code = props.children

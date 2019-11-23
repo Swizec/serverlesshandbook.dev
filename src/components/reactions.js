@@ -39,10 +39,10 @@ const Reactions = () => (
         </h2>
         <div className="styles__Flex-sc-1lygi1f-2 biiuQx">
           <a href={`https://spark-joy.netlify.com/c02dba9a-2eed-48d8-acd8-5b1797b5b14a/thumbsdown?instanceOfJoy=${url}`} className="Widget__RoundButton-sc-1ityn2x-1 caphDb">
-            <span role="img">👎</span>
+            <span role="img" aria-label="thumbs-down">👎</span>
           </a>
           <a href={`https://spark-joy.netlify.com/c02dba9a-2eed-48d8-acd8-5b1797b5b14a/thumbsdown?instanceOfJoy=${url}`} className="Widget__RoundButton-sc-1ityn2x-1 caphDb">
-            <span role="img">👍</span>
+            <span role="img" aria-label="thumbs-up">👍</span>
           </a>
         </div>
       </div>
