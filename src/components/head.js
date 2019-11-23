@@ -2,9 +2,12 @@ import React from "react"
 import { Helmet } from "react-helmet"
 
 export default props => {
+
+  if (props.image !== undefined) console.info(props.image)
+
   const title       = [props.title, "Serverless Handbook"].filter(Boolean).join(" | ")
   const description = props.description || "a resource teaching frontend engineers everything they need to know to dive into backend"
-  const image       = `https://serverlesshandbook.dev${props.image || '/card.png'}`
+  const image       = `${props.image || '/card.png'}`
   const url         = `https://serverlesshandbook.dev${props.pathName || ''}`
 
   return (
@@ -13,12 +16,13 @@ export default props => {
         lang: "en-us",
       }}
     >
-      <title>{title}</title>
+      <title>{title}</title>f
       <link rel="icon" href="/icon.png" />
       <meta name="description"         content={description}/>
 
       <meta name="twitter:card"        content="summary_large_image" />
       <meta name="twitter:site"        content="@swizec" />
+      <meta name="twitter:creator"     content="@swizec" />
       <meta name="twitter:title"       content={props.title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image"       content={image} />

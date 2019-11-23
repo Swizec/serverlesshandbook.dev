@@ -157,6 +157,7 @@ export default props => {
           body: { margin: 0 },
         }}
       />
+      <Head {...props} />
       <Header fullwidth={fullwidth} menu={menu} setMenu={setMenu} nav={nav} />
       {!fullwidth ? (
         <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
