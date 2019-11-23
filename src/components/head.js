@@ -2,9 +2,6 @@ import React from "react"
 import { Helmet } from "react-helmet"
 
 export default props => {
-
-  if (props.image !== undefined) console.info(props.image)
-
   const title       = [props.title, "Serverless Handbook"].filter(Boolean).join(" | ")
   const description = props.description || "a resource teaching frontend engineers everything they need to know to dive into backend"
   const image       = `${props.image || '/card.png'}`
@@ -16,7 +13,7 @@ export default props => {
         lang: "en-us",
       }}
     >
-      <title>{title}</title>f
+      <title>{title}</title>
       <link rel="icon" href="/icon.png" />
       <meta name="description"         content={description}/>
 
