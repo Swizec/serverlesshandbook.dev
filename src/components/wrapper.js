@@ -47,6 +47,7 @@ export const wrapper = ({ title, description, image, ...props }) => {
           title={title} 
           description={description}
           image={image}
+          pathName={props.location.pathname}
         />
       )}
       {children}

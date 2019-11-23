@@ -5,6 +5,7 @@ export default props => {
   const title       = [props.title, "Serverless Handbook"].filter(Boolean).join(" | ")
   const description = props.description || "a resource teaching frontend engineers everything they need to know to dive into backend"
   const image       = props.image || "https://serverlesshandbook.dev/card.png"
+  const url         = `https://serverlesshandbook.dev${props.pathName || ''}`
 
   return (
     <Helmet
@@ -24,7 +25,7 @@ export default props => {
 
       <meta property="og:title"        content={props.title} />
       <meta property="og:type"         content="article" />
-      <meta property="og:url"          content="https://serverlesshandbook.dev" />
+      <meta property="og:url"          content={url} />
       <meta property="og:image"        content={image} />
 
       <script src="https://gumroad.com/js/gumroad.js"></script>
