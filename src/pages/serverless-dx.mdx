@@ -8,7 +8,7 @@ export const image = "/dx.jpg"
 
 What makes a good developer experience?
 
-I asked on twitter and answers were all over the place. They shared a common theme:
+Answers on twitter were all over the place, but they shared a common theme:
 
 > Good developer experience is when tools make your job easier, get out of the way, and let you focus on *your* code
 
@@ -16,7 +16,7 @@ https://twitter.com/Swizec/status/1195742841877610496
 
 So how do you setup a serverless project for good DX?
 
-I think it comes down to 3 things:
+It comes down to 3 things:
 
 1. Infrastructure-as-code
 2. Fast deploys
@@ -26,18 +26,16 @@ I think it comes down to 3 things:
 
 https://twitter.com/muditameta/status/1195783892512444417
 
-As we touched upon in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) for serverless. When using AWS. You don't need it for Netlify or Zeit. They offer a different approach to reach the same goal.
+As we touched upon in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) with AWS. When using Netlify and Zeit you don't need Serverless because config-as-code is baked into their philosophies.
 
-The reason is that it turns your infrastructure into code.
-
-You write a configuration file, add it to version control, and that's your entire infrastructure. *Nothing* happens outside that configuration file.
+You write a configuration file, add it to version control, and that's your infrastructure. *Nothing* happens outside that configuration file.
 
 This means that:
 
 1. **Your deploys are replicable**. Run deploy, get the same result every time. The same functions, the same queues, the same caching servers, everything.
-2. **Same infrastructure in test as in prod** Dealing with subtle differences between test environments and production is a huge waste of time. And it gets you every time. Infrastructure-as-code fixes that. Also why Docker is so popular, maybe you've heard of it 😛
-3. **Share infrastructure between the team**. Ever had to ask a team member what environment variable they used for that thing? I have. Huge waste of time because you always spend 2 hours hunting dow the problem before realizing it's something stupid like a feature flag.
-4. **Infrastructure that always fits your feature branch** One of the biggest time sinks on a larger team is building features in parallel that need slightly different infrastructure. Say you added a new queue or cloud function. Are you gonna set it up and tear it down every time you test? With infra-as-code, it happens automatically.
+2. **Same infrastructure in test as in prod** Subtle differences between test environments and production are a waste of your time. Infrastructure-as-code fixes that. Also why Docker got so popular, maybe you've heard of it 😛
+3. **Share infrastructure between the team**. Ever had to ask a team member what environment variable they used for that thing? I have. Always takes 2 hours hunting down the problem before you notice it's a configuration issue.
+4. **Infrastructure that always fits your feature branch** One of the problem on a larger team is building features in parallel that need different infrastructure. Say you added a new queue or cloud function. Instead of setting it up every time you test, you can use infra-as-code to do it for you.
 5. **Spend times in the tools you like, not confusing web UI** We're engineers, we like writing code. Not clicking around a web UI performing repetitive tasks that take 20 minutes.
 
 ## Fast deploys
@@ -46,40 +44,38 @@ https://twitter.com/CodingDive/status/1195776781921464321
 
 The shorter your feedback cycle, the faster you can work. 
 
-When you make a change, how long does it take to know if it worked? How can you make that time as short as possible?
+On the frontend we have local dev servers and hot reloading. You get to see the results of your change almost as fast as you write them.
 
-On the frontend we have local dev servers and hot reloading. Means you see the results of your change almost as fast as you write them.
+On the backend things are trickier.
 
-On the backend things get trickier.
-
-You make a change ... now what? If you have unit tests, they show you some of the picture. The specific scenarios you thought to test, the specific methods you're testing with specific inputs.
+You make a change ... now what? If you have unit tests, they show you some of the picture. The specific scenarios you thought to test, the methods you're exercising, the particular inputs you thought of.
 
 All great.
 
 ![](https://media.giphy.com/media/WO74HAtUC9I40/giphy.gif)
 
-Unit tests don't tell you whether *your system* works. And that's where most bugs come from – systems complexity.
+But unit tests can't tell you *your system* works. That's where most bugs come from – systems complexity.
 
-You could simulate the environment locally and run your tests. That works to an extent, but it's never quite perfect.
+You can simulate the environment and run your tests. That works to an extent, but it's never quite perfect.
 
-Your best option is to make deploying to a staging, qa, or prod environment so fast that you can use it during development. With serverless, that becomes possible.
+Your best bet is to make deploying to a staging, QA, or prod environment so fast that you can use it during development. With serverless, that becomes possible.
 
-You could even set it up so pushing to github automatically deploys every branch. Netlify and Zeit both encourage this model.
+You could even set it up so pushing to GitHub automatically deploys every branch. Netlify and Zeit both encourage this model.
 
 ### How fast deploys work
 
 Here's how the flow works:
 
 0. Hit deploy
-1. **Compile your code locally** on your fast developer machine. Since your code is small, just a few functions, it compiles in seconds.
-2. **Compile your infrastructure** the serverless framework compiles your infrastructure into a config file the target platform understands. For AWS that's [SAM](https://aws.amazon.com/serverless/sam/).
-3. **Upload your bundle** this is often the slowest part. You have to upload a few megabytes of data.
-4. **Infrastructure sets itself up** using your config the platform sets itself up. Servers show up, queues go up, stuff like that. Usually in seconds 
+1. **Compile your code locally** on your fast developer machine. Since your code is small, it compiles in seconds.
+2. **Compile your infrastructure** the serverless framework compiles your infrastructure into a config file for the target platform. With AWS that's [SAM](https://aws.amazon.com/serverless/sam/).
+3. **Upload your bundle** this is often the slowest part.
+4. **Infrastructure sets itself up** using your config the platform sets itself up. Servers show up, queues go up, stuff like that. Takes a few seconds 
 5. **You're ready to go**
 
 <div id="lock" />
 
-Longest deploy times I've seen on production-sized serverless backends are in the 2 minute range. But that's a system with a configuration file measured in hundreds of lines.
+Longest deploy times I've seen on production-sized backends are in the 2 minute range. But that's a system with a configuration file in the hundreds of lines.
 
 Most often it's under a minute.
 
@@ -102,7 +98,7 @@ package.json
 
 With those 2 lines you can deploy from any branch without worry that you'll forget to build your project first. The `build` script runs a typescript build – you should use it for other builds, too – and `sls deploy` runs a serverless deploy process.
 
-This gets trickier when you use multiple environments. We'll talk about that in the chapter on prod, qa, and staging environments.
+This gets trickier when you use multiple environments. We'll talk about that in the chapter on prod, QA, and staging environments.
 
 Other helpful tools I've set up for my bigger projects include:
 
@@ -111,7 +107,7 @@ Other helpful tools I've set up for my bigger projects include:
 - `test-X` to run various types of tests against the server environment
 - `add-engineer` to add a new engineer-specific environment so everyone can test on their own
 
-Basically any time you find yourself running the same sequence of commands for a task, you should consider adding them as a script to your package.json. Give others that same super power :)
+Any time you find yourself running the same sequence of commands for a task, you should consider adding them as a script to your package.json. Give others that same super power :)
 
 # How this works in practice
 
