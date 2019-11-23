@@ -20,12 +20,11 @@ export default props => {
       <meta name="twitter:card"        content="summary_large_image" />
       <meta name="twitter:site"        content="@swizec" />
       <meta name="twitter:creator"     content="@swizec" />
-      <meta name="twitter:title"       content={props.title} />
+      <meta name="twitter:title"       content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image:src"   content={image} />
 
-      <meta property="og:title"        content={props.title} />
-      <meta property="og:type"         content="article" />
+      <meta property="og:title"        content={title} />
       <meta property="og:url"          content={url} />
       <meta property="og:image"        content={image} />
 
