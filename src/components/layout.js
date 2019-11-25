@@ -57,7 +57,6 @@ const Paywall = ({ floating }) => {
           position: absolute;
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
-          ${typeof window !== 'undefined' && window.document.body.scrollHeight < 5000 && 'display: none' }
       `
       })
     }

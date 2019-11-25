@@ -8,8 +8,6 @@ export default props => {
   const image       = `https://serverlesshandbook.dev${props.image || '/card.png'}`
   const url         = `https://serverlesshandbook.dev${props.pathName || ''}`.replace(/(.+)(\/)$/, '$1')
 
-  console.info(url);
-
   return (
     <Helmet
       htmlAttributes={{
