@@ -15,29 +15,27 @@ import Reactions from './reactions'
 
 
 const Paywall = ({ floating }) => {
+  
   const copyDiv = useRef(null)
 
   useLayoutEffect(() => {
-    if (typeof window !== "undefined" && floating) {
-
-      if (
-        !window.localStorage.getItem("unlock_handbook") ||
-        !window.localStorage.getItem("sale_id")
-      ) {
-        const children = [].slice.call(document.getElementById('content').children);
+    if (
+      !window.localStorage.getItem("unlock_handbook") ||
+      !window.localStorage.getItem("sale_id")
+    ) {
+      const children = [].slice.call(document.getElementById('content').children);
      
-        let isLocked = false;
-        for (const child of children) {
-          if (child.id === 'lock') isLocked = true;
-          if (isLocked === true ) {
-            child.style.display = 'none';
-          }
+      let isLocked = false;
+      for (const child of children) {
+        if (child.id === 'lock') isLocked = true;
+        if (isLocked === true ) {
+          child.style.display = 'none';
         }
       }
 
       window.requestAnimationFrame(() => {
-        const overlay = document.createElement("div")
-        const main = document.querySelector("main#content")
+        const overlay = typeof window !== 'undefined' && document.createElement("div")
+        const main    = typeof window !== 'undefined' && document.querySelector("main#content")
 
         const style = `
           background-image: linear-gradient(rgba(255, 255, 255, 0) 60%,  rgb(255, 255, 255, 1) 100%);
@@ -51,13 +49,9 @@ const Paywall = ({ floating }) => {
         main.style = "position: relative;"
         main.appendChild(overlay)
 
-        const dimensions = main.getBoundingClientRect()
 
         copyDiv.current.style = `
-          position: absolute;
-          top: ${Math.round(dimensions.height * 0.2)}px;
-          width: ${Math.round(dimensions.width)}px;
-      `
+        `
       })
     }
   }, [floating])
@@ -120,10 +114,7 @@ const Sidebar = props => {
             && <Reactions />
         }
         {showPaywall ? (
-          <>
-            <Paywall floating />
-            <Paywall />
-          </>
+          <Paywall />
         ) : (
           <QuickThanks />
         )}
