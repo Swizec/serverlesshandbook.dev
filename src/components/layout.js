@@ -14,22 +14,24 @@ import QuickThanks from "./quickthanks"
 import Reactions from './reactions'
 
 
-const Paywall = ({ floating }) => {
-  
+const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
 
   useLayoutEffect(() => {
-    if (
-      !window.localStorage.getItem("unlock_handbook") ||
-      !window.localStorage.getItem("sale_id")
-    ) {
-      const children = [].slice.call(document.getElementById('content').children);
+    if (typeof window !== "undefined" ) {
+
+      if (
+        !window.localStorage.getItem("unlock_handbook") ||
+        !window.localStorage.getItem("sale_id")
+      ) {
+        const children = [].slice.call(document.getElementById('content').children);
      
-      let isLocked = false;
-      for (const child of children) {
-        if (child.id === 'lock') isLocked = true;
-        if (isLocked === true ) {
-          child.style.display = 'none';
+        let isLocked = false;
+        for (const child of children) {
+          if (child.id === 'lock') isLocked = true;
+          if (isLocked === true ) {
+            child.style.display = 'none';
+          }
         }
       }
 
@@ -49,12 +51,15 @@ const Paywall = ({ floating }) => {
         main.style = "position: relative;"
         main.appendChild(overlay)
 
+        const dimensions = main.getBoundingClientRect()
 
         copyDiv.current.style = `
+          top: ${Math.round(dimensions.height * 0.2)}px;
+          width: ${Math.round(dimensions.width)}px;
         `
       })
     }
-  }, [floating])
+  }, [page])
 
   return (
     <Box id="paywall-copy" ref={copyDiv}>
@@ -114,7 +119,7 @@ const Sidebar = props => {
             && <Reactions />
         }
         {showPaywall ? (
-          <Paywall />
+          <Paywall page={props.location.pathname} />
         ) : (
           <QuickThanks />
         )}
