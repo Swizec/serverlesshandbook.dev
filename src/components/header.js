@@ -49,12 +49,36 @@ const Dot = props => (
   </svg>
 )
 
-export default ({ nav, menu, setMenu, fullwidth }) => {
+export default ({ nav, menu, setMenu, fullwidth}) => {
   const [mode, setMode] = useColorMode()
+
+  const updateLockedContent = () =>  {
+
+    if (
+      !window.localStorage.getItem("unlock_handbook") ||
+      !window.localStorage.getItem("sale_id")
+    ) {
+      let children = document.getElementById('content').children //[].slice.call(document.getElementById('content').children);
+
+      setTimeout(
+        () => {
+          let isLocked = false;
+          for (let child of children) {
+            if (child.id === 'lock') isLocked = true;
+            if (isLocked === true ) {
+              child.style.display = 'none';
+            }
+          }
+        }, 100
+      )
+    }
+
+  }
 
   const cycleMode = e => {
     const i = (modes.indexOf(mode) + 1) % modes.length
     setMode(modes[i])
+    updateLockedContent()
   }
 
   return (

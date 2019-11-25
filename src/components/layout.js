@@ -10,9 +10,7 @@ import Nav from "./nav"
 import EditLink from "./edit-link"
 import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
-
 import Reactions from './reactions'
-
 
 const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
@@ -54,8 +52,9 @@ const Paywall = ({ page }) => {
         const dimensions = main.getBoundingClientRect()
 
         copyDiv.current.style = `
-          top: ${Math.round(dimensions.height * 0.2)}px;
+          top:   ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
+          background-color: var(--theme-ui-colors-muted,#f6f6ff);
         `
       })
     }
