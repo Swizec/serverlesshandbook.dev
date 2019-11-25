@@ -65,7 +65,9 @@ const Paywall = ({ page }) => {
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
           background-color: var(--theme-ui-colors-muted,#f6f6ff);
-          min-height: 900px;
+          & iframe {
+            min-height: 350px;
+          }
         `
       })
     }
