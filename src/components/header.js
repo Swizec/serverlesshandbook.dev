@@ -69,7 +69,7 @@ export default ({ nav, menu, setMenu, fullwidth}) => {
               child.style.display = 'none';
             }
           }
-        }, 100
+        }, 1000
       )
     }
 

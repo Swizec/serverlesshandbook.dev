@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from "react"
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react"
 import { Global } from "@emotion/core"
 import { Box, Flex } from "rebass"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
@@ -10,28 +10,38 @@ import Nav from "./nav"
 import EditLink from "./edit-link"
 import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
+
 import Reactions from './reactions'
+
 
 const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
 
+
+  useEffect(() => {
+    if (
+      !window.localStorage.getItem("unlock_handbook") ||
+      !window.localStorage.getItem("sale_id")
+    ) {
+      setTimeout(
+        () => {
+          const children = [].slice.call(document.getElementById('content').children);
+       
+          let isLocked = false;
+          for (const child of children) {
+            if (child.id === 'lock') isLocked = true;
+            if (isLocked === true ) {
+              child.style.display = 'none';
+            }
+          }
+
+        }, 2000
+      )
+    }
+  }, [page])
+
   useLayoutEffect(() => {
     if (typeof window !== "undefined" ) {
-
-      if (
-        !window.localStorage.getItem("unlock_handbook") ||
-        !window.localStorage.getItem("sale_id")
-      ) {
-        const children = [].slice.call(document.getElementById('content').children);
-     
-        let isLocked = false;
-        for (const child of children) {
-          if (child.id === 'lock') isLocked = true;
-          if (isLocked === true ) {
-            child.style.display = 'none';
-          }
-        }
-      }
 
       window.requestAnimationFrame(() => {
         const overlay = typeof window !== 'undefined' && document.createElement("div")
@@ -52,9 +62,8 @@ const Paywall = ({ page }) => {
         const dimensions = main.getBoundingClientRect()
 
         copyDiv.current.style = `
-          top:   ${Math.round(dimensions.height * 0.2)}px;
+          top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
-          background-color: var(--theme-ui-colors-muted,#f6f6ff);
         `
       })
     }
