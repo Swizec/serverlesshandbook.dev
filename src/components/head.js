@@ -5,7 +5,7 @@ export default props => {
   const title       = [props.title, "Serverless Handbook"].filter(Boolean).join(" | ")
   const description = props.description || "a resource teaching frontend engineers everything they need to know to dive into backend"
   const image       = `https://serverlesshandbook.dev${props.image || '/card.png'}`
-  const url         = `https://serverlesshandbook.dev/${props.pageName || ''}`
+  const url         = `https://serverlesshandbook.dev${props.pageName !== undefined ? `/${props.pageName}` : ''}`
 
   return (
     <Helmet
