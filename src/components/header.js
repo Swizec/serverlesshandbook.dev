@@ -55,12 +55,15 @@ export default ({ nav, menu, setMenu, fullwidth}) => {
   const updateLockedContent = () =>  {
 
     if (
-      !window.localStorage.getItem("unlock_handbook") ||
-      !window.localStorage.getItem("sale_id")
+      typeof window !== 'undefined' &&
+      (
+        !window.localStorage.getItem("unlock_handbook") ||
+        !window.localStorage.getItem("sale_id")
+      )
     ) {
-      let children = document.getElementById('content').children //[].slice.call(document.getElementById('content').children);
+      let children = document.getElementById('content').children 
 
-      setTimeout(
+      window.requestAnimationFrame(
         () => {
           let isLocked = false;
           for (let child of children) {
@@ -69,7 +72,7 @@ export default ({ nav, menu, setMenu, fullwidth}) => {
               child.style.display = 'none';
             }
           }
-        }, 1000
+        }
       )
     }
 

@@ -17,33 +17,34 @@ import Reactions from './reactions'
 const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
 
-
-  useEffect(() => {
+  const updateLockedContent = () =>  {
     if (
-      !window.localStorage.getItem("unlock_handbook") ||
-      !window.localStorage.getItem("sale_id")
-    ) {
-      setTimeout(
-        () => {
-          const children = [].slice.call(document.getElementById('content').children);
-       
-          let isLocked = false;
-          for (const child of children) {
-            if (child.id === 'lock') isLocked = true;
-            if (isLocked === true ) {
-              child.style.display = 'none';
-            }
-          }
-
-        }, 2000
+      typeof window !== 'undefined' &&
+      (
+        !window.localStorage.getItem("unlock_handbook") ||
+        !window.localStorage.getItem("sale_id")
       )
+    ) {
+      let children = document.getElementById('content').children 
+
+      let isLocked = false;
+      for (let child of children) {
+        if (child.id === 'lock') isLocked = true;
+        if (isLocked === true ) {
+          child.style.display = 'none';
+        }
+      }
     }
-  }, [page])
+
+  }
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined" ) {
 
+
       window.requestAnimationFrame(() => {
+      updateLockedContent();
+
         const overlay = typeof window !== 'undefined' && document.createElement("div")
         const main    = typeof window !== 'undefined' && document.querySelector("main#content")
 
@@ -64,10 +65,6 @@ const Paywall = ({ page }) => {
         copyDiv.current.style = `
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
-          background-color: var(--theme-ui-colors-muted,#f6f6ff);
-          & iframe {
-            min-height: 350px;
-          }
         `
       })
     }

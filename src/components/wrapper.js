@@ -31,6 +31,7 @@ export const Breadcrumbs = ({ title }) => {
 }
 
 export const wrapper = ({ title, description, image, ...props }) => {
+
   const children = React.Children.toArray(props.children).reduce(
     (acc, child) => {
       const type = child.props.mdxType
@@ -47,7 +48,7 @@ export const wrapper = ({ title, description, image, ...props }) => {
           title={title} 
           description={description}
           image={image}
-          pathName={props.location.pathname}
+          pageName={props['*']}
         />
       )}
       {children}

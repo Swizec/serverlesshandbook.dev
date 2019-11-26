@@ -7,7 +7,7 @@
     "scripts": {
         "start": "gatsby develop",
         "clean": "gatsby clean",
-        "build": "gatsby clean && gatsby build",
+        "build": "npm run clean && gatsby build",
         "serve": "gatsby serve",
         "icon": "npx repng src/components/icon.js -d static -f icon.png -w 512 -h 512",
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
@@ -47,7 +47,6 @@
         "gatsby-transformer-remark": "^2.6.37",
         "gatsby-transformer-sharp": "^2.2.23",
         "isomorphic-fetch": "^2.2.1",
-        "now": "^16.6.0",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
         "react-helmet": "^5.2.1",
