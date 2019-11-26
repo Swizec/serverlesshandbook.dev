@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react"
+import React, { useState, useRef, useLayoutEffect } from "react"
 import { Global } from "@emotion/core"
 import { Box, Flex } from "rebass"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
@@ -65,6 +65,7 @@ const Paywall = ({ page }) => {
         copyDiv.current.style = `
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
+          background-color: var(--theme-ui-colors-muted,#f6f6ff);
         `
       })
     }
