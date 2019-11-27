@@ -14,33 +14,42 @@ import QuickThanks from "./quickthanks"
 import Reactions from './reactions'
 
 
-const Paywall = ({ floating }) => {
+const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
 
-  useLayoutEffect(() => {
-    if (typeof window !== "undefined" && floating) {
-
-      if (
+  const updateLockedContent = () =>  {
+    if (
+      typeof window !== 'undefined' &&
+      (
         !window.localStorage.getItem("unlock_handbook") ||
         !window.localStorage.getItem("sale_id")
-      ) {
-        const children = [].slice.call(document.getElementById('content').children);
-     
-        let isLocked = false;
-        for (const child of children) {
-          if (child.id === 'lock') isLocked = true;
-          if (isLocked === true ) {
-            child.style.display = 'none';
-          }
+      )
+    ) {
+      let children = document.getElementById('content').children 
+
+      let isLocked = false;
+      for (let child of children) {
+        if (child.id === 'lock') isLocked = true;
+        if (isLocked === true ) {
+          child.style.display = 'none';
         }
       }
+    }
+
+  }
+
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined" ) {
+
 
       window.requestAnimationFrame(() => {
-        const overlay = document.createElement("div")
-        const main = document.querySelector("main#content")
+      updateLockedContent();
+
+        const overlay = typeof window !== 'undefined' && document.createElement("div")
+        const main    = typeof window !== 'undefined' && document.querySelector("main#content")
 
         const style = `
-          background-image: linear-gradient(rgba(2, 0, 36, 0) 0%,  rgb(255, 255, 255, 0.99) 100%);
+          background-image: linear-gradient(rgba(255, 255, 255, 0) 60%,  rgb(255, 255, 255, 1) 100%);
           width: 100%;
           top: 0px;
           bottom: 0px;
@@ -54,14 +63,13 @@ const Paywall = ({ floating }) => {
         const dimensions = main.getBoundingClientRect()
 
         copyDiv.current.style = `
-          position: absolute;
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
-          ${typeof document !== 'undefined' && document.body.scrollHeight < 4000 && 'display: none' }
-      `
+          background-color: var(--theme-ui-colors-muted,#f6f6ff);
+        `
       })
     }
-  }, [])
+  }, [page])
 
   return (
     <Box id="paywall-copy" ref={copyDiv}>
@@ -116,12 +124,12 @@ const Sidebar = props => {
         }}
       >
         {props.children}
-        <Reactions />
+        {
+          showPaywall === false
+            && <Reactions />
+        }
         {showPaywall ? (
-          <>
-            <Paywall floating />
-            <Paywall />
-          </>
+          <Paywall page={props.location.pathname} />
         ) : (
           <QuickThanks />
         )}
@@ -154,14 +162,16 @@ export default props => {
           body: { margin: 0 },
         }}
       />
-      <Head {...props} />
       <Header fullwidth={fullwidth} menu={menu} setMenu={setMenu} nav={nav} />
       {!fullwidth ? (
         <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
           <main id="content">{props.children}</main>
         </Sidebar>
       ) : (
-        <main id="content">{props.children}</main>
+        <>
+          <Head {...props} />
+          <main id="content">{props.children}</main>
+        </>
       )}
       <Footer />
     </Box>
