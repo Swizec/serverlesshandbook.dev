@@ -3,7 +3,7 @@ import { Box, Flex } from "rebass"
 import GumroadButton from "./GumroadButton"
 import * as coverImg from '../images/cover.svg'
 
-const HomeTitle = props => (
+const HomeTitle = () => (
  <Flex flexWrap='wrap' sx={{textAlign: 'center'}}>
   <Box
     p={3}
