@@ -3,18 +3,28 @@ import merge from 'lodash.merge'
 import prism from '@theme-ui/prism/presets/theme-ui'
 
 export default merge(preset, {
-    initialColorMode: 'lite',
+    initialColorMode: 'themed',
     useCustomProperties: true,
     colors: {
-        text: '#000',
-        background: '#fff',
-        primary: '#33e',
-        secondary: '#a0c',
-        accent: '#f0a',
-        muted: '#f6f6ff',
-        gray: '#444',
-        lightgray: '#cfcfd3',
+            text: '#000',
+            background: '#fff',
+            primary: '#B37FFF',
+            secondary: '#6C19D9',
+            accent: '#f0a',
+            muted: '#af6f6ff',
+            gray: '#444',
+            lightgray: '#cfcfd3',
         modes: {
+            lite: {
+                text: '#000',
+                background: '#fff',
+                primary: '#33e',
+                secondary: '#a0c',
+                accent: '#f0a',
+                muted: '#f6f6ff',
+                gray: '#444',
+                lightgray: '#cfcfd3',
+            },
             dark: {
                 text: '#fff',
                 background: '#000',

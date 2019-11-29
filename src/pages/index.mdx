@@ -1,9 +1,10 @@
 import { Box, Flex, Button } from "rebass"
-import { Banner, NavGrid, Container, Grid, LogoGrid } from ".."
+import { Banner, NavGrid, Container, Grid, LogoGrid, Image } from ".."
 import Logo from "../components/logo"
 import GumroadButton from "../components/GumroadButton"
 import Avatar from '../components/avatar'
 import { graphql, } from "gatsby"
+import HomeTitle from  '../components/home-title'
 
 export const pageQuery =
   graphql`
@@ -40,28 +41,9 @@ export const pageQuery =
   `
 
 <Banner>
-<Box mt={5} />
-<LogoGrid>
-<Logo text='' size={192} />
-<div>
 
-<h1 style={{fontSize: '3em'}}>
-Serverless Handbook <br /><small style={{fontSize: '0.5em'}}>for frontend engineers</small>
-</h1>
+<HomeTitle />
 
-Secretly this is going to be a resource teaching frontend engineers everything they need to know to dive into backend
-
-<GumroadButton>
-  <a
-    className="gumroad-button"
-    href="https://gum.co/qdNn?wanted=true"
-    data-gumroad-single-product="true"
-    target="_blank"
-  >{`start learning for \$0+`}</a>
-</GumroadButton>
-
-</div>
-</LogoGrid>
 <Box my='auto' />
 <NavGrid>
 

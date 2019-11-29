@@ -2,7 +2,7 @@ import React from "react"
 import { Flex, Box, Link, Button } from "rebass"
 import { useColorMode } from "theme-ui"
 
-const modes = ["lite", "dark", "gray", "hack", "pink"]
+const modes = ["themed","lite", "dark", "gray", "hack", "pink"]
 
 const Burger = ({ size = 24 }) => (
   <Box
