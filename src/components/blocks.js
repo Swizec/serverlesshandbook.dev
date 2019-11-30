@@ -88,7 +88,7 @@ export const NavGrid = props => (
         gridGap: 3,
         gridTemplateRows: [`repeat(9, 1fr)`, `repeat(5, 1fr)`],
         gridTemplateColumns: ["repeat(2, 1fr)", "repeat(4, 1fr)"],
-        gridAutoFlow: "column",
+        gridAutoFlow: ["dense", "column"],
         counterReset: "nav-grid",
       },
       li: {
