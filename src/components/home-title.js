@@ -4,17 +4,17 @@ import GumroadButton from "./GumroadButton"
 import * as coverImg from '../images/cover.svg'
 
 const HomeTitle = () => (
- <Flex flexWrap='wrap' sx={{textAlign: 'center'}}>
+ <Flex flexWrap='wrap' sx={{textAlign: 'center', margin: 'auto auto'}}>
   <Box
     p={3}
     width={1/2}
     sx={{
-      minWidth: '400px',
+      minWidth: '250px',
       margin: 'auto auto'
     }}
   >
     <Box sx={{ textAlign: "center", }} >
-      <h1 style={{fontSize: '3em'}}>
+      <h1 style={{fontSize: '2em'}}>
         Serverless Handbook <br /><small style={{fontSize: '0.5em'}}>for frontend engineers</small>
       </h1>
       Secretly this is going to be a resource teaching frontend engineers everything they need to know to dive into backend
@@ -37,7 +37,7 @@ const HomeTitle = () => (
     p={3}
     width={1/2}
     sx={{
-      minWidth: '400px',
+      minWidth: '250px',
       margin: 'auto auto'
     }}
   >
