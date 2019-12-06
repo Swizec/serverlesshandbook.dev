@@ -23,14 +23,15 @@ const ShareButtons = styled.div`
 
 const SocialButton = styled.a`
   padding: 5px;
-`
+`;
 
-const Reactions = () => {
-  const url = typeof window !== "undefined" && window.location.href
-  const tweetUrl = `https://twitter.com/intent/tweet?text=${url}`
-  const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`
 
-  return (
+const Reactions = ({page}) => {
+  const url = `https://serverlesshandbook.dev${page}`;
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${url}`;
+  const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+
+  return(
     <Container>
       <JoyButton>
         <style></style>
