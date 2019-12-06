@@ -126,7 +126,7 @@ const Sidebar = props => {
         {props.children}
         {
           showPaywall === false
-            && <Reactions />
+            && <Reactions page={props.uri} />
         }
         {showPaywall ? (
           <Paywall page={props.location.pathname} />
