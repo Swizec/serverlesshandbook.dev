@@ -4,4 +4,183 @@ export const description = "Learn the Architecture Principles in the serverless 
 
 export const image = "/principles.jpg"
 
+import { Giphy } from "../components/giphy"
+
 # Architecture principles
+
+What do you do when 3% of requests fail?
+
+That was my reality one painful day in September. Deployed a new feature, patted myself on the back, and went to lunch. A big feature – done. Nothing could touch me.
+
+Ding.
+
+*Hm, a Slack message. Wonder who's working through lunch this time.*
+
+Ding. Ding.
+
+*Weird, that's a lot of slacks for lunchtime ...*
+
+BZZZ
+
+> Everything is on fire. High API error rate 🔥<br/>
+> ~ an alarm SMS
+
+Our system sends alarms to Slack. Serious alarms go to SMS.
+
+The *high API error rate* is our most serious alarm. A catch-all that triggers when our backend's on fire. So on fire that we can't be sure more specific alarms even work.
+
+Back to my desk, my heart sank: 3% of all API requests were failing. For reasons unknown.
+
+Every user action, every background process on the web, on iOS *and* on Android, every time you opened our site or accessed the app 👉 3% chance of failure. At our usual 10 requests per second, that's 18 errors every minute!
+
+<Giphy search="oh crap" />
+
+Wanna know the best part?
+
+Nobody noticed. ✌️
+
+Only reason I knew something was wrong was because of that SMS. The system itself just kept hobbling along. A little slower, a little in pain, but getting the job done.
+
+How can a system with 18 failures per minute just keep working?
+
+## Everything fails
+
+The core design principle behind every backend architecture states:
+
+1. Everything can and will fail
+2. Your system should work anyway
+3. Failures should be easy to fix
+
+<div id="lock" />
+
+Netflix famously forced engineers to think about this with the [Chaos Monkey](https://en.wikipedia.org/wiki/Chaos_engineering) in 2011. They wanted to *"move from a development model that assumed no breakdowns to a model where breakdowns were considered to be inevitable"*.
+
+The Chaos Monkey makes that happen by introducing random failures to production environments. Servers down, databases unresponsive, message queues failing, data pipelines gunked up. 
+
+While extreme for most people, reality is going to be your chaos monkey anyway. Might as well plan for it. 😉
+
+## How statistics play against you
+
+At scale, you're playing against statistics. A one in a million error rate, at 10 requests per second, means an error every day.
+
+You might have bigger fish to fry, but if that error happens in your payment flow and you double charge a user ... I promise they'll care 😉
+
+So what do statistics mean for you and your architecture? 
+
+[AWS Lambda](https://aws.amazon.com/lambda/sla/) guarantees a 99.95% monthly uptime percentage. That's your base error rate not counting failures in other parts of the system.
+
+**Even if you write the most perfect code, you can't have a lower error rate than your platform.**
+
+So what does *99.95% monthly uptime percentage* mean in practice?
+
+> “Monthly Uptime Percentage” for a given AWS region is calculated as the average of the Availability for all 5-minute intervals in a monthly billing cycle. Monthly Uptime Percentage measurements exclude downtime resulting directly or indirectly from any Lambda SLA Exclusion.
+> 
+> “Availability” is calculated for each 5-minute interval as the percentage of Requests processed by Lambda that do not fail with Errors and relate solely to the provisioned Lambda functions. If you did not make any Requests in a given 5-minute interval, that interval is assumed to be 100% available.
+
+<Giphy search="head scratch" />
+
+Let's run the numbers.
+
+There are `24*60/5 = 288` 5-minute intervals in a day. An average of 99.95% means that some intervals have lower availability, some have higher. None go higher than 100%.
+
+The hidden message is that you're going to see bursts of failures. A really bad 5-minute period in a sea of 100% green. Outliers that pull the average down.
+
+Let's assume an even error rate to ease the math.
+
+At 1 request per 5 minutes, you get `288 * 0.9995 = 287.86` successful requests. Round up to 288. All good.
+
+But at 1 per minute, you're down to `1439` successful requests. An error per day.
+
+And it all goes downhill from that.
+
+I built a system at work that's running at a 0.092% failure rate. Lower than the *error* rate of our platform because of the architecture.
+
+Pretty good right?
+
+*1069 errors per day.*
+
+<Giphy search="oof" />
+
+## How to design a resilient architecture
+
+[Resilience](https://en.wikipedia.org/wiki/Resilience_(engineering_and_construction)) is the name of the game. Designing your system to withstand shocks and errors. To work as a whole even when individual pieces fail.
+
+Your goal is to:
+
+- **isolate errors** when an error happens it should be confined to the smallest area possible without bringing down the rest of your system
+- **make operations replayable** triggering the same operation multiple times should produce the same result
+- **retry until success** most errors are often transient and go away when you try again
+- **make your system debuggable** store enough information about your actions so you can look back later
+- **remove unprocessable requests** sometimes requests can't be processed, make sure these don't kill your system or get i the way of valid requests
+- **alert the engineer when something is wrong** some errors are part of normal operations, but when there's too much your system should cry out in pain and tell you where it hurts
+
+You can achieve all that with a few simple steps.
+
+### Small, isolated, replayable operations
+
+Think of your overall task as a pipeline. 
+
+A request comes in. You do X, then you do Y, then Z, then the result comes out. The request is your input, the result is your output.
+
+Like Henry Ford's famous invention of the assembly line 👉 steel comes into the factory on one end, cars leave the factory on the other. 
+
+Your pipeline is the same. Requests come in, results go out.
+
+For max resilience, each operation should follow this algorithm:
+
+- get request
+- check if request already processed
+- if processed, finish
+- if not, do your thing
+- trigger the next step
+- mark request as processed
+
+**Every request needs an identifier.** Easiest if it's a unique `id` of a database row. 
+
+Having a way to answer *"Did I process this yet?"* gives you replayability. Call the same action with the same request twice and nothing happens.
+
+Easiest way to achieve that is with a lookup table. I like to have a `processed` flag in each database row. Then I can just pass a reference to the row among different actions and they each do their thing and change their flag.
+
+**Each action does one thing and one thing only.**
+
+Because each action performs a single step in the process, you can always look at the `processed` flags to see what's up.
+
+Debugging also becomes easier. You can test individual steps in the process on their own.
+
+Smallness makes them easier to reason about too. It's like a function call.
+
+**Isolation comes from decoupling** 
+
+Usually done with queues, isolation ensures that an error in one action doesn't impact others. *That* action fails and the pipeline might get backed up, but other actions keep working just fine.
+
+And because you have replayability, you can keep trying until the action succeeds. ✌️
+
+### Retry until success
+
+Retrying is built into most queues.
+
+Fire an action, get success or fail. If success, remove message from the queue and move on. If it fails, put message back on queue and try again in a little while.
+
+Most likely this particular action is just misbehaving *right now*. Engineers might fix it soon. If it's a hardware problem, you can wait until it runs on a different physical machine. Yay serverless.
+
+You can keep retrying until success because actions are replayable.
+
+To be safe, I like to have a **cleanup worker** that goes through my data every few hours and checks for any rows that failed to process and aren't retrying anymore. This catches errors in the retry system itself. ✌️
+
+### A debuggable system is a good system
+
+Small actions that store their "Yes Did It" state for each piece of data are easier to debug, too.
+
+You can always look at your database and see which step in the process failed. The flags tell you.
+
+Then, because you have replayability, you can trigger the failed action on that row and see what happens.
+
+Since actions are just JavaScript (or whatever) and your messages are just data, you can even test individual pieces locally. Unit tests are great, running your code on production data in your terminal, even better.
+
+And if that's not enough, add a bunch of logging. A well-placed `console.log` can do wonders.
+
+## Conclusion
+
+Build your system out of small isolated pieces that talk to each other via queues.
+
+Next chapter we're going to dive into queues and lambdas in more detail, and how to tie them together into a system.
