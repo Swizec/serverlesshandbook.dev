@@ -12,7 +12,7 @@
     }],
     "builds": [{
         "src": "package.json",
-        "use": "@now/static-build",
+        "use": "@now/node",
         "config": {
             "distDir": "public"
         }
