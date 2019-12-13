@@ -4,4 +4,76 @@ export const description = "Learn how lambdas and queues works in the serverless
 
 export const image = "/queue.jpg"
 
-# Lambdas, queues, etc
+# Elements of serverless – lambdas, queues, gateways, and more
+
+We mentioned lambdas, queues,  API gateways, and other elements of the serverless puzzle in previous chapters – [Architecture Principles](/serverless-architecture-principles) and [Serverless Flavors](/serverless-flavors) in particular – and maybe that's confusing. What is a lambda anyway? What does a queue do? How does it all tie together?
+
+Let me explain.
+
+## Lambda
+
+"Lambda" comes from [lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus), a mathematical definition of functional programming Alonzo Church introduced in the 1930s. The only known alternative to Turing's [turing machines](https://en.wikipedia.org/wiki/Turing_machine) for describing a system that can [solve any solvable problem](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis).
+
+It also happens to be what AWS named their cloud functions – AWS Lambda. The name stuck and many engineers use "lambda" as a generic term for a serverless server.
+
+A lambda is therefore just a function. Some providers call them cloud functions too.
+
+Here's a lambda function (yes just like ATM Machine) that prints `"Hello world"`
+
+```typescript
+// src/handler.ts
+
+import { APIGatewayEvent } from "aws-lambda";
+
+export const handler = async (event: APIGatewayEvent) => {
+	return {
+		statusCode: 200
+		body: "Hello world"
+	}
+}
+```
+
+A TypeScript file that exports a function called `handler` by convention. It accepts an event that triggered it and returns a response that the caller will understand.
+
+Because this is meant to be a user-facing API method, it accepts an AWS API Gateway event and returns an HTTP style response. Status code and body.
+
+Other providers and services will have different events and expect different responses, but a lambda always follows this pattern 👉 function with an event and a return value.
+
+Just like with functional programming, your functions should be:
+
+- **idempotent** – multiple invocations with the same inputs must produce the same result
+- **pure** – a function shouldn't rely on anything it isn't getting itself. Your environment is not persistent, saving data in local memory won't work. You have to use the arguments you re given and nothing else.
+- **light on side-effects** – you need *some* side-effects to make changes to your system. Those should come in the form of invoking other functions and services, not in the form of changing lambda value state.
+
+Each function should do one thing and one thing only. When combined, they produce extraordinary results. Like in this example of [combining Twilio and AWS Lambda to open the front door](https://swizec.com/blog/how-i-answer-the-door-with-aws-lambda-and-twilio/swizec/9255).
+
+In the open source Serverless Framework, you define lambda functions with `serverless.yml` like this:
+
+```yaml
+functions:
+    helloworld:
+        handler: dist/helloworld.handler
+        events:
+            - http:
+                  path: helloworld
+                  method: GET
+                  cors: true
+```
+
+Define a `helloworld` function and say it's handled by the `handler` method exported from the `dist/helloworld` file. Notice that we're running a compilation step for TypeScript so while the code is in `src/`, we run it from `dist/`.
+
+`events` is where we define which triggers fire this function. An HTTP GET request on the path `/helloworld` in this case.
+
+Other common triggers include Queues, S3 file changes, and CloudWatch events. At least in the AWS world.
+
+## Queue
+
+
+
+## API Gateway
+
+## Static file storage
+
+## Static file server – CDN
+
+## Logging 
