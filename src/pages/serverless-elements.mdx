@@ -6,19 +6,21 @@ export const image = "/queue.jpg"
 
 # Elements of serverless – lambdas, queues, gateways, and more
 
-We mentioned lambdas, queues,  API gateways, and other elements of the serverless puzzle in previous chapters – [Architecture Principles](/serverless-architecture-principles) and [Serverless Flavors](/serverless-flavors) in particular – and maybe that's confusing. What is a lambda anyway? What does a queue do? How does it all tie together?
+We mentioned lambdas, queues, and other elements of serverless in previous chapters – [Architecture Principles](/serverless-architecture-principles) and [Serverless Flavors](/serverless-flavors) – but what *are* they? 
 
 Let me explain.
 
-## Lambda
+## Lambda – a cloud function
 
-"Lambda" comes from [lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus), a mathematical definition of functional programming Alonzo Church introduced in the 1930s. The only known alternative to Turing's [turing machines](https://en.wikipedia.org/wiki/Turing_machine) for describing a system that can [solve any solvable problem](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis).
+"Lambda" comes from [lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus), a mathematical definition of functional programming Alonzo Church introduced in the 1930s. It is the alternative to Turing's [turing machines](https://en.wikipedia.org/wiki/Turing_machine) for describing a system that can [solve any solvable problem](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis). Turing machines describe iterative step-by-step programming, lambda calculus describes functions-calling-functions functional programming.
 
-It also happens to be what AWS named their cloud functions – AWS Lambda. The name stuck and many engineers use "lambda" as a generic term for a serverless server.
+Both approaches are equal in power.
 
-A lambda is therefore just a function. Some providers call them cloud functions too.
+No wonder that AWS decided to name their cloud functions AWS Lambda. As the platform's popularity grew, the word "lambda" morphed into a generic term for cloud functions and the core building block of serverless computing.
 
-Here's a lambda function (yes just like ATM Machine) that prints `"Hello world"`
+**A lambda is a function.** In this context, a function running as its own tiny server when triggered by an event.
+
+Here's a lambda function (yes just like ATM Machine) that returns `"Hello world"` in response to an HTTP event.
 
 ```typescript
 // src/handler.ts
@@ -33,19 +35,24 @@ export const handler = async (event: APIGatewayEvent) => {
 }
 ```
 
-A TypeScript file that exports a function called `handler` by convention. It accepts an event that triggered it and returns a response that the caller will understand.
+A TypeScript file exports a function called `handler`. The function accepts an event and returns a response. The AWS Lambda machinery takes care of the rest.
 
-Because this is meant to be a user-facing API method, it accepts an AWS API Gateway event and returns an HTTP style response. Status code and body.
+Because this is a user-facing API method, it accepts an AWS API Gateway event and returns an HTTP style response. Status code and body.
 
-Other providers and services will have different events and expect different responses, but a lambda always follows this pattern 👉 function with an event and a return value.
+Other providers and services will have different events and expect different responses, but **a lambda always follows this pattern 👉 function with an event and a return value.**
 
-Just like with functional programming, your functions should be:
+### Considerations with lambda functions
+
+Your functions should follow functional programming practices:
 
 - **idempotent** – multiple invocations with the same inputs must produce the same result
-- **pure** – a function shouldn't rely on anything it isn't getting itself. Your environment is not persistent, saving data in local memory won't work. You have to use the arguments you re given and nothing else.
-- **light on side-effects** – you need *some* side-effects to make changes to your system. Those should come in the form of invoking other functions and services, not in the form of changing lambda value state.
+- **pure** – a function can't rely on anything it isn't fetching itself. Your environment does not persist, data in local memory can vanish any time. Rely on the arguments you're given and nothing else.
+- **light on side-effects** – you need *some* side-effects to make changes to your system. Make sure those come in the form of invoking other functions and services. *State inside your lambda does not persist*
+- **do one thing and one thing only** – small functions focused on a single task are easiest to understand and combine
 
-Each function should do one thing and one thing only. When combined, they produce extraordinary results. Like in this example of [combining Twilio and AWS Lambda to open the front door](https://swizec.com/blog/how-i-answer-the-door-with-aws-lambda-and-twilio/swizec/9255).
+Small functions work together to produce extraordinary results. Like this example of [combining Twilio and AWS Lambda to answer the door](https://swizec.com/blog/how-i-answer-the-door-with-aws-lambda-and-twilio/swizec/9255).
+
+### Creating lambdas
 
 In the open source Serverless Framework, you define lambda functions with `serverless.yml` like this:
 
@@ -60,19 +67,32 @@ functions:
                   cors: true
 ```
 
-Define a `helloworld` function and say it's handled by the `handler` method exported from the `dist/helloworld` file. Notice that we're running a compilation step for TypeScript so while the code is in `src/`, we run it from `dist/`.
+Define a `helloworld` function and say it's handled by the `handler` method exported from the `dist/helloworld` file. Notice that we're running a build step for TypeScript so while the code is in `src/`, we run it from `dist/`.
 
-`events` is where we define which triggers fire this function. An HTTP GET request on the path `/helloworld` in this case.
+`events` lists triggers to fire this function. An HTTP GET request on the path `/helloworld` for us.
 
-Other common triggers include Queues, S3 file changes, and CloudWatch events. At least in the AWS world.
+Other common triggers include Queues, S3 changes, and CloudWatch events. At least in the AWS world.
 
 ## Queue
 
+Queue is short for [message queue](https://en.wikipedia.org/wiki/Message_queue) – a service built on top of [queue, the data structure](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)). Software engineers aren't the most inventive with names and like to overload words with many meanings 🤷‍♂️
 
+You can think of the queue data structure as a list of items. Enqueueing an item puts on the list, dequeueing takes it out. Typically in a guaranteed first in first out order.
+
+![](../images/queue.png)
+
+`enqueing` adds items at the front, `dequeing` takes them out the back. Items in the middle wait their turn.
+
+**A messaging queue takes this data structure and scales it into a service.** 
+
+You can find various implementations of messaging queues and they all share these core properties:
+
+- **persistent storage** – queues have to be reliable so they store messages in some sort of database. Redis, Postgres, even a flat file. Whatever it takes to ensure that restarting the server doesn't drop those messages.
+- **a periodic worker process**
 
 ## API Gateway
 
-## Static file storage
+## Static file storage – S3
 
 ## Static file server – CDN
 
