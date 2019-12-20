@@ -91,27 +91,27 @@ You can think of the queue data structure as a list of items.
 Different implementations of messaging queues exist and they all share these core properties:
 
 - **persistent storage** – queues have to be reliable so they store messages in a database. Redis is common for its speed, Postgres works, too. You could even write to a file. Most queues prioritize speed and use in-memory storage.
-- **a worker process** – once you have messages, you need to process them. Often a process periodically checks, if there's something new on the queue [(polling)](https://en.wikipedia.org/wiki/Polling_(computer_science)). Another approach is triggering this check every time a message arrives.
-- **a trigger API** – when the queue notices a new message, it triggers your code. In serverless that means running your lambda, in traditional environments it's a worker process of some sort.
-- **a retry/error policy** – most queue services help you deal with errors. When you fail to process a message, it goes back on the queue to be retried later.
+- **a worker process** – once you have messages, you need to process them. A process can periodically check, if there's something new [(polling)](https://en.wikipedia.org/wiki/Polling_(computer_science)). Another approach is triggering this check every time a message arrives.
+- **a trigger API** – when the queue sees a new message, it triggers your code. In serverless that means running your lambda, in traditional environments it's another worker process.
+- **a retry/error policy** – most queues help you deal with errors. When you fail to process a message, it goes back on the queue and gets retried later.
 
-Many modern queues add time to the mix. You can *schedule* messages to be processed in a certain amount of time. Like 5 minutes from now. Or 5 days.
+Many modern queues add time to the mix. You can *schedule* messages for later. 2 seconds, 2 minutes, 2 days, whatever you want. Some queues limit how long messages can stay.
 
 **Time is particularly useful when dealing with errors.**
 
-Server processes can [fail for any reason at any time](/architecture-principles). The error is often temporary so queues use what's called exponential backoff. Often fibonacci backoff.
+Server processes can [fail for any reason at any time](/architecture-principles). The error is often temporary so queues use an [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) when retrying. Giving your system more and more time to recover from issues.
 
-You try to process a message. It fails. You try again 1 second later. It fails. Retry in 2 seconds. Fail. 4 seconds ...
+Try to process a message. It fails. Try again 1 second later. Fails. Retry in 2 seconds. Fail. 4 seconds ...
 
-I've seen corrupt messages go as far as being retried a few days later. We'll talk more about dealing with poison pills in the [Robust Backend Design](/robust-backend-design) chapter.
+I've seen corrupt messages, also known as poison pills, backing off as far as days into the future. We'll talk about dealing with unprocessable messages in the [Robust Backend Design](/robust-backend-design) chapter.
 
 ### Defining a queue
 
-AWS SimpleQueueService is the easiest queue service I've found for use in the AWS serverless ecosystem. There are more powerful alternatives, but they require more setup and have features you often don't need.
+AWS SimpleQueueService is a great queue service I've found in the AWS serverless ecosystem. More powerful alternatives exist, but they require more setup, more upkeep, and have features you might not need.
 
 > Always use the simplest and smallest service that solves your problem until you know *why* you need something better ✌️
 
-Using the serverless framework, you define an SQS queue in your `resources` section like this:
+Using the serverless framework, you define an SQS queue in the `resources` section like this:
 
 ```yaml
 resources:
@@ -124,9 +124,13 @@ resources:
 
 A resource name `MyQueue` of the SQS Queue type with a queue name of `MyQueue-{stage}`. Adding the stage to your queue name allows you to deploy to different logical environments without collisions.
 
+Make sure you use correct capitalization. 
+
+The second `Resources` must be capitalized, so do `Type`, `Properties`, and `QueueName`. That's because you're dropping a layer below Serverless and writing AWS's native Serverless Application Model (SAM) configuration. It's what the serverless framework compiles configuration to before deploying.
+
 ### Processing a queue
 
-You're also going to need a lambda to process messages from this queue.
+You need a lambda to process messages on `MyQueue`.
 
 ```yaml
 functions:
@@ -141,11 +145,11 @@ functions:
                   batchSize: 1
 ```
 
-A lambda function triggered from messages on your queue. With a `batchSize` of 1, each message is processed on its own lambda – a good practice for initial implementations.
+A lambda triggered each time `MyQueue` has a new message to process. With a `batchSize` of 1, each message is processed on its own lambda – a good practice for initial implementations. More about batch sizes in the [Lambda Workflows](/lambda-workflows) and [Robust Backend Design](/robust-backend-design) chapters.
 
-We'll talk more about batch sizes in the [Lambda Workflows](/lambda-workflows) and [Robust Backend Design](/robust-backend-design) chapters.
+The weird yaml syntax reads as: *an SQS event fired by a queue with the ARN identifier of getAttribute(Arn) from MyQueue*. Amazon Resource Names, ARN, are unique identifiers for each resource in your AWS account.
 
-That `myQueue.handler` lambda function would look something like this:
+That `myQueue.handler` lambda would look like this:
 
 ```typescript
 import { SQSEvent, SQSRecord } from "aws-lambda";
@@ -156,72 +160,73 @@ export const handler = async (event: SQSEvent) => {
         (record: SQSRecord) => record.body
     );
 
-    // do something with the message
+    // do something with each message
     // throw Error() on fail
 
     return true;
 };
 ```
 
-You have an async function that accepts an `SQSEvent`, as opposed to an `APIGatewayEvent` earlier. This event contains multiple messages depending on `batchSize` and you should never assume the total number. Someone can change that setting.
+An async function that accepts an `SQSEvent`, which contains multiple messages depending on `batchSize`. Never assume the total number because the setting might change without warning.
 
-Extract messages into an array of strings – messages are always stringified – and process them. Throw an error when something goes wrong so SQS can retry, otherwise return true as a good practice.
-
-> And that's how you process events asynchronously in the serverless world. Great for sending email, data pipelines, processing payments, and anything where you don't want the user waiting around for feedback. ✌️
+Extract messages into an array of strings and process them. Throw an error when something goes wrong so SQS can retry. Return true on success.
 
 ## API Gateway
 
-You might not realize it, but most servers aren't actually exposed to the internet.
+You might not realize this, but most servers don't talk directly to the internet.
 
 <Giphy search="whaaat" />
 
-That's right, they're protected by a [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) – a server that takes raw requests from the internet and passes them on to the application server.
+Most servers are protected by a [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) – a server specializing in taking raw internet requests and routing them to application servers.
 
 ![](../images/api-gateway.png)
 
-Requests come from the wild internet into the proxy. The proxy then decides what to do:
+Requests come from the wild internet into the proxy. The proxy then decides:
 
 - is this a valid request?
-- will this request break things?
-- which server should handle this?
+- will this request break stuff?
+- which type of server can handle this?
+- which instance of that server should do it?
 
-Many requests can be dropped at the proxy level. Distributed denial of service attacks, requests we can't serve, even certain permissions can be verified.
+Validating requests can involve everything from checking for denial of service attacks, verifying permissions, and even A/B testing or firewall protection.
 
-After basic validation, the request is passed on to the correct application server. This is also where we can perform [horizontal scaling](https://en.wikipedia.org/wiki/Scalability#HORIZONTAL-SCALING) and have multiple application servers handling similar requests.
+Once verified the request is passed to an instance of your application server. I say instance because this is where [horizontal scaling](https://en.wikipedia.org/wiki/Scalability#HORIZONTAL-SCALING) comes into play.
 
-In the serverless world these reverse proxies are called API Gateways and they perform the exact same function: Take requests, do some filtering, pass them on.
-
-Usually triggering a lambda, calling your serverless function. A new mini server spins up, handles the request, and goes away. Near infinite horizontal scaling!
+Amazon calls its reverse proxies API Gateways. Different providers might have different names and they all perform the same function: Take request from the internet and pass it on to your lambda. Often on a fresh new container for near infinite scale. 🤘
 
 ## Static file storage – S3
 
-The serverless world is ephemeral so you can't save files just anywhere. Keeping them in your code makes spinning up new containers costly, and you can't save them locally from a request since the server is going away.
+The serverless world is ephemeral which means you can't save files just anywhere. 
 
-Static file storage exists to solve that problem. AWS S3 being the most common example. You may have heard of FTP servers too, if you're old enough 🙃
+Adding them to your code makes spinning up new containers slow. Can't save locally either because your server goes away after each request.
 
-You can think of this as a hard drive in the cloud with an API attached. Send a request to save a file, get its URL back.
+Static file storage services solve that problem. 
 
-The provider takes care of serving that URL from a server optimized for static files. No code execution, no edits, no deletes. Just sending a raw file in response to an HTTP request.
+AWS S3 is the most common. Some of you might remember FTP. Most other services I've seen use S3 behind the scenes. Perhaps because it's really cheap to save files there.
 
-You pay for bandwidth and some small fee for storage space. Files you never read often cost fractions of a cent per month.
+You can think of S3 as a hard drive with an API. Read and write files, get their URL, stuff like that.
+
+Each file gets a URL served by a server optimized for static files. No code, no nothing. Just a raw file flying through HTTP.
 
 ## Static file server – CDN
 
-CDNs – [content delivery networks](https://en.wikipedia.org/wiki/Content_delivery_network) – present an evolution on static file storage. They work more like distributed caching systems.
+![](../images/cdn.png)
 
-Where S3 serves your files from a central location, a CDN tries to serve those same files from as close to the end user as possible. Reducing round-trip times and speeding up your website.
+CDNs – [content delivery networks](https://en.wikipedia.org/wiki/Content_delivery_network) – are the next step in static file storage. They're like a distributed caching system.
 
-The configuration from your end goes something like this:
+Where S3 serves files from a central location, a CDN serves those same files from as close to the end user as possible. Reducing round-trip times and speeding up your website.
+
+Configuration from your end goes something like this:
 
 1. Point the CDN to your static file URL
 2. The CDN gives you a new URL
 3. Use *that* URL in your client-side code
 
-You can often automate this with build tools. I believe Netlify and Zeit both do it for you.
+You can often automate this part with build tools. Netlify and Zeit both handle it for you.
 
-Now when a browser requests that file, the URL resolution finds the physically nearest server to your user. Request goes to that server, if it has the file it returns it. Otherwise it goes back to your native URL, loads the file in its own memory, and *then* serves it.
+Now when a browser requests a file, the URL resolves to the physically nearest server. Request goes to that server, if it finds the file, it serves that request. If there's no file, the CDN server fetches it from your original source, saves it locally, and *then* sends it back to the user.
 
-And now your JavaScript, HTML, images, CSS, and others are fast to load anywhere in the world. 👌
+And just like that JavaScript, HTML, images, CSS, and others are fast to load anywhere in the world. 👌
 
 ## Logging
 
@@ -231,13 +236,13 @@ Nobody's looking at the console and files vanish after every request.
 
 So what do you do?
 
-You build a logging service and send logs to an API that collects them all in a central location. Often these logs are organized by service or lambda function so they're easier to follow.
+You use a logging service and send logs to an API that collects them in a central location. Often these logs are organized by service so they're easier to follow.
 
-Implementing a logging service yourself can be tricky (I've done it and don't recommend) and luckily the AWS ecosystem has you covered with CloudWatch. The UI tools for reading those logs aren't the best, but they're a great first start.
+Implementing a logging service yourself can be tricky (I've done it, do not recommend) and the AWS ecosystem has you covered with CloudWatch. Mostly. The UI tools for reading logs aren't the best and there's power user stuff you can't do, but it's a great start.
 
-Anything you `console.log` on AWS gets collected in CloudWatch. Making this an easy first logging service to use.
+Anything you `console.log` is collected in CloudWatch alongside some default logs. 
 
-# Those are the important bits
+# Those are the important elements
 
 Now you know the most important elements of your serverless ecosystem:
 
@@ -248,5 +253,5 @@ Now you know the most important elements of your serverless ecosystem:
 - CDN for serving static files
 - logging to keep track
 
-There's a bunch more to discover, of course, but that's the core. Next chapter we're gonna look at storing your data.
+There's a bunch more to discover, but that's the core. Next chapter we're gonna look at storing your data.
 
