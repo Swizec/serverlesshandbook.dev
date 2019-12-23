@@ -52,6 +52,10 @@
         "react-helmet": "^5.2.1",
         "rebass": "^4.0.6",
         "remark-slug": "^5.1.2",
-        "theme-ui": "^0.2.26"
+        "theme-ui": "^0.2.26",
+        "now": "^16.6.3"
+    },
+    "engines": {
+        "node": "12.x"
     }
 }
