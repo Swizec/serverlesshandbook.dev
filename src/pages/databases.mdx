@@ -1,7 +1,141 @@
 export const title = "Where to store data"
 
-export const description = "Learn how to store data using the serverless approach"
+export const description = "Serverless systems don't have a hard drive so where do you keep your data?"
 
 export const image = '/databases.jpg'
 
 # Where to store data
+
+Serverless systems don't have a hard drive, so where do you keep your data? You need a database of some sort.
+
+In this chapter, we're going to explore different database options and technologies, talk about their benefits, when to use them, and when they're a bad choice. 
+
+Contrary to popular belief, there is no silver bullet. Each database has its own advantages and disadvantages. Aim to fit your database to your problem, not your problem to your database.
+
+**So what is a database?** It's [a system for storing and organizing data](https://en.wikipedia.org/wiki/Database). 
+
+> A database is an organized collection of data, generally stored and accessed electronically from a computer system.
+
+Every database technology or service should provide you with these features:
+
+- keeps your data
+- lets you query data
+- lets you update data
+
+*Keeping* data is the difference between a cache and a database. You can have an in-memory database for speed, but that doesn't make it a cache. Your data persists.
+
+## Flat file database
+
+The simplest sort of database is a [flat file database](https://en.wikipedia.org/wiki/Flat-file_database). Store data in files and call it a day.
+
+You won't see these a lot in serverless applications. I mention flat-file databases here because people often forget they exist as an option. Saving data in flat files is a great fit for many problems you might encounter.
+
+My favorite advantage is that flat-file databases are so simple, you can build one yourself. Optimized for your exact use case.
+
+Can't get that anywhere else :)
+
+### How a flat-file database works
+
+A flat-file database happens any time you write data to files in a structured manner. Photos on your phone are a great example. 
+
+When you take a photo, your phone stores it as a file. Filenames often follow a naming convention with counting – `IMG_0001`, `IMG_0002`, etc. Some cameras add dates.
+
+Now you can sequentially access photos in storage. Start at the beginning and go until the end. You can even keep track of how far you've gotten so you can jump ahead next time.
+
+Ok what about finding all photos from a certain date?
+
+That's why images contain [EXIF metadata](https://en.wikipedia.org/wiki/Exif) – information about date, time, GPS location, even phone orientation and details about color correction. It's all there in the file in a structured way.
+
+So to find images from a certain date, you can search through your files and look at the metadata they contain. There are ways to make this faster than checking every image.
+
+### How you can create a flat-file database
+
+Have you ever built a music collection?
+
+Here's how mine worked in the mid-2000's at the peak of the music piracy era. We all did it, it's fine, fight the system ✌️
+
+I had a hard drive called `Music`. Inside were directories named by Artist. Each artist had one directory per album, prefixed by year. Inside were music files, prefixed with track number.
+
+```
+Music
+ |- Amanda Palmer
+	 |- 2008 – Who Killed Amanda Palmer
+			 |- 01 - Astronaut
+			 |- 02 - Runs in the Family
+			 ...
+ |- Iron Maiden
+	 |- 1992 – Fear of the Dark
+			 |- 01 - Be Quick or Be Dead
+			 |- 02 - From Here to Eternity
+			 ...
+	 |- 2000 – Brave New World
+			 |- 01 - The Wicker Man
+			 |- 02 - Ghost of the Navigator
+			 ...
+ |- Siddharta
+ ...
+```
+
+Prefixing filenames with numbers allowed me to sort by filename and maintain song order. 😉
+
+A similar approach works in most situations where a flat file database is appropriate.
+
+Use directories for high level hierarchical grouping. Like files created on the same date or belonging to a category.
+
+The data itself goes into files within those directories. Written in whatever format you prefer. Text containing one entry per line is common, binary works for images and such.
+
+You end up with a tree structure that's easy to search, fast to read, and quick to write. 
+
+Encoding hierarchical information in filenames is also common. Every file is named according to some pattern – like `${artist}-${year}-${album}-${tracknumber}-${track}`.
+
+Filename patterns preserve your ability to iterate through files without recursion and maintain the ability to jump into a category.
+
+### When you should store data in flat files
+
+Due to its low overhead, flat file storage is a great choice when you're looking for speed and simplicity.
+
+All databases eventually have to store your data in files. Any features you get on top of files are therefore overhead that's sometimes slowing you down.
+
+#### Use flat files when:
+
+1. You need fast append-only writes
+2. You have simple querying requirements
+3. You read data more often than you write data
+4. You write data that you rarely read
+
+The last two sound like an oxymoron. Let me explain.
+
+Flat file databases rely on your operating system for performance. Most modern operating systems use the [virtual memory](https://en.wikipedia.org/wiki/Virtual_memory) model of file access.
+
+When you access data, the OS reads through layers of progressively slower memory. Starting with L1 cache built into the processor, ending with read buffers on the hard drive.
+
+The consequence of this read-through cache approach is that files you read often, live in memory. Memory access is **[5 orders of magnitude faster](https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html)** than reading from hard drives.
+
+**That gives flat files cached in memory the fastest reads of any database.** No algorithmic overhead, just data straight from memory.
+
+You lose these caching benefits when reading data infrequently or thrashing around your entire database. But you also aren't paying overhead for data you store and never read.
+
+*On the topic of fast writes:* flat files are fast to write because there's no overhead from the database. *Every* database eventually has to write a file. Writing to a file without running database machinery is therefore fastest.
+
+#### Avoid flat files when:
+
+1. You need to cross-reference data or use complex queries
+2. You need fast access across your entire database
+3. Your data often changes
+
+No. 3 is the flat file database killer.
+
+Updating data in a flat file is difficult at best. Changing files piece-by-piece can lead to inefficient use of disk space, which makes your whole OS slower. So it's often best to overwrite a whole file, even if you're changing a single row.
+
+But then, reading and storing large amounts of data to make a small change is inefficient, too.
+
+You can't win. Best treat flat file databases as append-only. You can write, you can delete, you can't update.
+
+And complex queries are difficult due to how your data is stored. Unless you can jump to the right data based on directory structure or filename, you'd have to read your whole database to find everything that fits.
+
+## Using traditional databases – SQL
+
+## The NoSQL movement in context
+
+## Blockchain
+
