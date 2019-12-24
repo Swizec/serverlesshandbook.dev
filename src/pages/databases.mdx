@@ -4,25 +4,62 @@ export const description = "Serverless systems don't have a hard drive so where 
 
 export const image = '/databases.jpg'
 
-# Where to store data
+# Where and how to store data
 
-Serverless systems don't have a hard drive, so where do you keep your data? You need a database of some sort.
+Serverless systems don't have a hard drive, so where does your your data go? You need a database.
 
-In this chapter, we're going to explore different database options and technologies, talk about their benefits, when to use them, and when they're a bad choice. 
+In this chapter, we're going to explore database technologies, discuss their benefits, and look at the criteria for matching your database choice to the problem you're solving. 
 
-Contrary to popular belief, there is no silver bullet. Each database has its own advantages and disadvantages. Aim to fit your database to your problem, not your problem to your database.
+There is no silver bullet. Each database has its own advantages and disadvantages. *Always fit your tech to your problem, not your problem to your tech.*
 
 **So what is a database?** It's [a system for storing and organizing data](https://en.wikipedia.org/wiki/Database). 
 
 > A database is an organized collection of data, generally stored and accessed electronically from a computer system.
 
-Every database technology or service should provide you with these features:
+Every database technology provides you with these features:
 
 - keeps your data
 - lets you query data
 - lets you update data
 
-*Keeping* data is the difference between a cache and a database. You can have an in-memory database for speed, but that doesn't make it a cache. Your data persists.
+*Keeping* data is the difference between a cache and a database. You can have an in-memory database for speed, but that doesn't make it a cache.
+
+## How to evaluate your choice of database
+
+Databases seek to find a balance between different optimization criteria. Which you pick depends on how that balance fits the problem you're solving.
+
+The common criteria are:
+
+1. Speed of reading data
+2. Speed of writing data
+3. Speed of updating data
+4. Speed of changing data shape
+5. Correctness of data
+6. Scalability
+
+Notice how most criteria are about speed? That's because speed of data access is the biggest predictor of real world app performance.
+
+You can have an API request that hits the database 30 times or more. When each of those queries takes 1ms or 10ms, that's the difference between a great user experience and an app that feels broken.
+
+### ACID – a database correctness model
+
+We're going to focus on speed for most of this chapter. To gain speed and scalability, databases often sacrifice correctness. So it's important to know what correctness means in a database context.
+
+Traditionally databases follow the [ACID model](https://en.wikipedia.org/wiki/ACID) of transactional correctness. A transaction being a logical operation on your data.
+
+- **Atomicity** ensures that all operations inside a transaction succeed or fail in unison and aren't visible until they all succeed
+- **Consistency** ensures your data is always in a valid state and doesn't become corrupted by a half-failed transaction
+- **Isolation** ensures that transactions executed in parallel behave the same as if they happened one after another and don't interfere with each other
+- **Durability** ensures that once a transaction succeeds, it stays succeeded and the data doesn't just vanish
+
+Some databases add additional levels of logical correctness on top of the ACID model. We'll talk about those later.
+
+The ACID model might remind you of the [Architecture Principles](/serverless-architecture-principles) chapter. That's because it aims to guarantee at the database level what your serverless architecture tries to ensure at the backend ecosystem level.
+
+You're often building a glorified database for your web and mobile apps :)
+
+## Types of databases
+
 
 ## Flat file database
 
