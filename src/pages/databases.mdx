@@ -104,9 +104,11 @@ The end result is:
 
 Where flat files struggle are data updates. 
 
-To add a line at the beginning of your file, you have to move the whole thing. To change a line in the middle, you have to update everything that comes after.
+To add a line at the beginning of a file, you have to move the whole thing. To change a line in the middle, you have to update everything that comes after.
 
-Another problem is lack of a query interface. You have to read all your files to compare, analyze, and search. If you didn't think of a use-case beforehand, you're left with a slow search through everything.
+Another problem is lack of a query interface. 
+
+You have to read all your files to compare, analyze, and search. If you didn't think of a use-case beforehand, you're left with a slow search through everything.
 
 - **slow data updates**, because you often have to rewrite more than just the changes
 - **no data shape guarantees**, because you can store individual  data items any way you like. If you change your schema, you have to deal with inconsistencies, or rewrite your data
@@ -129,13 +131,13 @@ To find images from a certain date, you can search through your files and look a
 
 #### Hierarchical and flat file organization
 
-You can speed up most common seek operations by adding important meta data to your file names.
+You can speed up seek operations by adding common search keys to your file names.
 
-A common example is organizing photos by year - month - date. Each year is a directory containing directories for months. Each of those contains directories for days. Those contain photos.
+A good example is organizing photos by year - month - date. Each year is a directory containing directories for months. Each of those contains directories for days. Those contain photos.
 
 Hierarchical storage slashes search speed by a huge factor. You can jump right into a specific category (date).
 
-But hierarchical storage makes scanning harder. Counting all images, for example, requires a recursive search through directories.
+But hierarchical storage makes scanning harder. Counting all images now requires a recursive search through directories.
 
 A better approach might be encoding your meta data in the filename. Something like `IMG_${year}-${month}-${day}-001.jpg`.
 
@@ -160,9 +162,9 @@ Due to its low overhead, flat file storage is a great choice when you're looking
 
 No. 3 is the flat file database killer.
 
-The most common use cases for flat files are logs, large datasets, and large files (image, video, etc) with little metadata.
+The most common use cases for flat files are logs, large datasets, and large binary files (image, video, etc).
 
-You often append logs and rarely read them. You store large datasets as structured files for easy sharing. You write images once and rarely update, and they contain orders of magnitude more raw binary data than structured metadata.
+You often append logs and rarely read them. You store large datasets as structured files for easy sharing. You save images and rarely update, and they contain orders of magnitude more binary data than structured metadata.
 
 ## Relational databases – RDBMS
 
@@ -170,57 +172,57 @@ You often append logs and rarely read them. You store large datasets as structur
 
 [Relational databases](https://en.wikipedia.org/wiki/Relational_database) are the most common type of database people think of when you say "database". Data lives in a structured data model and many features exist to optimize performance.
 
-Choosing a relational database for your project is almost always the right decision. Most real world apps work best with a relational database.
+Choosing a relational database for your business data is almost always the right decision. 
 
 ### Advantages of relational databases
 
-Relational databases have been around since the 1970's and are a battle tested solution to storing your data. They can adapt to almost any workload and store almost any kind o data.
+Relational databases have been around since the 1970's. They're battle tested, reliable, and can adapt to almost any workload.
 
-Some modern solutions incorporate features from the NoSQL universe to make them more versatile. [Postgres](https://en.wikipedia.org/wiki/PostgreSQL) is a great example as it often outperforms NoSQL solutions on performance benchmarks.
+Some modern solutions incorporate features from the NoSQL universe to become even more versatile. [Postgres](https://en.wikipedia.org/wiki/PostgreSQL) is a great example since it often outperforms NoSQL solutions on performance benchmarks.
 
-The main advantage of relational databases is their relational data model, which makes it easy to model complex data. Everything else stems from there.
+The defining feature of relational databases is their relational data model. The relational data model makes it easy to model complex data using small isolated concepts. Everything else stems from there.
 
-And the many **decades of research that's gone into optimizing performance**. Even things like reserving empty space on a hard drive so data commonly used together sits next to each other in physical space to make access faster 🤯
+**Decades of research have gone into optimizing relational database performance**. Down to features like reserving empty space on a hard drive so data commonly used together sits together to make access faster 🤯
 
 With a relational database, you get:
 
 - **fast write performance**, because most systems write to memory first and save to drive later
 - **fast read performance**, because you can build lookup data structures [(indexes)](https://en.wikipedia.org/wiki/Database_index) for common queries
 - **flexible querying**, because you can use a query language (usually SQL) to access any data in any configuration
-- **strict ACID compliance**, because it's a core design objective of these systems
+- **strict ACID compliance**, because it's a core design objective
 - some **logical data validation**, because you can describe the shape of your data and have the database enforce its consistency
 
 ### Disadvantages of relational databases
 
-The benefits of relational databases come with the downside of being harder to use, requiring more expertise to tune performance, and some loss in flexibility.
+Benefits of relational databases come with the downside of being harder to use, requiring more expertise to tune performance, and some loss in flexibility.
 
-You can create a database that's fast as lightning, or shoot yourself in the foot and make it slow.
+You can create a database that's fast as lightning, or shoot yourself in the foot.
 
 Main disadvantages are:
 
-- **high level of complexity**, because it's easy to get started, but the rabbit hole of fine-tuning your database goes deep
+- **high level of complexity**, because it's easy to get started and the fine-tuning rabbit hole goes forever deep
 - **performance traps at scale**, because a database that's blazing fast at 10,000 entries, might crawl to a halt at 10,000,000 entries
 - **tradeoffs between read and write performance**, because you can get more read performance by sacrificing write performance and vice-versa. Mostly to do with index building
 - **data shape inflexibility**, because with a typical configuration, you have to redefine the shape of your data every time you add a property
-- **lack of horizontal scalability**, because relational databases can't give you most of their benefits when split across multiple servers
+- **lack of horizontal scalability**, because relational databases can't give you most of their benefits when split across many servers
 
-A common solution for the flexibility issue is adding a blobby JSON field to every model. You lose automatic data integrity and performance optimization on that field, but gain the flexibility to store any data in any shape. Great for metadata.
+A common solution for flexibility is to add a blobby JSON field to every model. You lose automatic data integrity and performance optimization on that field, but gain the flexibility to store any data in any shape. Perfect use-case for less important metadata.
 
 ### How to use a relational DB
 
-The relational database rabbit hole goes deep so we'll focus on the basics. Approaching the rest with just-in-time learning is best – run into a problem, learn how to solve it. ✌️
+We'll focus on the basics here. You should approach the rest with just-in-time learning – run into a problem, learn how to solve it. ✌️
 
 You start with a database server.
 
 #### A database server
 
-Since you don't want to run your own servers (the whole point of serverless), you'll need a provider. 3rd party services are an okay option, if your serverless provider doesn't offer their own. Most do.
+Since you don't want to run your own servers (the whole point of serverless), you'll need a provider. 3rd party services are okay, if your serverless provider doesn't offer their own.
 
-Using a "native" service cuts down on network overhead and makes your system faster. With some luck your provider runs the database and cloud functions in the same datacenter. Perhaps even on the same physical machine.
+Using a "native" service cuts down on network overhead and makes your system faster. With some luck, your provider runs the database and cloud functions in the same datacenter. Perhaps even on the same physical machine. 🤘
 
-In the AWS world, I've found [RDS – Relational Database Service](https://aws.amazon.com/rds/) to be a great option. Gives you a stable provisioned database server.
+In the AWS world, I've found [RDS – Relational Database Service](https://aws.amazon.com/rds/) works great. Gives you a stable provisioned database server.
 
-Despite giving you a reserved database instance, RDS still offers some advantages over rolling your own:
+Despite giving you a reserved database instance, RDS still offers advantages over rolling your own:
 
 - drive space grows as necessary
 - regular updates run automatically
@@ -229,7 +231,7 @@ Despite giving you a reserved database instance, RDS still offers some advantage
 - easy restore from backup
 - optional multi-zone replication for extra reliability (copies your DB over several data centers)
 
-A more serverless version of RDS is Amazon Aurora DB. Implemented as a layer on top of RDS, it scales your database based on usage. Even shutting down when nothing's happening. Makes it less expensive for intermittent workloads *and* you don't have to predict how much power you'll need.
+A more serverless version of RDS is [Amazon Aurora DB](https://aws.amazon.com/rds/aurora/). Implemented as a layer on top of RDS, it scales your database based on usage. Even shutting down when nothing's happening. Less expensive for intermittent workloads *and* you don't have to predict how much power you'll need.
 
 When choosing which relational database software to use, **always choose Postgres**. It's open source, crazy fast, and with great support for modern NoSQL features.
 
@@ -239,19 +241,17 @@ https://twitter.com/Swizec/status/1210371195889049600
 
 The next step is to model your data.
 
-*How* to model your data is as much an art as it is a science. You can think of it as a mix between [domain modeling](https://en.wikipedia.org/wiki/Domain_model) and [object modeling](https://en.wikipedia.org/wiki/Object_model).
+*How* to model your data is as much an art as it is a science. Sort of a mix between [domain modeling](https://en.wikipedia.org/wiki/Domain_model) and [object modeling](https://en.wikipedia.org/wiki/Object_model).
 
-Models are also known as tables where each property is a column. A table is like a class and each row is like an instance.
+Models also known as tables store each property as a column. Model instances live as rows inside those tables.
 
 Let's say you're building a blog. You have `authors` and `posts`.
 
 Each author has an `id` (automatically assigned), a `created_at` timestamp, and a `name`. Each post also has an `id` (automatically assigned), a `created_at` timestamp, a `title`, and some `content`.
 
-Ids are numbers, timestamps are timestamps, the rest is text. A relational database ensures this is always true so you can expect to always get valid data.
+Ids are numbers, timestamps are timestamps, the rest is text. A relational database ensures that's always true so you can expect valid data.
 
-To create a connection between models, you use a [foreign key](https://en.wikipedia.org/wiki/Foreign_key). A column that points to the identifier in a different table.
-
-You can handle foreign keys manually at the application level. But your database is much more reliable at maintaining integrity.
+To create a connection between models, you use a [foreign key](https://en.wikipedia.org/wiki/Foreign_key). A column that points to the identifier of a different table.
 
 For `authors` and `posts` you get a schema like this:
 
@@ -286,7 +286,7 @@ Having the `posts` table "belong to" (point at) the `authors` table means each a
 
 You interact with a relational database primarily through [SQL](https://en.wikipedia.org/wiki/SQL). Many web server frameworks come with an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping) – object-relational-mapping – layer on top of SQL that simplifies common operations.
 
-Regardless of using an ORM, you will have to know SQL for anything complex. At least have an understanding of how it works.
+Regardless of using an ORM, you'll have to know SQL for anything complex. At least have an understanding of how it works.
 
 A basic query that fetches all `authors` looks like this:
 
@@ -302,7 +302,7 @@ To fetch just names, you'd do this:
 SELECT name FROM authors;
 ```
 
-Select *what* from *where*. SQL is meant to be somewhat readable as natural English. Computer users used to have to write it by hand as the main user interface :)
+Select *what* from *where*. SQL is meant to be readable as natural English. Used to be the main user interface after all.
 
 To fetch authors created after a certain date, something like this:
 
@@ -310,9 +310,11 @@ To fetch authors created after a certain date, something like this:
 SELECT name FROM authors WHERE created_at >= '2019-12-26';
 ```
 
-You can put almost any condition you want in a `WHERE` clause.
+You can put almost any condition in a `WHERE` clause.
 
-Life gets tricky real fast when you want to select data from multiple tables. You have to use [SQL joins](https://en.wikipedia.org/wiki/Join_(SQL)) based on set arithmetic. If you want a list of post titles and dates with each author:
+Where life gets real tricky real fast is selecting data from multiple tables. You have to use [SQL joins](https://en.wikipedia.org/wiki/Join_(SQL)), which are based on set arithmetic. 
+
+If you want a list of post titles and dates with each author:
 
 ```sql
 SELECT a.name, p.title, p.created_at
@@ -320,21 +322,21 @@ FROM authors a, posts po
 WHERE p.author_id = a.id;
 ```
 
-This is called an [inner join](https://en.wikipedia.org/wiki/Join_(SQL)#Inner_join) where you take a cartesian join combining every row in `authors` with every row in `posts` and filter away non-matches.
+This is called an [inner join](https://en.wikipedia.org/wiki/Join_(SQL)#Inner_join) where you take a cartesian join combining every row in `authors` with every row in `posts` and filter away the non-matches.
 
-Those are the basics that cover most use-cases. Using SQL effectively is a matter of some practice. You'll get the hang of SQL the more you use it :)
+Those are some basics that cover most use-cases. It takes some practice to use SQL effectively so practice away :)
 
 #### Speed up your data
 
-Relational databases use a [query planner](https://en.wikipedia.org/wiki/Query_plan) to execute your SQL queries as efficiently as possible. You most often don't have to think about performance.
+Relational databases use a [query planner](https://en.wikipedia.org/wiki/Query_plan) to execute SQL queries as efficiently as possible. You often don't even have to think about performance.
 
 Common ways to speed up your database include:
 
 1. **Adding indexes** – data structures that help your database find data matching specific queries. Depending on the type of index you choose, it can behave like a directory tree, or like a hash table
 2. **Denormalization** – storing properties often used together in the same table even if it means duplicating some data. Like having an author name field in each post.
-3. **Partitioning** – telling your database how to chunk a table into files so common lookups can read from the same physical file
+3. **Partitioning** – telling your database how to chunk a large table into files so common lookups read from the same physical file
 
-Tuning a relational database for performance is a whole field of software engineering so I wouldn't worry about it too much. Learn about it when you need to 🙃
+Tuning a relational database for performance is a whole field of software engineering so I wouldn't worry about it too much. Learn about it when you need to ✌️
 
 ### When you should store data in a relational DB
 
