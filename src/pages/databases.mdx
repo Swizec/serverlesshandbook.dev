@@ -8,11 +8,11 @@ export const image = '/databases.jpg'
 
 ![](../images/chapter_headers/databases.svg)
 
-Serverless systems don't have a hard drive, so where does your your data go? You need a database.
+_**Serverless systems don't have a hard drive, so where does your data go?** You need a database._
 
-In this chapter, we're going to explore database technologies, discuss their benefits, and look at the criteria for matching your database choice to the problem you're solving. 
+In this chapter, we're going to explore database technologies, discuss their benefits, and look at the criteria for matching your choice of database to the problem you're solving. 
 
-There is no silver bullet. Each database has its own advantages and disadvantages. *Always fit your tech to your problem, not your problem to your tech.*
+There is no silver bullet. Each system has its own advantages and disadvantages. Always fit your tech to your problem, not your problem to your tech. 😉
 
 **So what is a database?** It's [a system for storing and organizing data](https://en.wikipedia.org/wiki/Database). 
 
@@ -35,19 +35,19 @@ The common criteria are:
 1. Speed of reading data
 2. Speed of writing data
 3. Speed of updating data
-4. Speed of changing data shape
+4. Speed of changing the shape of data
 5. Correctness of data
 6. Scalability
 
-Notice how most criteria are about speed? That's because speed of data access is the biggest predictor of real world app performance.
+Notice how most of the list is about speed? That's because speed of access to data is the biggest predictor of real world app performance.
 
-You can have an API request that hits the database 30 times or more. When each of those queries takes 1ms or 10ms, that's the difference between a great user experience and an app that feels broken.
+I've seen API endpoints that hit the database 30 times or more.  Queries taking 10ms instead of 1ms can mean the difference between great user experience and a broken app.
 
 ### ACID – a database correctness model
 
-We're going to focus on speed for most of this chapter. To gain speed and scalability, databases often sacrifice correctness. So it's important to know what correctness means in a database context.
+We're going to focus on speed for most of this chapter. But to gain speed and scalability, databases often sacrifice correctness. So it's important you know what correctness means in a database context.
 
-Traditionally databases follow the [ACID model](https://en.wikipedia.org/wiki/ACID) of transactional correctness. A transaction being a logical operation on your data.
+Traditional databases follow the [ACID model](https://en.wikipedia.org/wiki/ACID) of transactional correctness. A transaction being a logical operation on your data.
 
 - **Atomicity** ensures that all operations inside a transaction succeed or fail in unison and aren't visible until they all succeed
 - **Consistency** ensures your data is always in a valid state and doesn't become corrupted by a half-failed transaction
@@ -56,107 +56,103 @@ Traditionally databases follow the [ACID model](https://en.wikipedia.org/wiki/AC
 
 Some databases add additional levels of logical correctness on top of the ACID model. We'll talk about those later.
 
-The ACID model might remind you of the [Architecture Principles](/serverless-architecture-principles) chapter. That's because it aims to guarantee at the database level what your serverless architecture tries to ensure at the backend ecosystem level.
+<div id="lock" />
+
+Goals of the ACID model might remind you of the [Architecture Principles](/serverless-architecture-principles) chapter. That's because it aims to guarantee at the database level what your serverless architecture aims to ensure at the backend ecosystem level.
 
 You're often building a glorified database for your web and mobile apps :)
 
 ## Types of databases
 
+You can classify databases into 4 broad categories based on how they prioritize opposing optimization criteria.
+
+1. **Flat file storage** the simplest and often fastest solution, great for large data
+2. **Relational databases** the most correct and surprisingly fast for many workloads, great for complex data
+3. **NoSQL** the broad post 2000's movement of databases breaking ACID for greater speed/scalability, different types exist
+4. **Blockchain** a sort of distributed database without a central authority, we're still figuring out what it's good for
+
+Regardless of what you choose, you will most likely talk to your database through the network. It runs on a different machine. Perhaps even in a different data center.
+
+These network round-trips present a bottomline performance limit. No matter how fast your database, you can't get data faster than it can fly through the network.
+
+Serverless providers optimize that to an extent – at least run everything in the same datacenter – and if that's not enough, you'll have to start running your own servers.
 
 ## Flat file database
 
-The simplest sort of database is a [flat file database](https://en.wikipedia.org/wiki/Flat-file_database). Store data in files and call it a day.
+The simplest way to store data is a [flat file database](https://en.wikipedia.org/wiki/Flat-file_database). Even if you call it "just organized files".
 
-You won't see these a lot in serverless applications. I mention flat-file databases here because people often forget they exist as an option. Saving data in flat files is a great fit for many problems you might encounter.
+Serverless systems don't have drives to store files so these flat file databases aren't a popular choice. You'd have to use S3 or similar, which negates some of the built-in advantages.
 
-My favorite advantage is that flat-file databases are so simple, you can build one yourself. Optimized for your exact use case.
+We mention them here because they're often a great choice and most engineers forget they exist.
 
-Can't get that anywhere else :)
+### Advantages of flat files
 
-### How a flat-file database works
+Compared to other databases, flat files have zero overhead. Your data goes straight to storage without your database adding any logic on top.
+
+This gives flat files amazing write performance. As long as you're adding data to the end of a file.
+
+Optimizing file access for speed comes down to your operating system. Performance mostly has to do with [memory paging](https://en.wikipedia.org/wiki/Paging), [filesystem](https://en.wikipedia.org/wiki/File_system) configuration, [direct memory access](https://en.wikipedia.org/wiki/Direct_memory_access), and hardware-level optimizations.
+
+The end result is:
+
+- **fast append performance**, because you stream data from memory to drive without processor involvement
+- **fast read performance for common reads**, because computers use their memory as read-through cache. Once you read a file, subsequent reads come from much faster memory
+- **fast search for predicted lookups**, because you can structure your files in a way that makes common lookups instant
+- **great scalability**, because you can spread your data over as many servers as you'd like
+
+### Disadvantages of flat files
+
+Where flat files struggle are data updates. 
+
+To add a line at the beginning of your file, you have to move the whole thing. To change a line in the middle, you have to update everything that comes after.
+
+Another problem is lack of a query interface. You have to read all your files to compare, analyze, and search. If you didn't think of a use-case beforehand, you're left with a slow search through everything.
+
+- **slow data updates**, because you often have to rewrite more than just the changes
+- **no data shape guarantees**, because you can store individual  data items any way you like. If you change your schema, you have to deal with inconsistencies, or rewrite your data
+- **slow broad reads**, because you lose benefits of read-through-cache, if you read data across your entire database with random patterns
+- **no ACID compliance** unless you build it yourself at the application layer
+
+### How to use flat files
 
 A flat-file database happens any time you write data to files in a structured manner. Photos on your phone are a great example. 
 
-When you take a photo, your phone stores it as a file. Filenames often follow a naming convention with counting – `IMG_0001`, `IMG_0002`, etc. Some cameras add dates.
+When you take a photo, your phone stores it as a file. Filenames often follow a naming convention – `IMG_0001`, `IMG_0002`, etc. Some cameras add dates.
 
-Now you can sequentially access photos in storage. Start at the beginning and go until the end. You can even keep track of how far you've gotten so you can jump ahead next time.
+Now you can sequentially access photos. Start at the beginning, go until the end. You can even keep track of how far you've gotten so you can jump ahead next time.
 
-Ok what about finding all photos from a certain date?
+What about finding all photos from a certain date?
 
-That's why images contain [EXIF metadata](https://en.wikipedia.org/wiki/Exif) – information about date, time, GPS location, even phone orientation and details about color correction. It's all there in the file in a structured way.
+That's why images contain [EXIF metadata](https://en.wikipedia.org/wiki/Exif) – information about date, time, GPS location, even phone orientation. It's all stored in the file in a structured way.
 
-So to find images from a certain date, you can search through your files and look at the metadata they contain. There are ways to make this faster than checking every image.
+To find images from a certain date, you can search through your files and look at the metadata they contain. 
 
-### How you can create a flat-file database
+#### Hierarchical and flat file organization
 
-Have you ever built a music collection?
+You can speed up most common seek operations by adding important meta data to your file names.
 
-Here's how mine worked in the mid-2000's at the peak of the music piracy era. We all did it, it's fine, fight the system ✌️
+A common example is organizing photos by year - month - date. Each year is a directory containing directories for months. Each of those contains directories for days. Those contain photos.
 
-I had a hard drive called `Music`. Inside were directories named by Artist. Each artist had one directory per album, prefixed by year. Inside were music files, prefixed with track number.
+Hierarchical storage slashes search speed by a huge factor. You can jump right into a specific category (date).
 
-```
-Music
- |- Amanda Palmer
-	 |- 2008 – Who Killed Amanda Palmer
-			 |- 01 - Astronaut
-			 |- 02 - Runs in the Family
-			 ...
- |- Iron Maiden
-	 |- 1992 – Fear of the Dark
-			 |- 01 - Be Quick or Be Dead
-			 |- 02 - From Here to Eternity
-			 ...
-	 |- 2000 – Brave New World
-			 |- 01 - The Wicker Man
-			 |- 02 - Ghost of the Navigator
-			 ...
- |- Siddharta
- ...
-```
+But hierarchical storage makes scanning harder. Counting all images, for example, requires a recursive search through directories.
 
-Prefixing filenames with numbers allowed me to sort by filename and maintain song order. 😉
+A better approach might be encoding your meta data in the filename. Something like `IMG_${year}-${month}-${day}-001.jpg`.
 
-A similar approach works in most situations where a flat file database is appropriate.
-
-Use directories for high level hierarchical grouping. Like files created on the same date or belonging to a category.
-
-The data itself goes into files within those directories. Written in whatever format you prefer. Text containing one entry per line is common, binary works for images and such.
-
-You end up with a tree structure that's easy to search, fast to read, and quick to write. 
-
-Encoding hierarchical information in filenames is also common. Every file is named according to some pattern – like `${artist}-${year}-${album}-${tracknumber}-${track}`.
-
-Filename patterns preserve your ability to iterate through files without recursion and maintain the ability to jump into a category.
+Gives you quick access to specific dates *and* fast scans across many. 👌
 
 ### When you should store data in flat files
 
 Due to its low overhead, flat file storage is a great choice when you're looking for speed and simplicity.
 
-All databases eventually have to store your data in files. Any features you get on top of files are therefore overhead that's sometimes slowing you down.
-
-#### Use flat files when:
+**Use flat files when:**
 
 1. You need fast append-only writes
 2. You have simple querying requirements
 3. You read data more often than you write data
 4. You write data that you rarely read
 
-The last two sound like an oxymoron. Let me explain.
-
-Flat file databases rely on your operating system for performance. Most modern operating systems use the [virtual memory](https://en.wikipedia.org/wiki/Virtual_memory) model of file access.
-
-When you access data, the OS reads through layers of progressively slower memory. Starting with L1 cache built into the processor, ending with read buffers on the hard drive.
-
-The consequence of this read-through cache approach is that files you read often, live in memory. Memory access is **[5 orders of magnitude faster](https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html)** than reading from hard drives.
-
-**That gives flat files cached in memory the fastest reads of any database.** No algorithmic overhead, just data straight from memory.
-
-You lose these caching benefits when reading data infrequently or thrashing around your entire database. But you also aren't paying overhead for data you store and never read.
-
-*On the topic of fast writes:* flat files are fast to write because there's no overhead from the database. *Every* database eventually has to write a file. Writing to a file without running database machinery is therefore fastest.
-
-#### Avoid flat files when:
+**Avoid flat files when:**
 
 1. You need to cross-reference data or use complex queries
 2. You need fast access across your entire database
@@ -164,17 +160,215 @@ You lose these caching benefits when reading data infrequently or thrashing arou
 
 No. 3 is the flat file database killer.
 
-Updating data in a flat file is difficult at best. Changing files piece-by-piece can lead to inefficient use of disk space, which makes your whole OS slower. So it's often best to overwrite a whole file, even if you're changing a single row.
+The most common use cases for flat files are logs, large datasets, and large files (image, video, etc) with little metadata.
 
-But then, reading and storing large amounts of data to make a small change is inefficient, too.
+You often append logs and rarely read them. You store large datasets as structured files for easy sharing. You write images once and rarely update, and they contain orders of magnitude more raw binary data than structured metadata.
 
-You can't win. Best treat flat file databases as append-only. You can write, you can delete, you can't update.
+## Relational databases – RDBMS
 
-And complex queries are difficult due to how your data is stored. Unless you can jump to the right data based on directory structure or filename, you'd have to read your whole database to find everything that fits.
+![](../images/relational_generic.png)
 
-## Using traditional databases – SQL
+[Relational databases](https://en.wikipedia.org/wiki/Relational_database) are the most common type of database people think of when you say "database". Data lives in a structured data model and many features exist to optimize performance.
 
-## The NoSQL movement in context
+Choosing a relational database for your project is almost always the right decision. Most real world apps work best with a relational database.
+
+### Advantages of relational databases
+
+Relational databases have been around since the 1970's and are a battle tested solution to storing your data. They can adapt to almost any workload and store almost any kind o data.
+
+Some modern solutions incorporate features from the NoSQL universe to make them more versatile. [Postgres](https://en.wikipedia.org/wiki/PostgreSQL) is a great example as it often outperforms NoSQL solutions on performance benchmarks.
+
+The main advantage of relational databases is their relational data model, which makes it easy to model complex data. Everything else stems from there.
+
+And the many **decades of research that's gone into optimizing performance**. Even things like reserving empty space on a hard drive so data commonly used together sits next to each other in physical space to make access faster 🤯
+
+With a relational database, you get:
+
+- **fast write performance**, because most systems write to memory first and save to drive later
+- **fast read performance**, because you can build lookup data structures [(indexes)](https://en.wikipedia.org/wiki/Database_index) for common queries
+- **flexible querying**, because you can use a query language (usually SQL) to access any data in any configuration
+- **strict ACID compliance**, because it's a core design objective of these systems
+- some **logical data validation**, because you can describe the shape of your data and have the database enforce its consistency
+
+### Disadvantages of relational databases
+
+The benefits of relational databases come with the downside of being harder to use, requiring more expertise to tune performance, and some loss in flexibility.
+
+You can create a database that's fast as lightning, or shoot yourself in the foot and make it slow.
+
+Main disadvantages are:
+
+- **high level of complexity**, because it's easy to get started, but the rabbit hole of fine-tuning your database goes deep
+- **performance traps at scale**, because a database that's blazing fast at 10,000 entries, might crawl to a halt at 10,000,000 entries
+- **tradeoffs between read and write performance**, because you can get more read performance by sacrificing write performance and vice-versa. Mostly to do with index building
+- **data shape inflexibility**, because with a typical configuration, you have to redefine the shape of your data every time you add a property
+- **lack of horizontal scalability**, because relational databases can't give you most of their benefits when split across multiple servers
+
+A common solution for the flexibility issue is adding a blobby JSON field to every model. You lose automatic data integrity and performance optimization on that field, but gain the flexibility to store any data in any shape. Great for metadata.
+
+### How to use a relational DB
+
+The relational database rabbit hole goes deep so we'll focus on the basics. Approaching the rest with just-in-time learning is best – run into a problem, learn how to solve it. ✌️
+
+You start with a database server.
+
+#### A database server
+
+Since you don't want to run your own servers (the whole point of serverless), you'll need a provider. 3rd party services are an okay option, if your serverless provider doesn't offer their own. Most do.
+
+Using a "native" service cuts down on network overhead and makes your system faster. With some luck your provider runs the database and cloud functions in the same datacenter. Perhaps even on the same physical machine.
+
+In the AWS world, I've found [RDS – Relational Database Service](https://aws.amazon.com/rds/) to be a great option. Gives you a stable provisioned database server.
+
+Despite giving you a reserved database instance, RDS still offers some advantages over rolling your own:
+
+- drive space grows as necessary
+- regular updates run automatically
+- if a server falls over, RDS brings up a new one with the same data
+- automatic backups
+- easy restore from backup
+- optional multi-zone replication for extra reliability (copies your DB over several data centers)
+
+A more serverless version of RDS is Amazon Aurora DB. Implemented as a layer on top of RDS, it scales your database based on usage. Even shutting down when nothing's happening. Makes it less expensive for intermittent workloads *and* you don't have to predict how much power you'll need.
+
+When choosing which relational database software to use, **always choose Postgres**. It's open source, crazy fast, and with great support for modern NoSQL features.
+
+https://twitter.com/Swizec/status/1210371195889049600
+
+#### Model your data
+
+The next step is to model your data.
+
+*How* to model your data is as much an art as it is a science. You can think of it as a mix between [domain modeling](https://en.wikipedia.org/wiki/Domain_model) and [object modeling](https://en.wikipedia.org/wiki/Object_model).
+
+Models are also known as tables where each property is a column. A table is like a class and each row is like an instance.
+
+Let's say you're building a blog. You have `authors` and `posts`.
+
+Each author has an `id` (automatically assigned), a `created_at` timestamp, and a `name`. Each post also has an `id` (automatically assigned), a `created_at` timestamp, a `title`, and some `content`.
+
+Ids are numbers, timestamps are timestamps, the rest is text. A relational database ensures this is always true so you can expect to always get valid data.
+
+To create a connection between models, you use a [foreign key](https://en.wikipedia.org/wiki/Foreign_key). A column that points to the identifier in a different table.
+
+You can handle foreign keys manually at the application level. But your database is much more reliable at maintaining integrity.
+
+For `authors` and `posts` you get a schema like this:
+
+![](../images/relational.png)
+
+Which in SQL – [Standard Query Language](https://en.wikipedia.org/wiki/SQL) – looks something like this:
+
+```sql
+CREATE TABLE IF NOT EXISTS "authors" (
+	"id" serial,
+	"created_at" timestamp,
+	"name" text,
+	PRIMARY KEY( id )
+);
+
+CREATE TABLE IF NOT EXISTS "posts" (
+	"id" serial,
+	"created_at" timestamp,
+	"title" text,
+	"content" text,
+	"author_id" integer,
+	PRIMARY KEY( id, author_id ),
+	FOREIGN KEY ( author_id ) REFERENCES authors( id )
+);
+```
+
+That creates 2 empty tables in your database and connects them via a foreign key. Postgres automatically increments identifiers and ensures uniqueness as you insert new rows.
+
+Having the `posts` table "belong to" (point at) the `authors` table means each author can have multiple posts.
+
+#### Query your data
+
+You interact with a relational database primarily through [SQL](https://en.wikipedia.org/wiki/SQL). Many web server frameworks come with an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping) – object-relational-mapping – layer on top of SQL that simplifies common operations.
+
+Regardless of using an ORM, you will have to know SQL for anything complex. At least have an understanding of how it works.
+
+A basic query that fetches all `authors` looks like this:
+
+```sql
+SELECT * FROM authors;
+```
+
+Writing keywords in all caps is customary but not required. I think it stems from ye olden times before syntax highlighting.
+
+To fetch just names, you'd do this:
+
+```sql
+SELECT name FROM authors;
+```
+
+Select *what* from *where*. SQL is meant to be somewhat readable as natural English. Computer users used to have to write it by hand as the main user interface :)
+
+To fetch authors created after a certain date, something like this:
+
+```sql
+SELECT name FROM authors WHERE created_at >= '2019-12-26';
+```
+
+You can put almost any condition you want in a `WHERE` clause.
+
+Life gets tricky real fast when you want to select data from multiple tables. You have to use [SQL joins](https://en.wikipedia.org/wiki/Join_(SQL)) based on set arithmetic. If you want a list of post titles and dates with each author:
+
+```sql
+SELECT a.name, p.title, p.created_at
+FROM authors a, posts po
+WHERE p.author_id = a.id;
+```
+
+This is called an [inner join](https://en.wikipedia.org/wiki/Join_(SQL)#Inner_join) where you take a cartesian join combining every row in `authors` with every row in `posts` and filter away non-matches.
+
+Those are the basics that cover most use-cases. Using SQL effectively is a matter of some practice. You'll get the hang of SQL the more you use it :)
+
+#### Speed up your data
+
+Relational databases use a [query planner](https://en.wikipedia.org/wiki/Query_plan) to execute your SQL queries as efficiently as possible. You most often don't have to think about performance.
+
+Common ways to speed up your database include:
+
+1. **Adding indexes** – data structures that help your database find data matching specific queries. Depending on the type of index you choose, it can behave like a directory tree, or like a hash table
+2. **Denormalization** – storing properties often used together in the same table even if it means duplicating some data. Like having an author name field in each post.
+3. **Partitioning** – telling your database how to chunk a table into files so common lookups can read from the same physical file
+
+Tuning a relational database for performance is a whole field of software engineering so I wouldn't worry about it too much. Learn about it when you need to 🙃
+
+### When you should store data in a relational DB
+
+Choosing a relational database is almost always the correct choice.
+
+**Use relational DBs when:**
+
+1. You don't know how you're using your data
+2. You benefit from data integrity
+3. You need good performance up to hundreds of million entries
+4. Your app fits in a single data center (availability zone)
+5. You often use different objects together
+
+**Avoid relational DBs when:**
+
+1. You're storing lots of binary data (images, video)
+2. You don't care about data integrity
+3. You don't want to invest in initial setup
+4. You just need a quick way to save some data
+5. You have so much data it doesn't fit on 1 server
+
+This makes relational databases the perfect choice for most applications. You wouldn't use them to store files, but should consider it for metadata about those files. They're also not a great choice for fast append-only writes like logs or tweets.
+
+I wouldn't worry about number 5. If you ever reach a scale where your data doesn't fit in a single database, you'll have a team to solve the problem for you :)
+
+## The NoSQL approach to data
+
+### Advantages of relational databases
+
+### Disadvantages of relational databases
+
+### How to use a relational DB
+
+### When you should store data in a relational DB
 
 ## Blockchain
 
