@@ -360,17 +360,216 @@ Choosing a relational database is almost always the correct choice.
 
 This makes relational databases the perfect choice for most applications. You wouldn't use them to store files, but should consider it for metadata about those files. They're also not a great choice for fast append-only writes like logs or tweets.
 
-I wouldn't worry about number 5. If you ever reach a scale where your data doesn't fit in a single database, you'll have a team to solve the problem for you :)
+I wouldn't worry about number 5. If you ever reach the scale where your data doesn't fit in a single database, you'll have a team to solve the problem for you :)
 
 ## The NoSQL approach to data
 
-### Advantages of relational databases
+"NoSQL" is a broad range of technologies built for different purposes with different design goals in mind. A sort of catch-all for any database that doesn't use relational data models.
 
-### Disadvantages of relational databases
+Yes even flat file storage is a sort of NoSQL database.
 
-### How to use a relational DB
+Wikipedia offers [a great description of NoSQL databases](https://en.wikipedia.org/wiki/NoSQL)
 
-### When you should store data in a relational DB
+> The data structures used by NoSQL databases are different from those used by default in relational databases, making some operations faster in NoSQL. The particular suitability of a given NoSQL database depends on the problem it must solve.
+
+This variety is where NoSQL differs most from relational databases. Where relational databases aim to fit most use cases, NoSQL often aims to solve a specific problem.
+
+### Flavors of NoSQL
+
+You can classify NoSQL databases in 4 broad categories:
+
+1. **key:value store** that works like a dictionary. A unique key points to a stored value. Offers fast read/write performance and is often used as a caching layer in front of a relational database. Some solutions offer sortable keys so you can perform data scans.
+2. **document store** that maps unique keys to documents. Basically key:value stores that allow complex values. They often support a query language that lets you search based on value contents, not just the key.
+3. **graph database** that stores graph data structures efficiently. Useful for data models with a lot of circular references like social graphs or road maps.
+4. **wide column database** that is a sort of mix between a document store and a relational database. Keys map to objects that all fit a schema, but that schema isn't prescriptive. There's no guarantee every object has every column, but you always know every column that might exist.
+
+Everything else is a variation on these themes. Most modern databases support multiple models.
+
+You can stringify JSON objects into a key:value store to create a document store without querying support. Or you can store simple values in a document DB to create a key:value store with too much overhead.
+
+There's nothing stopping you from forcing a graph to live inside a table database either. 😉
+
+### Which NoSQL flavor should you pick?
+
+It really depends. What are you trying to do?
+
+I would prioritize a hosted fully managed database solution that my serverless provider offers. This cuts down on networking overhead, just like the RDBMS section, and makes your life easier because there's one less thing to manage.
+
+Then I would pick whatever fits my use case.
+
+**Use key:value stores** when you need blazing fast data with low overhead. Great for implementing caching layers and queue systems. [Redis](https://en.wikipedia.org/wiki/Redis) is a great choice here. [Memcached](https://en.wikipedia.org/wiki/Memcached), if you just need cache.
+
+I often use Redis *and* Memcached in real world projects.
+
+**Use a document DB or wide column store** when you want a generic database for business data that isn't a relational database. You get the benefit of flexibility and horizontal scalability. No schemas to prepare in advance and little thought about optimizing queries. 
+
+You pay for that 3 years down the line with inconsistent data. Learned my lesson ✌️
+
+[MongoDB](https://en.wikipedia.org/wiki/MongoDB) is a good document/object store. [Amazon DynamoDB](https://en.wikipedia.org/wiki/Amazon_DynamoDB) and [Google's Bigtable](https://en.wikipedia.org/wiki/Bigtable) are great examples of wide column stores.
+
+**Use a graph DB** when you're *actually* storing graph data. While you can fit a graph into any database (I've tried), you're going to benefit from graph querying support that comes with a real graph DB. They're optimized for just that use-case.
+
+Haven't had a good excuse to use one yet, but I've heard [Neo4j](https://en.wikipedia.org/wiki/Neo4j) is great.
+
+**My favorite advantage of most NoSQL databases** is their wonderful integration with the JavaScript/TypeScript ecosystem. Most let you store JSON blobs, which means there's no translation between JavaScript objects and database objects.
+
+That makes your life much easier compared to a SQL-based solution.
+
+### Disadvantages of NoSQL databases
+
+Disadvantages of NoSQL mostly come from its advantages. Funny how that works.
+
+The simplicity of key:value stores gives you speed at the cost of not being able to store complex data.
+
+The write speed of some document databases comes at the cost of ACID compliance. Often using the [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) model to write fast and propagate to other instances and objects later.
+
+The ease of schema-less development comes at the cost of inconsistent data. If you want entries to look the same, you often have to take care of that yourself.
+
+NoSQL databases also struggle with relational data. And it turns out most real world data is relational.
+
+You *can* store relational data in a NoSQL database, but it can be cumbersome to query. Often there's no support for joins so you have to search through different parts of your database and assemble objects by hand.
+
+### How to use a NoSQL DB
+
+How to use a NoSQL DB depends on which database you pick. I recommend using an official library.
+
+Serverless Handbook focuses on using the AWS ecosystem with the serverless framework, so we're going to look at DynamoDB. 
+
+DynamoDB is a great choice for saving JSON data, scales well, works fast, and is pretty cheap to use. And unlike RDS, you can set it up using `serverless.yml`.
+
+#### Create a DynamoDB table
+
+To define a new DynamoDB table, add this to your config.
+
+```yaml
+provider:
+    environment:
+        DATA_TABLE: ${self:service}-data-${self:provider.stage}
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DATA_TABLE}"
+```
+
+Using environment variables for table names makes them easier to use. Postfixing with the stage lets you replicate configuration between development and production without messing up your data.
+
+`iamRoleStatements` give your app permission to use this table.
+
+You then need to create the actual table:
+
+```yaml
+resources:
+    Resources:
+        DataTable:
+            Type: "AWS::DynamoDB::Table"
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: dataId
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: dataId
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: ${self:provider.environment.DATA_TABLE}
+```
+
+You're defining an AWS resource of type `DynamoDB::Table` with a required `dataId` column that's going to be used as a key. `HASH` keys give you key:value lookups, `RANGE` keys are easier to scan through.
+
+Each table can have 2 key columns at most.
+
+Name your table using the environment variable defined earlier for better consistency. ✌️
+
+#### Save some data
+
+Saving data to a DynamoDB table is a little cumbersome using Amazon's default SDK. You can build wrappers to make it easier or find a library you like.
+
+There doesn't seem to be a clear best library yet.
+
+You save data using upserts: If a key exists, the data is updated. If it doesn't, it's created. I recommend using [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) for identifiers.
+
+Something like this:
+
+```typescript
+export const createData = async (_: any, params: CreateDataParams) => {
+    const dataId = uuidv4();
+
+    const result = await updateItem({
+        TableName: process.env.DATE_TABLE!,
+        Key: {
+            dataId
+        },
+        UpdateExpression: "SET dataName = :dataName, createdAt = :createdAt",
+        ExpressionAttributeValues: {
+            ":dataName": params.dataName,
+            ":createdAt": new Date().toISOString()
+        },
+        ReturnValues: "ALL_NEW"
+    });
+
+    return result.Attributes;
+};
+```
+
+Create an identifier with the uuid library, run an update expression on the appropriate table. Return the entire new row.
+
+`UpdateExpression` and `ExpressionAttributeValues` is split into two objects to help DynamoDB prevent injection attacks. Also helps with performance.
+
+`updateItem` is a wrapper I built around the official SDK. You can [see the code on GitHub](https://github.com/Swizec/markdownlandingpage.com/blob/master/server/src/dynamodb.ts#L35). I'll turn it into a library once I'm happy with the ergonomics.
+
+You now have data saved in the database.
+
+**To update this data** you have to create a similar method that gets your `dataId` as a parameter and uses it to run an `updateItem` query. Make sure you aren't always creating a new identifier.
+
+#### Read some data
+
+Unlike with a relational database, you have a choice of *scanning* and *getting*. A scan lets you search for entries that match a criteria. Getting lets you jump to an exact entry.
+
+Something like this:
+
+```typescript
+export const allDataWithName = async ({ dataName }) => {
+    const result = await scanItems({
+        TableName: process.env.DATA_TABLE!,
+        FilterExpression: "#dataName = :dataName",
+        ExpressionAttributeNames: {
+          "#dataName": "dataName"
+        },
+        ExpressionAttributeValues: {
+          ":dataName": dataName
+        }
+    });
+
+    return result.Items;
+};
+```
+
+`scanItems` is again [a little helper method I wrote](https://github.com/Swizec/markdownlandingpage.com/blob/master/server/src/dynamodb.ts#L73). It needs to do more because this is quite cumbersome.
+
+But it lets you *scan* through a table looking for entries that fit a criteria. 
+
+You can use the `getItem` approach when you know exactly what you're looking for.
+
+```typescript
+export const data = async ({ dataId }) => {
+    const result = await getItem({ Key: { dataId } });
+
+    if (!result.Item) {
+        return {};
+    }
+
+    return result.Item
+};
+```
+
+Notice how we get a JavaScript object that we can return without modification. That's the beauty of NoSQL. ✌️
 
 ## Blockchain
 
