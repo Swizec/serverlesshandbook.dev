@@ -79,6 +79,8 @@ Serverless providers optimize that to an extent – at least run everything in 
 
 ## Flat file database
 
+![](../images/flat-file.png)
+
 The simplest way to store data is a [flat file database](https://en.wikipedia.org/wiki/Flat-file_database). Even if you call it "just organized files".
 
 Serverless systems don't have drives to store files so these flat file databases aren't a popular choice. You'd have to use S3 or similar, which negates some of the built-in advantages.
@@ -364,6 +366,8 @@ I wouldn't worry about number 5. If you ever reach the scale where your data doe
 
 ## The NoSQL approach to data
 
+![](../images/nosql.png)
+
 "NoSQL" is a broad range of technologies built for different purposes with different design goals in mind. A sort of catch-all for any database that doesn't use relational data models.
 
 Yes even flat file storage is a sort of NoSQL database.
@@ -421,9 +425,9 @@ Disadvantages of NoSQL mostly come from its advantages. Funny how that works.
 
 The simplicity of key:value stores gives you speed at the cost of not being able to store complex data.
 
-The write speed of some document databases comes at the cost of ACID compliance. Often using the [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) model to write fast and propagate to other instances and objects later.
+The write speed of document databases comes at the cost of some ACID compliance. Often using the [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) model to write fast and propagate to other instances and objects later.
 
-The ease of schema-less development comes at the cost of inconsistent data. If you want entries to look the same, you often have to take care of that yourself.
+The ease of schema-less development comes at the cost of inconsistent data. If you want entries to look the same, you often have to take care of it yourself.
 
 NoSQL databases also struggle with relational data. And it turns out most real world data is relational.
 
@@ -433,7 +437,7 @@ You *can* store relational data in a NoSQL database, but it can be cumbersome to
 
 How to use a NoSQL DB depends on which database you pick. I recommend using an official library.
 
-Serverless Handbook focuses on using the AWS ecosystem with the serverless framework, so we're going to look at DynamoDB. 
+Serverless Handbook focuses on the AWS ecosystem with the serverless framework, so we're going to look at DynamoDB. 
 
 DynamoDB is a great choice for saving JSON data, scales well, works fast, and is pretty cheap to use. And unlike RDS, you can set it up using `serverless.yml`.
 
@@ -483,15 +487,13 @@ resources:
 
 You're defining an AWS resource of type `DynamoDB::Table` with a required `dataId` column that's going to be used as a key. `HASH` keys give you key:value lookups, `RANGE` keys are easier to scan through.
 
-Each table can have 2 key columns at most.
+Each table can have 2 keys at most.
 
-Name your table using the environment variable defined earlier for better consistency. ✌️
+Name your table using the environment variable defined earlier for consistency. ✌️
 
 #### Save some data
 
-Saving data to a DynamoDB table is a little cumbersome using Amazon's default SDK. You can build wrappers to make it easier or find a library you like.
-
-There doesn't seem to be a clear best library yet.
+Saving data to a DynamoDB table can be a little cumbersome with Amazon's default SDK. There doesn't seem to be a clear best library so I've been writing small wrappers myself.
 
 You save data using upserts: If a key exists, the data is updated. If it doesn't, it's created. I recommend using [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) for identifiers.
 
@@ -530,7 +532,7 @@ You now have data saved in the database.
 
 #### Read some data
 
-Unlike with a relational database, you have a choice of *scanning* and *getting*. A scan lets you search for entries that match a criteria. Getting lets you jump to an exact entry.
+Unlike with a relational database, you have a choice of *scanning* and *getting*. A scan lets you search for entries that match a criteria. Getting lets you fetch an exact entry.
 
 Something like this:
 
@@ -573,3 +575,30 @@ Notice how we get a JavaScript object that we can return without modification. T
 
 ## Blockchain
 
+![](../images/blockchain.png)
+
+Blockchain is the new kid on the block. Usually mixed up with cryptocurrencies and financial speculation, it's actually a solid way to share and store data.
+
+You've probably used one before 👉 git.
+
+That's right, [git](https://en.wikipedia.org/wiki/Git) and [The Blockchain](https://en.wikipedia.org/wiki/Blockchain) share the same underlying data structure: a merkle tree.
+
+A [merkle tree](https://en.wikipedia.org/wiki/Merkle_tree) stores data in a cryptographically verified sequence of blocks. Each new block contains a cryptographic hash of the previous block.
+
+That means you can always verify your data. Follow the chain and validate every hash. Once you reach the initial block, you know your chain is valid.
+
+As a result you don't need a central authority to tell you the current state of your data. Clients can independently decide, if the data they have is valid. Often by assuming the longest valid chain is correct.
+
+Adding a consensus algorithm makes the process even more robust. When you add new data, how many servers have to agree that the data is valid? 
+
+The result is a slow, but robustly decentralized database. 
+
+I wouldn't use the blockchain to store real data just yet, but it's an exciting space to watch. [Blockstack](https://blockstack.org/) is a great way to get started.
+
+## So what should you choose?
+
+Most real world projects use a combination of database technologies.
+
+Files for large binary blobs, relational database for critical business data, key:value store for persistent caching, document store for complex data that always lives together.
+
+Adding JSON blobs to relational data is a common compromise.
