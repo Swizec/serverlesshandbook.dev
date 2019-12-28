@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import styled from "@emotion/styled"
 
 const Container = styled.div`
@@ -23,18 +23,24 @@ const ShareButtons = styled.div`
 
 const SocialButton = styled.a`
   padding: 5px;
-`;
+`
 
+const Reactions = ({ page }) => {
+  const [pathname, setPathname] = useState(page)
 
-const Reactions = ({page}) => {
-  const url = `https://serverlesshandbook.dev${page}`;
-  const tweetUrl = `https://twitter.com/intent/tweet?text=${url}`;
-  const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPathname(window.location.pathname)
+    }
+  }, [])
 
-  return(
+  const url = `https://serverlesshandbook.dev${pathname}`
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${url}`
+  const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`
+
+  return (
     <Container>
       <JoyButton>
-        <style></style>
         <div className="Widget__WidgetLayout-sc-1ityn2x-2 cJHITu">
           <h2 className="styles__Heading-sc-1lygi1f-1 Widget__Question-sc-1ityn2x-3 haLIoK">
             Did you enjoy this chapter?
