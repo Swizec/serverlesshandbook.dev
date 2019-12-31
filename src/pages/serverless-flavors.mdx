@@ -31,7 +31,7 @@ With over 165 services it's impossible to try or even know all of AWS. Here's a 
 - **EC2** – old school cloud. You get a virtual computer, set it up, and you're in control. Runs forever unless you make it stop.
 - **S3** – the most popular solution for static files. Upload a file, get a URL, file stays there forever. Often used for image and video assets, can't run server code or host a website.
 - **CloudFront** – a [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) that integrates well with S3. Point to static files via CloudFront and it serves files from the physically nearest server to your users. Works like a read-through cache, makes your apps faster.
-- **IAM** – identity and account management. AWS forces you to use this one to manage permissions. It's super secure, tedious to set up, and as far as I ca tell everyone hates it. Until it saves their butts.
+- **IAM** – identity and account management. AWS forces you to use this one to manage permissions. It's super secure, tedious to set up, and as far as I can tell everyone hates it. Until it saves their butts.
 - **AWS Secrets Manager** – a secure way to use secrets like API keys in your serverless apps. Not in code, not in environment variables, but a secure storage that's encrypted at rest. Enables you to rotate values for everyone.
 - **Lambda** – the poster child for serverless. One of the first to popularize function-as-a-service architectures. Write your function code, Lambda handles the rest.
 - **SQS** – simple queue service is ... a simple way to implement queues. Best used for async communication between services. Stores and retries messages if necessary.
