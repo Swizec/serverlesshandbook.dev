@@ -1,0 +1,65 @@
+service: serverless-rest-example
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  environment:
+    ITEM_TABLE: ${self:service}-items-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ITEM_TABLE}"
+
+functions:
+  getItems:
+    handler: dist/manageItems.getItem
+    events:
+      - http:
+          path: item
+          method: GET
+          cors: true
+      - http:
+          path: item/{itemId}
+          method: GET
+          cors: true
+  updateItems:
+    handler: dist/manageItems.updateItem
+    events:
+      - http:
+          path: item
+          method: POST
+          cors: true
+      - http:
+          path: item/{itemId}
+          method: POST
+          cors: true
+  deleteItems:
+    handler: dist/manageItems.deleteItem
+    events:
+      - http:
+          path: item/{itemId}
+          method: DELETE
+          cors: true
+
+resources:
+  Resources:
+    UsersTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: itemId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: itemId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.ITEM_TABLE}
