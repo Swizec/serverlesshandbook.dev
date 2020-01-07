@@ -12,14 +12,7 @@ function response(statusCode: number, body: any) {
 
 // fetch using /item/ID
 export const getItem = async (event: APIGatewayEvent): Promise<APIResponse> => {
-  const itemId = event.pathParameters ? event.pathParameters.itemId : null
-
-  if (!itemId) {
-    return response(404, {
-      status: "error",
-      error: "Item not found",
-    })
-  }
+  const itemId = event.pathParameters ? event.pathParameters.itemId : ""
 
   const item = await db.getItem({
     TableName: process.env.ITEM_TABLE!,

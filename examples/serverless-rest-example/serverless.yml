@@ -22,10 +22,6 @@ functions:
     handler: dist/manageItems.getItem
     events:
       - http:
-          path: item
-          method: GET
-          cors: true
-      - http:
           path: item/{itemId}
           method: GET
           cors: true

@@ -1,6 +1,6 @@
 export const title = "Creating a REST API"
 
-export const description = "What *is* REST? How does it work? How do you build one without servers?"
+export const description = "What is REST and how does it work? How do you build an API without servers?"
 
 export const image = '/chapter_headers/serverless-rest-api.png'
 
@@ -8,27 +8,419 @@ export const image = '/chapter_headers/serverless-rest-api.png'
 
 ![](../images/chapter_headers/serverless-rest-api.svg)
 
-You've heard of REST before, but what ***is*** REST? How does it work? Can you build one from scratch?
+> You've heard of REST before, but what ***is*** REST? How does it work? Can you build one from scratch? Does serverless make your REST life easier?
+
+We go into some depth on REST best practices in this chapter of Serverless Handbook and finish with a simple implementation you can try right now. I left mine running ✌️
 
 ## What is REST anyway
 
+[REST](https://en.wikipedia.org/wiki/Representational_state_transfer) stands for REpresentational State Transfer. Coined in [Roy Fielding's 2000 doctoral thesis](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm) it now represents what many consider the standard way to write web APIs.
+
+Fielding says REST is an architectural principle. It *recommends* how to build scalable web systems, but there's no official standard.
+
+You may have noticed this in the wild. RESTful APIs follow similar guidelines and yet no two are alike.
+
+**These days any API that uses HTTP to transfer data and URLs to identify resources is called REST.**
+
+Here are the 6 architectural constraints that define a RESTful system. While these work for any context, we'll focus on the web 👇
+
+- **client-server architecture** specifies a separation of concerns between the user interface and the storage of data. This simplifies both domains and lets them evolve independently.
+- **statelessness** specifies that *the protocol* is stateless. Meaning each request to the server contains all information necessary to process that request. Servers do not maintain any client context.
+- **cacheability** specifies that clients can cache any server response to improve performance on subsequent requests. Servers have to annotate their responses with appropriate caching policies (usually via http headers)
+- **layered system** means that just like regular HTTP, a RESTful client shouldn't need to know whether it's talking to a server, a proxy, or load balancer. This improves scalability.
+- **code on demand (optional)** says that servers can send executable code as part of their responses. You see this with web servers sending JavaScript.
+- **uniform interface** is the most fundamental and means that clients can interact with a server purely from responses, without any outside knowledge. 
+
+### A uniform interface
+
+Creating a uniform interface is the most important aspect of any RESTful API. The less clients need to know about how your server works, the better.
+
+Each **request identifies the resource** it is requesting. Often using the URL itself. 
+
+**Responses send a representation** of a resource rather than the resource itself. Like compiling a set of database objects into a JSON document.
+
+All **messages are self-descriptive** meaning both client and server can understand a message without external information. Send everything you need.
+
+A resource's **representation includes everything needed to modify** said resource. When clients get a response, it should contain everything necessary to modify or delete the underlying resources.
+
+Academics say **responses should list possible actions** so clients can navigate a system without intimate knowledge of its API. I have almost never seen this in the wild.
+
 ## Designing a RESTful API
+
+The trickiest part of designing a RESTful API is evolving it over time. The second trickiest is keeping it consistent across your entire app.
+
+As your system grows you will be tempted to tack onto existing APIs and gently break resource constraints. You're also likely to forget the exact wording and phrasing of different parts.
+
+All of that is natural. We all do it. **The important part is to start on the right foot and clean up when you can.**
+
+### Engineers are human
+
+When engineers *can* do something with your API, they will. 
+
+They're going to find every undocumented feature, discover every "alternative" way to get some data, and uncover any easter egg you didn't mean to include. They're good at their job and they want to do it the fastest.
+
+So do yourself a favor and try to **keep everything consistent**. The more consistent you are, the easier it will be to clean up when you have to.
+
+That means 
+
+- all dates in the same format
+- all responses in the same shape
+- keep field types consistent, if an error is a string it's always a string
+- always include every standard string
+- when multiple endpoints include the same model, make it *the same* 
+
+Here are some tips I've picked up over the past 13 years of building and using RESTful APIs.
+
+### URL schema
+
+Your URL schema exists to solve one problem: Provide a way to uniformly identify resources and endpoints on your server.
+
+Keep it consistent, otherwise don't sweat it. 
+
+People get way too wrapped up in the details here and it honestly doesn't matter. As long as your team agrees on what makes sense.
+
+When designing an URL schema I aim to:
+
+- **make it guessable**, which stems from consistency and predictability
+- **make it human readable**, which makes it easier to use, debug, and memorize
+- **avoid query strings** because they look messy and sometimes don't play well with copypasting
+- **avoid strange characters** like spaces and emojis and such. It looks cute and is often cumbersome to work with
+- **include IDs in URLs** because it makes debugging easier
+
+The two schemas I like most go something like this:
+
+```
+https://api.wonderfulservice.com/<namespace>/<model>/<id>
+```
+
+Using an `api.*` subdomain helps with load balancing and using special servers just for your API. Less relevant in the serverless world because providers create unique domains anyway.
+
+The optional `<namespace>` helps you keep things organized. You'll often find different parts of the app use similar-sounding models.
+
+You wouldn't use a namespace for generic models like `user` or `subscription`.
+
+Adding a `<model>` that's named as closely as possible to the model on your backend helps you stay sane. Yes it breaks the idea of total separation between client and server, but it's really really useful to maintain consistency.
+
+**If everyone calls everything the same name, you never need to translate. 😉**
+
+Finally the `<id>` helps you identify the specific instance of a model that you're changing.
+
+Sometimes it's useful to use this alternative schema:
+
+```
+https://api.wonderfulservice.com/<namespace>/<model>/<verb>/<id>
+```
+
+The verb specifies what you're doing to the model. More on that when we discuss [HTTP verbs](#using-http-verbs) in a bit.
+
+### Data format
+
+Always use JSON. Both for sending data and for receiving data.
+
+Great support in most programming languages, extremely easy to use with JavaScript, simple to write by hand, readable by humans, not very verbose. All that makes JSON the perfect format for a modern API.
+
+**For timestamps** I recommend the [ISO 8601 standard](https://en.wikipedia.org/wiki/ISO_8601) for those same reasons. Great tooling in all languages, readable by humans, in a pinch writable by hand.
+
+UNIX timestamps used to be popular and are falling out of favor for various reasons. They're hard to read as a human, don't work well with dates beyond 2038, suck at dates before 1970, etc.
+
+Stick to ISO time and JSON data 😊
+
+### Using HTTP verbs
+
+Verbs specify *what* your request does with a resource. 
+
+Opinions on how to pass verbs from client to server vary. Some say you should stick to HTTP verbs, others think verbs belong in the URL, others still consider them part of the JSON request body.
+
+Everyone agrees that a `GET` request is for getting data and should have no side-effects.
+
+Other verbs belong to the `POST` request, if you're into URL- or JSON- verbs. Or use other HTTP verbs like `PUT`, `PATCH`, and `DELETE`.
+
+I like to use a combination.
+
+`GET` for getting data. `POST` for posting data (both create and update). `DELETE` for deleting ... on the rare occasion I let clients delete data.
+
+`PUT` and `PATCH` are often difficult to work with in client libraries or just feel non-standard.
+
+### Errors
+
+Should you use HTTP error codes to communicate errors or not?
+
+Opinions vary.
+
+One camp says that HTTP errors are for HTTP-layer problems only. Things like your server being down or a malformed URL. When your application successfully processes a request and decides there's an error, it should return 200 with an error object.
+
+The other camp says that's silly and we already have a perfectly valid system for errors. Your application should use the full gamut of HTTP error codes *and return an error object*.
+
+**Always return a descriptive JSON error object.** That's a given. Make sure your server doesn't return HTML when there's an error.
+
+Something like:
+
+```json
+{
+	"status": "error",
+	"error": "This is what went wrong"
+}
+```
+
+is best.
+
+I like to use a combination approach. `500` errors for my application failing to do its job, `404` for things that aren't found, `200` with an explanation for everything else. Helps me avoid hunting for obscure error codes to encode every possible error and keeps with the basics of HTTP.
+
+### Versioning
+
+I have given up on versioning APIs.
+
+Your best bet is to maintain eternal backwards compatibility. Make additive changes whenever you feel like, remove things never.
+
+It leads to messy APIs, which is a shame, but often better than crashing an app the user hasn't updated in 3 years.
+
+Transition to new endpoints with newer clients.
 
 ## Build a simple REST
 
+To show you how this all works in practice, we're going to build a serverless REST API. Accepts and returns JSON blobs, stores them in DynamoDB.
 
+You can [see the full code on GitHub](https://github.com/Swizec/serverless-handbook/tree/master/examples/serverless-rest-example). I encourage you to play around and try deploying to your own AWS.
 
+Code samples here are the key parts, not everything.
 
-- explain what is REST
-- how to design a REST API
-	- considerations in different flavors
-	- what should be a route
-	- what shouldn't
-	- do you always need everything
-- recipe to build a simple CRUD
-	- what is crud
-	- build the whole thing
-- REST beyond CRUD
+### URL schema mapped to Lambdas
 
+We start with a URL schema and lambda function definitions in `serverless.yml`.
 
-Ever wondered
+```yaml
+# serverless.yml
+
+functions:
+  getItems:
+    handler: dist/manageItems.getItem
+    events:
+      - http:
+          path: item/{itemId}
+          method: GET
+          cors: true
+  updateItems:
+    handler: dist/manageItems.updateItem
+    events:
+      - http:
+          path: item
+          method: POST
+          cors: true
+      - http:
+          path: item/{itemId}
+          method: POST
+          cors: true
+  deleteItems:
+    handler: dist/manageItems.deleteItem
+    events:
+      - http:
+          path: item/{itemId}
+          method: DELETE
+          cors: true
+```
+
+Here we define the 4 operations of a basic CRUD app:
+
+- `getItem` to fetch items
+- `updateItem` to create items
+- `updateItem/id` to update items
+- `deleteItem` to delete items
+
+The `{itemId}` syntax lets APIGateway parse the URL for us and pass those identifiers to our code as parameters.
+
+Mapping every operation to its own lambda means you don't have to write routing code of your own. When a lambda gets called, it knows exactly what to do.
+
+We define lambdas in a [`manageItems.ts` file](https://github.com/Swizec/serverless-handbook/blob/master/examples/serverless-rest-example/src/manageItems.ts). Grouping operations on the same model together helps keep your code organized.
+
+### getItem
+
+```typescript
+// src/manageItems.ts
+
+// fetch using /item/ID
+export const getItem = async (event: APIGatewayEvent): Promise<APIResponse> => {
+  const itemId = event.pathParameters ? event.pathParameters.itemId : ""
+
+  const item = await db.getItem({
+    TableName: process.env.ITEM_TABLE!,
+    Key: { itemId },
+  })
+
+  if (item.Item) {
+    return response(200, {
+      status: "success",
+      item: item.Item,
+    })
+  } else {
+    return response(404, {
+      status: "error",
+      error: "Item not found",
+    })
+  }
+}
+```
+
+The `getItem` function is triggered from an APIGatewayEvent. It includes a `pathParameters` object that contains an `itemId` parsed from the URL.
+
+We then use a [DynamoDB `getItem` wrapper](https://github.com/Swizec/serverless-handbook/blob/master/examples/serverless-rest-example/src/dynamodb.ts#L80) method to talk to the database and find the requested item. 
+
+If the item is found we return a success response, otherwise an error. The `response` method is a small helper that makes responses easier to write.
+
+```typescript
+// src/manageItems.ts
+
+function response(statusCode: number, body: any) {
+  return {
+    statusCode,
+    body: JSON.stringify(body),
+  }
+}
+```
+
+**You can try it out in your terminal like this:**
+
+```
+curl https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/0769413a-b306-46cb-a03c-5a8d5e29aa3e
+```
+
+Or paste that URL into a browser. 
+
+### updateItem
+
+Updating an item is the most complex operation we've got. 
+
+It handles both creating and updating items, always assuming that the client knows best. You might want to verify that assumption in a production system.
+
+Here we overwrite server data with whatever the client sends.
+
+```typescript
+// upsert an item
+// /item or /item/ID
+export const updateItem = async (
+  event: APIGatewayEvent
+): Promise<APIResponse> => {
+  let itemId = event.pathParameters ? event.pathParameters.itemId : uuidv4()
+
+  let createdAt = new Date().toISOString()
+
+  // find item if exists
+  const find = await db.getItem({
+    TableName: process.env.ITEM_TABLE!,
+    Key: { itemId },
+  })
+
+  if (find.Item) {
+    // save createdAt so we don't overwrite on update
+    createdAt = find.Item.createdAt
+  } else {
+    return response(404, {
+      status: "error",
+      error: "Item not found",
+    })
+  }
+
+  if (!event.body) {
+    return response(400, {
+      status: "error",
+      error: "Provide a JSON body",
+    })
+  }
+
+  let body = JSON.parse(event.body)
+
+  if (body.itemId) {
+    // this will confuse DynamoDB, you can't update the key
+    delete body.itemId
+  }
+
+  const item = await db.updateItem({
+    TableName: process.env.ITEM_TABLE!,
+    Key: { itemId },
+    UpdateExpression: `SET ${db.buildExpression(
+      body
+    )}, createdAt = :createdAt, lastUpdatedAt = :lastUpdatedAt`,
+    ExpressionAttributeValues: {
+      ...db.buildAttributes(body),
+      ":createdAt": createdAt,
+      ":lastUpdatedAt": new Date().toISOString(),
+    },
+    ReturnValues: "ALL_NEW",
+  })
+
+  return response(200, {
+    status: "success",
+    item: item.Attributes,
+  })
+}
+```
+
+The pattern we're following is:
+
+- if no ID provided, generate one
+- find item in DB
+- update or create a `createdAt` timestamp
+- parse the request JSON body
+- create an update expression
+- add a `lastUpdatedAt` timestamp
+- return the resulting object
+
+Adding `createdAt` and `lastUpdatedAt` timestamps is surprisingly helpful when debugging these systems. You always want to keep that data around.
+
+You can find the `db.*` helper methods in my [`dynamodb.ts` file](https://github.com/Swizec/serverless-handbook/blob/master/examples/serverless-rest-example/src/dynamodb.ts)
+
+**You can try it out in your terminal like this:**
+
+```
+curl -d '{"hello_world": "this is a json item", "params": "It can have multiple params", "customNumber": 4}' https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item
+```
+
+To create an item.
+
+```
+curl -d '{"hello_world": "this is a json item", "params": "It can have multiple params", "customNumber": 4}' https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/e76e46f4-296d-4fef-a349-a1bb5717f2ac
+```
+
+To update an item.
+
+### deleteItem
+
+Deleting is pretty easy. Get the ID, delete the item. Again with no verification that you should or shouldn't be able to.
+
+```typescript
+// src/manageItems.ts
+
+export const deleteItem = async (
+  event: APIGatewayEvent
+): Promise<APIResponse> => {
+  const itemId = event.pathParameters ? event.pathParameters.itemId : null
+
+  if (!itemId) {
+    return response(400, {
+      status: "error",
+      error: "Provide an itemId",
+    })
+  }
+
+  // DynamoDB handles deleting already deleted files, no error :)
+  const item = await db.deleteItem({
+    TableName: process.env.ITEM_TABLE!,
+    Key: { itemId },
+    ReturnValues: "ALL_OLD",
+  })
+
+  return response(200, {
+    status: "success",
+    itemWas: item.Attributes,
+  })
+}
+```
+
+We get `itemId` from the URL props and call a `deleteItem` method on DynamoDB. The API returns the item as it was before deletion.
+
+## Fin ✌️
+
+And that's 13 years of REST API experience condensed into 2000 words. My favorite is how much easier this was to implement using serverless than with Rails or Express.
+
+It really is quite wonderful how you can have different lambda functions (whole servers really) for individual endpoints.
+
+Next, we're going to look at GraphQL and why it represents such an exciting future.
