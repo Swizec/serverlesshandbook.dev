@@ -32,7 +32,7 @@ const Reactions = ({ page }) => {
     if (typeof window !== "undefined") {
       setPathname(window.location.pathname)
     }
-  }, [])
+  })
 
   const url = `https://serverlesshandbook.dev${pathname}`
   const tweetUrl = `https://twitter.com/intent/tweet?text=${url}`
