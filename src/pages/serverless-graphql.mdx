@@ -1,9 +1,244 @@
 export const title = "Using GraphQL"
 
-export const description = "Laern how to use GraphQL in the serverless approach"
+export const description = "Learn about GraphQL and how to set it up with serverless"
 
 export const image = '/chapter_headers/serverless-graphql.png'
+
+import { Giphy } from "../components/giphy"
 
 # Using GraphQL
 
 ![](../images/chapter_headers/serverless-graphql.svg)
+
+GraphQL brings power and flexibility to frontend developers. No longer beholden to strict dictums from the backend, they're free to iterate and move fast without waiting on the API to update.
+
+Users love GraphQL too ... well, they love the result 👉 a faster webapp with less networking overhead and a team that's quicker to respond to their feature requests. 😍
+
+And unlike REST, GraphQL is easier to work with on the server as well. If you can write a JavaScript or TypeScript function, you can write a GraphQL server.
+
+## Why GraphQL
+
+Say you're building an app. It needs data from a server. What do you do?
+
+You make a `fetch()` request.
+
+```javascript
+fetch('https://swapi.co/api/people/1/')
+	.then(res => res.json())
+	.then(console.log)
+```
+
+And you get eeeevery piece of info about Luke Skywalker.
+
+```json
+{
+	"name": "Luke Skywalker",
+	"height": "172",
+	"mass": "77",
+	"hair_color": "blond",
+	"skin_color": "fair",
+	"eye_color": "blue",
+	"birth_year": "19BBY",
+	"gender": "male",
+	"homeworld": "https://swapi.co/api/planets/1/",
+	"films": [
+		"https://swapi.co/api/films/2/",
+		"https://swapi.co/api/films/6/",
+		"https://swapi.co/api/films/3/",
+		"https://swapi.co/api/films/1/",
+		"https://swapi.co/api/films/7/"
+	],
+	"species": [
+		"https://swapi.co/api/species/1/"
+	],
+	"vehicles": [
+		"https://swapi.co/api/vehicles/14/",
+		"https://swapi.co/api/vehicles/30/"
+	],
+	"starships": [
+		"https://swapi.co/api/starships/12/",
+		"https://swapi.co/api/starships/22/"
+	],
+	"created": "2014-12-09T13:50:51.644000Z",
+	"edited": "2014-12-20T21:17:56.891000Z",
+	"url": "https://swapi.co/api/people/1/"
+}
+```
+
+Well that's annoying ... all you wanted was his name and hair color. Why's the API sending you all this crap? 🤦‍♂️
+
+And what's this about Luke's species being `1`? What the heck is `1`?
+
+Okay, another fetch request.
+
+```javascript
+fetch('https://swapi.co/api/species/1/')
+	.then(res => res.json())
+	.then(console.log)
+```
+
+You get a bunch of data about humans. Great.
+
+```json
+{
+	"name": "Human",
+	"classification": "mammal",
+	"designation": "sentient",
+	"average_height": "180",
+	"skin_colors": "caucasian, black, asian, hispanic",
+	"hair_colors": "blonde, brown, black, red",
+	"eye_colors": "brown, blue, green, hazel, grey, amber",
+	"average_lifespan": "120",
+	"homeworld": "https://swapi.co/api/planets/9/",
+	"language": "Galactic Basic",
+	"people": [
+		"https://swapi.co/api/people/1/",
+		"https://swapi.co/api/people/4/",
+		"https://swapi.co/api/people/5/",
+		"https://swapi.co/api/people/6/",
+		"https://swapi.co/api/people/7/",
+		"https://swapi.co/api/people/9/",
+		"https://swapi.co/api/people/10/",
+		"https://swapi.co/api/people/11/",
+		"https://swapi.co/api/people/12/",
+		"https://swapi.co/api/people/14/",
+		"https://swapi.co/api/people/18/",
+		"https://swapi.co/api/people/19/",
+		"https://swapi.co/api/people/21/",
+		"https://swapi.co/api/people/22/",
+		"https://swapi.co/api/people/25/",
+		"https://swapi.co/api/people/26/",
+		"https://swapi.co/api/people/28/",
+		"https://swapi.co/api/people/29/",
+		"https://swapi.co/api/people/32/",
+		"https://swapi.co/api/people/34/",
+		"https://swapi.co/api/people/43/",
+		"https://swapi.co/api/people/51/",
+		"https://swapi.co/api/people/60/",
+		"https://swapi.co/api/people/61/",
+		"https://swapi.co/api/people/62/",
+		"https://swapi.co/api/people/66/",
+		"https://swapi.co/api/people/67/",
+		"https://swapi.co/api/people/68/",
+		"https://swapi.co/api/people/69/",
+		"https://swapi.co/api/people/74/",
+		"https://swapi.co/api/people/81/",
+		"https://swapi.co/api/people/84/",
+		"https://swapi.co/api/people/85/",
+		"https://swapi.co/api/people/86/",
+		"https://swapi.co/api/people/35/"
+	],
+	"films": [
+		"https://swapi.co/api/films/2/",
+		"https://swapi.co/api/films/7/",
+		"https://swapi.co/api/films/5/",
+		"https://swapi.co/api/films/4/",
+		"https://swapi.co/api/films/6/",
+		"https://swapi.co/api/films/3/",
+		"https://swapi.co/api/films/1/"
+	],
+	"created": "2014-12-10T13:52:11.567000Z",
+	"edited": "2015-04-17T06:59:55.850671Z",
+	"url": "https://swapi.co/api/species/1/"
+}
+```
+
+That's a lot of data just to get the word `"Human"` out of the [Star Wars API](https://swapi.co/) ...
+
+<Giphy search="eyeroll" />
+
+What about all of Luke's starships? There's just 2 and yet that's 2 more API requests ...
+
+```javascript
+fetch("https://swapi.co/api/starships/12/")
+	.then(res => res.json())
+	.then(console.log)
+	
+fetch("https://swapi.co/api/starships/22/")
+	.then(res => res.json())
+	.then(console.log)
+```
+
+I don't even wanna know how much data those dump out ...
+
+You've just made **4 API requests** and transferred a shitload of data to find out that Luke Skywalker is human, has blond hair, and flies an X-Wing and an Imperial Shuttle.
+
+And guess what, you didn't cache anything. How often do you think this data changes? Once a year? Twice?
+
+🤦‍♂️
+
+### GraphQL to the rescue
+
+Here's what that same process looks like with GraphQL.
+
+```graphql
+query luke {
+  Person(name: "Luke Skywalker") {
+    name
+    hairColor
+    species {
+      name
+    }
+    starships {
+      name
+    }
+  }
+}
+```
+
+And the API returns exactly what you wanted with a single request.
+
+```json
+{
+  "data": {
+    "Person": {
+      "name": "Luke Skywalker",
+      "hairColor": [
+        "BLONDE"
+      ],
+      "species": [
+        {
+          "name": "Human"
+        }
+      ],
+      "starships": [
+        {
+          "name": "X-wing"
+        },
+        {
+          "name": "Imperial shuttle"
+        }
+      ]
+    }
+  }
+}
+```
+
+Wait what 😲
+
+An API mechanism that gives you total flexibility on the frontend, slashes API requests to almost nothing, *and doesn't transfer a bunch of data you don't need?*
+
+That's amazing! 
+
+You write a query, specify what you want, send to an endpoint, and GraphQL figures out the rest. Want different params? Just say so. Want multiple models? Got it. Wanna go deep? You can.
+
+All without making any changes on the server. Within reason.
+
+Many GraphQL libraries also add caching so you don't make the same calls too often. Some even consolidate queries so making 10 requests real fast gets wrapped into a single API call. 😲
+
+I fell in love the moment it clicked.
+
+![](https://media.giphy.com/media/7FyMQm2vBiTjG/giphy.gif)
+
+You can [try it out on graph.cool's public playground](https://swapi.graph.cool/)
+
+## What *is* GraphQL
+
+
+
+## GraphQL vs. REST, which to use when
+
+## How to create a serverless GraphQL server
+
+
+
