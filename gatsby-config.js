@@ -20,6 +20,14 @@ module.exports = {
         gatsbyRemarkPlugins: [
           "gatsby-remark-copy-linked-files",
           {
+            resolve: "gatsby-remark-giphy",
+            options: {
+              giphyApiKey: "tvyI1ARG6FOkW9PUzmgubJ3iY5P5rJmO",
+              useVideo: true,
+              embedWidth: "80%",
+            },
+          },
+          {
             resolve: "gatsby-remark-images",
             options: {
               markdownCaptions: true,
@@ -27,7 +35,7 @@ module.exports = {
               linkImagestoOriginal: false,
               showCaptions: ["title", "alt"],
               withWebp: true,
-              wrapperStyle: 'text-align: center; font-style: italic',
+              wrapperStyle: "text-align: center; font-style: italic",
               tracedSVG: {
                 color: `lightgray`,
                 optTolerance: 0.4,
@@ -85,7 +93,7 @@ module.exports = {
         background_color: "#fff",
         theme_color: "#FF002B",
         display: "standalone",
-        icon: "./static/icon.png"
+        icon: "./static/icon.png",
       },
     },
     "gatsby-plugin-offline",

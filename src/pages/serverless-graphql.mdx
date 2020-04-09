@@ -1,22 +1,12 @@
 export const title = "Using GraphQL"
 
-export const description = "Learn about GraphQL and how to set it up with serverless"
+export const description = "Learn about GraphQL and how to use it with serverless"
 
 export const image = '/chapter_headers/serverless-graphql.png'
-
-import { Giphy } from "../components/giphy"
 
 # Using GraphQL
 
 ![](../images/chapter_headers/serverless-graphql.svg)
-
-GraphQL brings power and flexibility to frontend developers. No longer beholden to strict dictums from the backend, they're free to iterate and move fast without waiting on the API to update.
-
-Users love GraphQL too ... well, they love the result 👉 a faster webapp with less networking overhead and a team that's quicker to respond to their feature requests. 😍
-
-And unlike REST, GraphQL is easier to work with on the server as well. If you can write a JavaScript or TypeScript function, you can write a GraphQL server.
-
-## Why GraphQL
 
 Say you're building an app. It needs data from a server. What do you do?
 
@@ -145,7 +135,7 @@ You get a bunch of data about humans. Great.
 
 That's a lot of data just to get the word `"Human"` out of the [Star Wars API](https://swapi.co/) ...
 
-<Giphy search="eyeroll" />
+![](giphy:eyeroll)
 
 What about all of Luke's starships? There's just 2 and yet that's 2 more API requests ...
 
@@ -169,7 +159,7 @@ And guess what, you didn't cache anything. How often do you think this data chan
 
 ### GraphQL to the rescue
 
-Here's what that same process looks like with GraphQL.
+Here's what the same process looks like with GraphQL.
 
 ```graphql
 query luke {
@@ -186,7 +176,7 @@ query luke {
 }
 ```
 
-And the API returns exactly what you wanted with a single request.
+And the API returns what you wanted with a single request.
 
 ```json
 {
@@ -224,7 +214,7 @@ You write a query, specify what you want, send to an endpoint, and GraphQL figur
 
 All without making any changes on the server. Within reason.
 
-Many GraphQL libraries also add caching so you don't make the same calls too often. Some even consolidate queries so making 10 requests real fast gets wrapped into a single API call. 😲
+Many GraphQL libraries add caching so you don't make the same calls too often. Some even consolidate queries so making 10 requests real fast gets wrapped into a single API call. 😲
 
 I fell in love the moment it clicked.
 
@@ -232,13 +222,185 @@ I fell in love the moment it clicked.
 
 You can [try it out on graph.cool's public playground](https://swapi.graph.cool/)
 
+<div id="lock" />
+
 ## What *is* GraphQL
 
+GraphQL is an open-source data query and manipulation language for APIs, and a runtime for fulfilling queries with existing data. [[1]](https://en.wikipedia.org/wiki/GraphQL)
 
+Often touted as a replacement for REST, GraphQL is really a different approach to building an API. Better suited for many common use-cases, but comes with its own set of drawbacks.
+
+Don't let the propaganda fool you 👉 you can and should use both REST and GraphQL. Most real world projects need both.
+
+The main benefit of GraphQL is its declarative nature.
+
+On the client, you describe what you want using its shape and GraphQL figures out how to get it. On the server, you write resolver functions for specific sub-queries and GraphQL combines them into the full result.
+
+So while REST queries can be declarative on the client, GraphQL is declarative on both ends.
+
+### GraphQL queries
+
+GraphQL queries are used to fetch data. They follow this pattern:
+
+```graphql
+query {
+	what_you_want {
+		its_property
+	}
+}
+```
+
+You nest fields – often representing database models – and their properties into queries to describe the data-shape you're looking for. You can go as deep as you want.
+
+Write fields side-by-side to create the effect of executing multiple queries with a single API request.
+
+```graphql
+query {
+	what_you_want {
+		its_property
+	}
+	other_thing_you_want {
+		its_property {
+			property_of_property
+		}
+	}
+}
+```
+
+This is where the power and flexibility come from.
+
+With variables you can create dynamic queries and even construct complex filters to further limit the scope of your result.
+
+```graphql
+query queryName($filterProp: "value") {
+	field(filterProp: $filterProp) {
+		property1
+		property3
+	}
+}
+```
+
+`$filterProp` defines a new variable that the `field()` lookup uses to filter results to those matching `"value"`. 
+
+GraphQL comes with basic equality filters built-in and you're encouraged to add more abilities in your resolvers. Many projects choose to support sorting, greater-than, not-equals, etc.
+
+### GraphQL mutations
+
+GraphQL mutations are used to write data. They follow this pattern:
+
+```graphql
+mutation {
+	what_youre_updating(argument: "value", argument2: "value 2") {
+		prop_you_want_back
+	}
+}
+```
+
+Similar to a query with arguments, you specify what you're updating and pass-in the update arguments. What's available depends on the implementation of your mutation resolvers on the server.
+
+The mutation body specifies which properties you want returned. You can nest these as deep as you'd like.
+
+Just like queries, you can specify multiple mutations side-by-side and use variables.
+
+```
+mutation mutationName($argument: "value") {
+	what_youre_updating(argument: $argument) {
+		prop_you_want_back
+	}
+	
+	other_field(argument: $argument) {
+		return_prop
+	}
+}
+```
 
 ## GraphQL vs. REST, which to use when
 
+The GraphQL vs. REST debate is a false dichotomy. People like to say GraphQL is *replacing* REST and that's simply not the case. GraphQL is *augmenting* REST.
+
+Will GraphQL become the future default API layer? Yes probably.
+
+Should you rip out your existing REST API and rewrite everything for GraphQL? Please don't.
+
+GraphQL doesn't care where data comes from. Relational database, NoSQL database, files, a REST API, another GraphQL API ... doesn't matter. If you can write a function to fetch data in response to a query, that's all you need.
+
+In fact, [you can start using GraphQL *without* changing your existing server](https://swizec.com/blog/how-you-can-start-using-graphql-today-without-changing-the-backend/swizec/9350) with a GraphQL middle layer. Create a GraphQL server and make it talk to your REST API.
+
+![](giphy:wow)
+
+### So how do you choose between REST and GraphQL?
+
+When building a typical CRUD – Create, Read, Update, Delete – API, I like to use 6 questions to help me choose:
+
+1. Is this a new project? *Default to GraphQL*
+2. Do I know in advance what clients are going to need? *REST is great*
+3. Am I fetching small subsets of large data? *GraphQL*
+4. Am I generating new values for each request? *REST*
+5. Updating a few properties on an object? *GraphQL*
+6. Submitting large payloads to be saved? *REST*
+
+Use upserts to deal with Create *and* Update. Avoid deletes – update a `hidden` flag instead.
+
+### Should you expose your entire data model verbatim?
+
+No.
+
+Exposing your data model verbatim is a common mistake in API design for both GraphQL and REST. 
+
+Define a logical API using [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design) instead. How your backend stores data for max performance and good database design differs from how your consumers think about that data.
+
+Exposing server internals like that is a leaky abstraction at best and leads to performance and security issues at worst.
+
+Plus it creates APIs that are hard to use.
+
+There's also the question of derived and computed properties with complex business logic. You don't want to re-implement that on the client using raw data from your database.
+
 ## How to create a serverless GraphQL server
 
+There's many ways you can go about this. The most pleasant approach I've found is with [Apollo](https://www.apollographql.com/)'s [apollo-server-lambda](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-lambda) package, specifically designed for this purpose.
+
+To create a GraphQL lambda, you follow a 4 step process:
+
+1. Add to your `serverless.yml` file
+2. Initialize the Apollo server
+3. Specify your schema
+4. Add your resolvers
+
+### serverless.yml
+
+We define a new Lambda function in our `functions:` section.
+
+```yaml
+# serverless.yml
+
+functions:
+  graphql:
+    handler: dist/graphql.handler
+    events:
+      - http:
+          path: graphql
+          method: GET
+          cors: true
+      - http:
+          path: graphql
+          method: POST
+          cors: true
+```
+
+I like to use the `/graphql` endpoint for everything, but you could split the API into sections and use different lambdas for different areas.
+
+Make sure to define both `GET` and `POST` endpoints. `GET` serves the Apollo playground and `POST` handles the queries and mutations.
+
+And I recommend enabling CORS, so you can talk to the server from wherever you host your client.
+
+### initialize Apollo server
 
 
+
+### specify your schema
+
+### add your resolvers
+
+## GraphQL no-code services
+
+coming soon, research ongoing
