@@ -1,5 +1,13 @@
 import * as db from "simple-dynamodb"
 
+function remapProps(item: any) {
+  return {
+    ...item,
+    id: item.itemId,
+    name: item.itemName,
+  }
+}
+
 // fetch using item(id: String)
 export const item = async (_: any, args: { id: string }) => {
   const item = await db.getItem({
@@ -9,5 +17,5 @@ export const item = async (_: any, args: { id: string }) => {
     },
   })
 
-  return item.Item
+  return remapProps(item.Item)
 }

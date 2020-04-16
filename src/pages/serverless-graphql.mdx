@@ -357,6 +357,8 @@ There's also the question of derived and computed properties with complex busine
 
 ## How to create a serverless GraphQL server
 
+![Example create mutation from server below](../images/graphql-playground.png)
+
 There's many ways you can go about this. The most pleasant approach I've found is with [Apollo](https://www.apollographql.com/)'s [apollo-server-lambda](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-lambda) package, specifically designed for this purpose.
 
 To create a GraphQL lambda, you follow a 4 step process:
@@ -496,6 +498,14 @@ The `item()` query is a basic fetch and looks like this:
 
 import * as db from "simple-dynamodb"
 
+function remapProps(item: any) {
+  return {
+    ...item,
+    id: item.itemId,
+    name: item.itemName,
+  }
+}
+
 // fetch using item(id: String)
 export const item = async (_: any, args: { id: string }) => {
   const item = await db.getItem({
@@ -505,7 +515,7 @@ export const item = async (_: any, args: { id: string }) => {
     },
   })
 
-  return item.Item
+  return remapProps(item.Item)
 }
 ```
 
@@ -514,6 +524,10 @@ We can ignore Apollo's first resolver argument for now. The second argument is w
 Since `id` is a required param, you don't have to check for nulls. GraphQL will handle that before ever calling your resolver.
 
 Means you can call `getItem` on DynamoDB, or run a SQL query for a relational database, and return the result. GraphQL handles the rest.
+
+One niggle to note 👉 DynamoDB considers `name` and `id` reserved attributes. We remap them to `itemName` and `itemId` when saving and have to map them back to pretty GraphQL attributes when reading.
+
+This is what I meant by *"You don't want to expose raw database details to your API"* :)
 
 #### updateItem()
 
@@ -555,7 +569,7 @@ export const updateItem = async (_: any, args: ItemArgs) => {
   }
 
   const updateValues = {
-    name: args.name,
+    itemName: args.name,
     body: args.body,
   }
 
@@ -573,7 +587,7 @@ export const updateItem = async (_: any, args: ItemArgs) => {
     ReturnValues: "ALL_NEW",
   })
 
-  return item.Attributes
+  return remapProps(item.Attributes)
 }
 ```
 
@@ -602,7 +616,7 @@ export const deleteItem = async (_: any, args: { id: string }) => {
     ReturnValues: "ALL_OLD",
   })
 
-  return item.Attributes
+  return remapProps(item.Attributes)
 }
 ```
 

@@ -7,6 +7,14 @@ type ItemArgs = {
   body: string
 }
 
+function remapProps(item: any) {
+  return {
+    ...item,
+    id: item.itemId,
+    name: item.itemName,
+  }
+}
+
 // upsert an item
 // item(name, ...) or item(id, name, ...)
 export const updateItem = async (_: any, args: ItemArgs) => {
@@ -30,7 +38,7 @@ export const updateItem = async (_: any, args: ItemArgs) => {
   }
 
   const updateValues = {
-    name: args.name,
+    itemName: args.name,
     body: args.body,
   }
 
@@ -48,7 +56,7 @@ export const updateItem = async (_: any, args: ItemArgs) => {
     ReturnValues: "ALL_NEW",
   })
 
-  return item.Attributes
+  return remapProps(item.Attributes)
 }
 
 export const deleteItem = async (_: any, args: { id: string }) => {
@@ -61,5 +69,5 @@ export const deleteItem = async (_: any, args: { id: string }) => {
     ReturnValues: "ALL_OLD",
   })
 
-  return item.Attributes
+  return remapProps(item.Attributes)
 }
