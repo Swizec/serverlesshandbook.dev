@@ -1,0 +1,28 @@
+{
+  "name": "serverless-rest-example",
+  "version": "1.0.0",
+  "description": "A simple CRUD example using serverless",
+  "main": "index.js",
+  "repository": "https://github.com/Swizec/serverless-handbook",
+  "author": "Swizec",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && serverless deploy"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.39",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/node-fetch": "^2.5.4",
+    "@types/uuid": "^3.4.6",
+    "apollo-server-lambda": "^2.12.0",
+    "aws-lambda": "^1.0.4",
+    "aws-sdk": "^2.597.0",
+    "querystring": "^0.2.0",
+    "simple-dynamodb": "^1.0.0",
+    "uuid": "^3.3.3"
+  }
+}

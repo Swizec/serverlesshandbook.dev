@@ -305,22 +305,23 @@ export const updateItem = async (
 
   let createdAt = new Date().toISOString()
 
-  // find item if exists
-  const find = await db.getItem({
-    TableName: process.env.ITEM_TABLE!,
-    Key: { itemId },
-  })
-
-  if (find.Item) {
-    // save createdAt so we don't overwrite on update
-    createdAt = find.Item.createdAt
-  } else {
-    return response(404, {
-      status: "error",
-      error: "Item not found",
+  if (event.pathParameters && event.pathParameters.itemId) {
+    // find item if exists
+    const find = await db.getItem({
+      TableName: process.env.ITEM_TABLE!,
+      Key: { itemId },
     })
+    if (find.Item) {
+      // save createdAt so we don't overwrite on update
+      createdAt = find.Item.createdAt
+    } else {
+      return response(404, {
+        status: "error",
+        error: "Item not found",
+      })
+    }
   }
-
+  
   if (!event.body) {
     return response(400, {
       status: "error",
