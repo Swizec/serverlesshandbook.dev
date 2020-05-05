@@ -11,62 +11,62 @@ import EditLink from "./edit-link"
 import { default as PaywallCopy } from "./paywall"
 import QuickThanks from "./quickthanks"
 
-import Reactions from './reactions'
-
+import Reactions from "./reactions"
 
 const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
 
-  const updateLockedContent = () =>  {
-    if (
-      typeof window !== 'undefined' &&
-      (
-        !window.localStorage.getItem("unlock_handbook") ||
-        !window.localStorage.getItem("sale_id")
-      )
-    ) {
-      let children = document.getElementById('content').children 
+  const updateLockedContent = () => {
+    if (typeof window !== "undefined") {
+      let children = document.getElementById("content").children
 
-      let isLocked = false;
+      let isLocked = false
       for (let child of children) {
-        if (child.id === 'lock') isLocked = true;
-        if (isLocked === true ) {
-          child.style.display = 'none';
+        if (child.id === "lock") isLocked = true
+        if (isLocked === true) {
+          child.style.display = "none"
         }
       }
     }
-
   }
 
   useLayoutEffect(() => {
-    if (typeof window !== "undefined" ) {
-
-
+    if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
-      updateLockedContent();
+        if (
+          window.localStorage.getItem("unlock_handbook") &&
+          window.localStorage.getItem("sale_id")
+        ) {
+          copyDiv.current.style = `display: none`
+        } else {
+          updateLockedContent()
 
-        const overlay = typeof window !== 'undefined' && document.createElement("div")
-        const main    = typeof window !== 'undefined' && document.querySelector("main#content")
+          const overlay =
+            typeof window !== "undefined" && document.createElement("div")
+          const main =
+            typeof window !== "undefined" &&
+            document.querySelector("main#content")
 
-        const style = `
+          const style = `
           background-image: linear-gradient(rgba(255, 255, 255, 0) 60%,  rgb(255, 255, 255, 1) 100%);
           width: 100%;
           top: 0px;
           bottom: 0px;
           position: absolute;
         `
-        overlay.style = style
+          overlay.style = style
 
-        main.style = "position: relative;"
-        main.appendChild(overlay)
+          main.style = "position: relative;"
+          main.appendChild(overlay)
 
-        const dimensions = main.getBoundingClientRect()
+          const dimensions = main.getBoundingClientRect()
 
-        copyDiv.current.style = `
+          copyDiv.current.style = `
           top: ${Math.round(dimensions.height * 0.2)}px;
           width: ${Math.round(dimensions.width)}px;
           background-color: var(--theme-ui-colors-muted,#f6f6ff);
         `
+        }
       })
     }
   }, [page])
@@ -78,7 +78,7 @@ const Paywall = ({ page }) => {
   )
 }
 
-const Sidebar = props => {
+const Sidebar = (props) => {
   const showPaywall =
     typeof window !== "undefined" &&
     (!window.localStorage.getItem("unlock_handbook") ||
@@ -90,13 +90,13 @@ const Sidebar = props => {
         as={Sidenav}
         ref={props.nav}
         open={props.open}
-        onClick={e => {
+        onClick={(e) => {
           props.setMenu(false)
         }}
-        onBlur={e => {
+        onBlur={(e) => {
           props.setMenu(false)
         }}
-        onFocus={e => {
+        onFocus={(e) => {
           props.setMenu(true)
         }}
         sx={{
@@ -124,10 +124,7 @@ const Sidebar = props => {
         }}
       >
         {props.children}
-        {
-          showPaywall === false
-            && <Reactions page={props.uri} />
-        }
+        {showPaywall === false && <Reactions page={props.uri} />}
         {showPaywall ? (
           <Paywall page={props.location.pathname} />
         ) : (
@@ -145,7 +142,7 @@ const Sidebar = props => {
   )
 }
 
-export default props => {
+export default (props) => {
   const fullwidth = props.location.pathname === "/"
   const [menu, setMenu] = useState(false)
   const nav = useRef(null)
