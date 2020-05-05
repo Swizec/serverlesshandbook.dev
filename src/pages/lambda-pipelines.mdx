@@ -1,0 +1,94 @@
+export const title = "Lambda workflows"
+
+export const description = "Learn how to build a robust distributed data, event, or message processing pipeline"
+
+export const image = '/chapter_headers/lambda-workflows.png'
+
+# Lambda pipelines
+
+![](../images/chapter_headers/lambda-workflows.svg)
+
+You get tens of thousands of events every hour. How do you process them?
+
+You've got a shitload of data. What do you do?
+
+Users send hundreds of messages per minute. Now what?
+
+You could learn Elixir and Erlang, purpose built languages for message processing used in 4G routers and packet switching networks. But is that really where you want your career to go?
+
+You could try [Kafka](https://kafka.apache.org/) or [Hadoop](https://hadoop.apache.org/). Tools designed for big data, used by many large organizations. People often use them too early and shoot themselves in the foot.
+
+You see, Elixir, Erlang, Kafka, and Hadoop are all wonderful tools. If you know how to use them. For most, they're a pain in the ass with a significant learning curve and lots of devops work to keep everything running.
+
+They break the *infrastructure as code* and *no servers* rules of good developer experience.
+
+![](giphy:just_great)
+
+## Serverless data processing
+
+What you can do instead is to use your existing skills to build a data processing pipeline.
+
+I've used this approach to build an event processing pipeline handling millions of events per day in production with just 0.0007% data loss. A rate of 7 events lost per 1,000,000.
+
+We used it to gather business and engineering analytics. Like a distributed `console.log` that writes to a central database.
+
+![High level architecture for distributed logging and tracing](../images/distributed-logging.png)
+
+This system would accept batches of events, process them to add additional info about user and server state, then save each event for easy retrieval.
+
+It got got so cushy, we even use it for tracing and debugging hard to track down bugs in production. Pepper your code with `console.log`, wait for an error, see what happened.
+
+![](giphy:perfection)
+
+You can build a similar system to process almost anything.
+
+Works great for problems you can split into independent tasks. Avoid for large inter-dependent operations.
+
+Great for preparing data. Bad for machine learning.
+
+### Architectures for serverless data processing
+
+You can think of serverless data processing as using `.map` and `.reduce` at scale. Inspired by Google's famous [MapReduce programming model](https://en.wikipedia.org/wiki/MapReduce).
+
+Work happens in 3 steps:
+
+1. Accept chunks of data
+2. **Map** over your data
+3. **Reduce** into output format
+
+Let's say you're building a trivial adder. Multiply every number by 2 then sum.
+
+Dumb example but bear with me.
+
+Using functional programming patterns in JavaScript, you'd build such an adder like this:
+
+```javascript
+const result = 
+	[1,2,3,4,5] // input array
+		.map(n => n*2) // multiply each by 2
+		.reduce((sum, n) => sum+n, 0); // sum together
+```
+
+Each of those steps is independent. The `n => n*2` function doesn't need to know anything other than its `n`. The `(sum, n) => sum+n` function only needs the current `sum` and `n`.
+
+That means you can distribute them. Run each on a separate Lambda in parallel. Thousands at a time.
+
+You go from slow algorithm to as fast as a single operation. With infinite scale, you could process an array of 10,000,000 as fast as an array of 10.
+
+![](giphy:mind_blown)
+
+
+Following principles from the [Architecture Principles](/serverless-architecture-principles) chapter you want a system that is:
+
+- easy to understand
+- robust against errors
+- debuggable
+- replayable
+- always inspectable
+
+To get there you'll need 3 [Serverless Elements](/serverless-elements)
+
+- lambdas
+- queues
+- storage
+
