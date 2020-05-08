@@ -1,0 +1,43 @@
+service: serverless-data-pipeline-example
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  environment:
+    RESULTS_TABLE: ${self:service}-results-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.RESULTS_TABLE}"
+
+functions:
+  sumArray:
+    handler: dist/sumArray.handler
+    events:
+      - http:
+          path: sumArray
+          method: POST
+          cors: true
+
+resources:
+  Resources:
+    UsersTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: resultId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: resultId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.RESULTS_TABLE}
