@@ -1,6 +1,6 @@
 import { APIGatewayEvent } from "aws-lambda"
 import uuidv4 from "uuid/v4"
-import { response } from "./utils"
+import { response, sendSQSMessage } from "./utils"
 
 interface APIResponse {
   statusCode: number
@@ -8,7 +8,7 @@ interface APIResponse {
 }
 
 export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
-  const requestId = uuidv4()
+  const arrayId = uuidv4()
 
   if (!event.body) {
     return response(400, {
@@ -17,7 +17,17 @@ export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
     })
   }
 
-  const array = JSON.parse(event.body)
+  const array: number[] = JSON.parse(event.body)
+
+  // split array into elements
+  // trigger timesTwo lambda for each entry
+  for (let number of array) {
+    await sendSQSMessage(process.env.timesTwoQueueURL!, {
+      arrayId,
+      arrayLength: array.length,
+      number,
+    })
+  }
 
   return response(200, {
     status: "success",

@@ -5,7 +5,7 @@ provider:
   runtime: nodejs12.x
   stage: dev
   environment:
-    RESULTS_TABLE: ${self:service}-results-${self:provider.stage}
+    RESULTS_TABLE: ${self:service}-sums-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -17,6 +17,12 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.RESULTS_TABLE}"
 
+    # all permissions on all SQS queues, what could possibly go wrong
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource: "*"
+
 functions:
   sumArray:
     handler: dist/sumArray.handler
@@ -25,10 +31,40 @@ functions:
           path: sumArray
           method: POST
           cors: true
+    environment:
+      timesTwoQueueURL:
+        Ref: TimesTwoQueue
+
+  timesTwo:
+    handler: dist/timesTwo.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - TimesTwoQueue
+              - Arn
+          batchSize: 1
+    environment:
+      reduceQueueURL:
+        Ref: ReduceQueue
+
+  reduce:
+    handler: dist/reduce.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ReduceQueue
+              - Arn
+          # we rely on batch size to grab 2 messages with each invocation
+          batchSize: 2
+    environment:
+      reduceQueueURL:
+        Ref: ReduceQueue
 
 resources:
   Resources:
-    UsersTable:
+    ResultsTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
         AttributeDefinitions:
@@ -41,3 +77,21 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.RESULTS_TABLE}
+
+    TimesTwoQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "TimesTwoQueue-${self:provider.stage}"
+        VisibilityTimeout: 60
+
+    ReduceQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "ReduceQueue-${self:provider.stage}"
+        VisibilityTimeout: 60
+        # RedrivePolicy:
+        #   deadLetterTargetArn:
+        #     Fn::GetAtt:
+        #       - UnpackLogDLQueue
+        #       - Arn
+        #   maxReceiveCount: 10

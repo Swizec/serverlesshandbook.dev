@@ -1,5 +1,11 @@
 import AWS from "aws-sdk"
 
+export type Packet = {
+  arrayId: string
+  arrayLength: number
+  number: number
+}
+
 export const sendSQSMessage = async (QueueURL: string, Message: any) => {
   Message = JSON.stringify(Message)
 
