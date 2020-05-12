@@ -40,8 +40,6 @@ export const handler = async (event: SQSEvent) => {
     new Set(packets.map((packet) => packet.arrayId))
   )
 
-  console.log("Triggering", uniqueArrayIds)
-
   await Promise.all(
     uniqueArrayIds.map((arrayId) =>
       sendSQSMessage(process.env.reduceQueueURL!, arrayId)
