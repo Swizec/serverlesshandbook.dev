@@ -12417,6 +12417,11 @@ simple-concat@^1.0.0:
   resolved "https://registry.yarnpkg.com/simple-concat/-/simple-concat-1.0.0.tgz#7344cbb8b6e26fb27d66b2fc86f9f6d5997521c6"
   integrity sha1-c0TLuLbib7J9ZrL8hvn21Zl1IcY=
 
+simple-dynamodb@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/simple-dynamodb/-/simple-dynamodb-1.0.1.tgz#d7d7d07da2ed4f423e2ab18dbfed0c7ce8c63569"
+  integrity sha512-gfDmDuzlH1XFenUcNOOyVY1+YWVV+zBynkHumhYIgMRAdkA0OZat4CxcnlBFfYQelrJjDLqIYWS20kABRtEACg==
+
 simple-get@^3.0.3, simple-get@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/simple-get/-/simple-get-3.1.0.tgz#b45be062435e50d159540b576202ceec40b9c6b3"

@@ -21,11 +21,13 @@ export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
 
   // split array into elements
   // trigger timesTwo lambda for each entry
-  for (let number of array) {
+  for (let packetValue of array) {
     await sendSQSMessage(process.env.timesTwoQueueURL!, {
       arrayId,
+      packetId: uuidv4(),
+      packetValue,
       arrayLength: array.length,
-      number,
+      packetContains: 1,
     })
   }
 

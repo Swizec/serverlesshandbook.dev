@@ -2,9 +2,10 @@ import AWS from "aws-sdk"
 
 export type Packet = {
   arrayId: string
+  packetId: string
+  packetValue: number
   arrayLength: number
-  number: number
-  seenTimes?: number
+  packetContains: number
 }
 
 export const sendSQSMessage = async (QueueURL: string, Message: any) => {

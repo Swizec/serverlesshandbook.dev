@@ -6,6 +6,7 @@ provider:
   stage: dev
   environment:
     SUMS_TABLE: ${self:service}-summs-${self:provider.stage}
+    SCRATCHPAD_TABLE: ${self:service}-scratchpad-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -16,6 +17,16 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUMS_TABLE}"
+
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCRATCHPAD_TABLE}"
 
     # all permissions on all SQS queues, what could possibly go wrong
     - Effect: "Allow"
@@ -77,6 +88,24 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.SUMS_TABLE}
+
+    ScratchpadTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: packetId
+            AttributeType: S
+          - AttributeName: arrayId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: packetId
+            KeyType: HASH
+          - AttributeName: arrayId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.SCRATCHPAD_TABLE}
 
     TimesTwoQueue:
       Type: "AWS::SQS::Queue"

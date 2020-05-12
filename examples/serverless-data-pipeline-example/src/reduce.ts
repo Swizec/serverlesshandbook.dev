@@ -1,96 +1,109 @@
 import { SQSEvent, SQSRecord } from "aws-lambda"
 import * as db from "simple-dynamodb"
+import uuidv4 from "uuid/v4"
 
-import { sendSQSMessage, fetchSQSMessage, Packet } from "./utils"
+import { sendSQSMessage, Packet } from "./utils"
 
 export const handler = async (event: SQSEvent) => {
   // grab messages from queue
-  // hopefully batchSize allowed us to get multiple
-  let packets: Packet[] = event.Records.map((record: SQSRecord) =>
+  // depending on batchSize there could be multiple
+  let arrayIds: string[] = event.Records.map((record: SQSRecord) =>
     JSON.parse(record.body)
   )
 
-  // another approach here would be to use an intermediary DynamoDB table
-  // trigger a reduce method and it grabs items from Dynamo to process
-
-  if (!isBatch(packets)) {
-    packets = await ensureBatch(packets)
-  }
-
-  if (packets.length < 2 && !seenTooOften(packets[0])) {
-    // didn't get a batch, try again
-    await sendSQSMessage(process.env.reduceQueueURL!, {
-      ...packets[0],
-      seenTimes: packets[0].seenTimes ? packets[0].seenTimes + 1 : 1,
-    })
-
-    return false
-  }
-
-  console.log("PACKETS", packets)
-
-  // sum packets together
-  // TODO: no guarantee they belong to same requestId
-  // left as an exercise to the reader :P
-  const sum = packets
-    .map((packet) => packet.number)
-    .reduce((sum, num) => sum + num, 0)
-
-  // how much work is left?
-  const arrayLength = packets[0].arrayLength - packets.length
-
-  console.log(arrayLength)
-
-  if (arrayLength <= 1) {
-    // save result
-    await db.updateItem({
-      TableName: process.env.SUMS_TABLE!,
-      Key: {
-        arrayId: packets[0].arrayId,
-      },
-      UpdateExpression: `SET resultSum = :resultSum`,
-      ExpressionAttributeValues: {
-        ":resultSum": sum,
-      },
-    })
-  } else {
-    // trigger next reduce step in pipeline
-    await sendSQSMessage(process.env.reduceQueueURL!, {
-      arrayId: packets[0].arrayId,
-      arrayLength,
-      number: sum,
-    })
-  }
-
-  return true
+  // process each ID from batch
+  await Promise.all(arrayIds.map(reduceArray))
 }
 
-async function ensureBatch(packets: Packet[]) {
-  let newPackets: Packet[] = []
-  // didn't get a batch, try to fetch a packet
-  try {
-    const result = await fetchSQSMessage(process.env.reduceQueueURL!)
+async function reduceArray(arrayId: string) {
+  // grab 2 entries from scratchpad table
+  // IRL you'd grab as many as you can cost-effectively process in execution
+  // depends what you're doing
+  const packets = await readPackets(arrayId)
 
-    console.log(result)
+  if (packets.length > 0) {
+    // sum packets together
+    const sum = packets.reduce(
+      (sum: number, packet: Packet) => sum + packet.packetValue,
+      0
+    )
 
-    if (result.Messages && result.Messages.length > 0) {
-      // got more packets, continue
-      newPackets = result.Messages.map((msg: AWS.SQS.Message) =>
-        JSON.parse(msg.Body!)
-      )
+    // add the new item sum to scratchpad table
+    // we do this first so we don't delete rows if it fails
+    const newPacket = {
+      arrayId,
+      packetId: uuidv4(),
+      arrayLength: packets[0].arrayLength,
+      packetValue: sum,
+      packetContains: packets.reduce(
+        (count: number, packet: Packet) => count + packet.packetContains,
+        0
+      ),
     }
-  } catch (e) {
-    console.error(e)
-    throw "Error fetching from queue"
+    await db.updateItem({
+      TableName: process.env.SCRATCHPAD_TABLE!,
+      Key: {
+        arrayId,
+        packetId: uuidv4(),
+      },
+      UpdateExpression:
+        "SET packetValue = :packetValue, arrayLength = :arrayLength, packetContains = :packetContains",
+      ExpressionAttributeValues: {
+        ":packetValue": newPacket.packetValue,
+        ":arrayLength": newPacket.arrayLength,
+        ":packetContains": newPacket.packetContains,
+      },
+    })
+
+    // delete the 2 rows we just summed
+    await cleanup(packets)
+
+    // are we done?
+    if (newPacket.packetContains >= newPacket.arrayLength) {
+      // done, save sum to final table
+      await db.updateItem({
+        TableName: process.env.SUMS_TABLE!,
+        Key: {
+          arrayId,
+        },
+        UpdateExpression: "SET resultSum = :resultSum",
+        ExpressionAttributeValues: {
+          ":resultSum": sum,
+        },
+      })
+    } else {
+      // not done, trigger another reduce step
+      await sendSQSMessage(process.env.reduceQueueURL!, arrayId)
+    }
   }
-
-  return [...packets, ...newPackets]
 }
 
-function isBatch(packets: Packet[]) {
-  return packets.length >= 2 || packets[0].arrayLength <= 1
+async function readPackets(arrayId: string): Promise<Packet[]> {
+  const result = await db.scanItems({
+    TableName: process.env.SCRATCHPAD_TABLE!,
+    FilterExpression: "#arrayId = :arrayId",
+    ExpressionAttributeNames: { "#arrayId": "arrayId" },
+    ExpressionAttributeValues: { ":arrayId": arrayId },
+    Limit: 2,
+  })
+
+  if (result.Items) {
+    return result.Items as Packet[]
+  } else {
+    return []
+  }
 }
 
-function seenTooOften(packet: Packet) {
-  return packet.seenTimes && packet.seenTimes > 5
+async function cleanup(packets: Packet[]) {
+  await Promise.all(
+    packets.map((packet) =>
+      db.deleteItem({
+        TableName: process.env.SCRATCHPAD_TABLE!,
+        Key: {
+          arrayId: packet.arrayId,
+          packetId: packet.packetId,
+        },
+      })
+    )
+  )
 }

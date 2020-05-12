@@ -21,7 +21,7 @@
     "aws-lambda": "^1.0.4",
     "aws-sdk": "^2.597.0",
     "querystring": "^0.2.0",
-    "simple-dynamodb": "^1.0.0",
+    "simple-dynamodb": "^1.0.1",
     "uuid": "^3.3.3"
   }
 }
