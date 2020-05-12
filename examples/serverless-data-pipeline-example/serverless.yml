@@ -5,7 +5,7 @@ provider:
   runtime: nodejs12.x
   stage: dev
   environment:
-    RESULTS_TABLE: ${self:service}-sums-${self:provider.stage}
+    SUMS_TABLE: ${self:service}-summs-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -15,7 +15,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.RESULTS_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SUMS_TABLE}"
 
     # all permissions on all SQS queues, what could possibly go wrong
     - Effect: "Allow"
@@ -56,7 +56,7 @@ functions:
             Fn::GetAtt:
               - ReduceQueue
               - Arn
-          # we rely on batch size to grab 2 messages with each invocation
+          # this means we get up to 2 messages per invocation
           batchSize: 2
     environment:
       reduceQueueURL:
@@ -64,19 +64,19 @@ functions:
 
 resources:
   Resources:
-    ResultsTable:
+    SumsTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
         AttributeDefinitions:
-          - AttributeName: resultId
+          - AttributeName: arrayId
             AttributeType: S
         KeySchema:
-          - AttributeName: resultId
+          - AttributeName: arrayId
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.RESULTS_TABLE}
+        TableName: ${self:provider.environment.SUMS_TABLE}
 
     TimesTwoQueue:
       Type: "AWS::SQS::Queue"

@@ -7,7 +7,10 @@ export const handler = async (event: SQSEvent) => {
     JSON.parse(record.body)
   )
 
+  console.log(packets)
+
   // iterate packets and multiply by 2
+  // this would be a more expensive operation usually
   packets = packets.map((packet) => ({
     ...packet,
     number: packet.number * 2,

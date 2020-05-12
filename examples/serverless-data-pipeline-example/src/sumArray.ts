@@ -32,5 +32,6 @@ export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
   return response(200, {
     status: "success",
     array,
+    arrayId,
   })
 }
