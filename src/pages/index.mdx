@@ -2,43 +2,42 @@ import { Box, Flex, Button } from "rebass"
 import { Banner, NavGrid, Container, Grid, LogoGrid, Image } from ".."
 import Logo from "../components/logo"
 import GumroadButton from "../components/GumroadButton"
-import Avatar from '../components/avatar'
-import { graphql, } from "gatsby"
-import HomeTitle from  '../components/home-title'
+import Avatar from "../components/avatar"
+import { graphql } from "gatsby"
+import HomeTitle from "../components/home-title"
 
-export const pageQuery =
-  graphql`
-    query {
-      man1: file(relativePath: { eq: "man1.png" }) {
-        childImageSharp {
-          fluid(maxWidth: 120, maxHeight: 120) {
-            ...GatsbyImageSharpFluid
-          }
-        }
-      },
-      man2: file(relativePath: { eq: "man2.png" }) {
-        childImageSharp {
-          fluid(maxWidth: 120, maxHeight: 120) {
-            ...GatsbyImageSharpFluid
-          }
-        }
-      },
-      man3: file(relativePath: { eq: "man3.png" }) {
-        childImageSharp {
-          fluid(maxWidth: 120, maxHeight: 120) {
-            ...GatsbyImageSharpFluid
-          }
-        }
-      },
-      woman1: file(relativePath: { eq: "woman1.png" }) {
-        childImageSharp {
-          fluid(maxWidth: 120, maxHeight: 120) {
-            ...GatsbyImageSharpFluid
-          }
+export const pageQuery = graphql`
+  query {
+    man1: file(relativePath: { eq: "man1.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 120, maxHeight: 120) {
+          ...GatsbyImageSharpFluid
         }
       }
     }
-  `
+    man2: file(relativePath: { eq: "man2.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 120, maxHeight: 120) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    man3: file(relativePath: { eq: "man3.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 120, maxHeight: 120) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    woman1: file(relativePath: { eq: "woman1.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 120, maxHeight: 120) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+  }
+`
 
 <Banner>
 
@@ -60,7 +59,7 @@ export const pageQuery =
 - [Robust backend design](/robust-backend-design)
 - [Monitoring serverless apps](/serverless-monitoring)
 - [Dev, QA, and prod](/dev-qa-prod)
-- [Running Chrome puppeteer](/chrome-puppeteer)
+- [Running Chrome puppeteer](/serverless-chrome-puppeteer)
 - [Serverless performance](/serverless-performance)
 - [Dealing with authentication](/serverless-authentication)
 - [Handling secrets](/handling-secrets)
@@ -162,4 +161,3 @@ export const pageQuery =
 </GumroadButton>
 
 </Container>
-
