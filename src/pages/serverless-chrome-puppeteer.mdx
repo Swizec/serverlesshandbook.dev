@@ -1,8 +1,9 @@
 export const title = "Serverless Chrome puppeteer"
 
-export const description = "Build advanced browser automations with Chrome Puppeteer and serverless AWS Lambda. Take screenshots, test websites, scrape content. Anything a browser can do ✌️"
+export const description =
+  "Build advanced browser automations with Chrome Puppeteer and serverless AWS Lambda. Take screenshots, test websites, scrape content. Anything a browser can do ✌️"
 
-export const image = "/chapter_headers/puppeteer.png"
+export const image = "/chapter_headers/serverless-chrome-puppeteer.png"
 
 # Serverless Chrome puppeteer
 
@@ -37,8 +38,8 @@ You can use it for browser automation – scraping, testing, screenshots, etc. 
 
 Normally this means:
 
-- downloading a chrome binary, 
-- setting up an environment that makes it happy, 
+- downloading a chrome binary,
+- setting up an environment that makes it happy,
 - running in headless mode,
 - configuring processes that talk to each other via complex sockets
 
@@ -81,7 +82,7 @@ package:
 
 Configure a new service, make it run on AWS, use latest node.
 
-The `package` part is important. It tells Serverless *not* to package the chromium binary with your code. AWS rejects builds that big.
+The `package` part is important. It tells Serverless _not_ to package the chromium binary with your code. AWS rejects builds that big.
 
 You are now ready to start running Chrome ✌️
 
@@ -124,13 +125,13 @@ The core idea is easy:
 - read content
 - return content in new format
 
-Where this gets fiddly is that it doesn't generalize. Each website is a little different. 
+Where this gets fiddly is that it doesn't generalize. Each website is a little different.
 
-You have to adapt the core technique to each website you're scraping and there's no telling when the HTML might change. 
+You have to adapt the core technique to each website you're scraping and there's no telling when the HTML might change.
 
 You might encounter websites that actively fight against scraping. Block bots, limit speed of access, etc.
 
-*Please play nice and don't unleash thousands of parallel requests onto unsuspecting websites.*
+_Please play nice and don't unleash thousands of parallel requests onto unsuspecting websites._
 
 You can watch me work on this project on YouTube, if you prefer video:
 
@@ -266,7 +267,7 @@ export const createHandler = (
 }
 ```
 
-We read the `?search=` param, open a browser, and verify everything's ready. 
+We read the `?search=` param, open a browser, and verify everything's ready.
 
 Then we call the passed-in `workFunction`, which returns a response. If that fails, we throw a 500 error.
 
@@ -322,7 +323,7 @@ There's a lot going on here. Let's go piece by piece.
 ```typescript
 const page = await browser.newPage()
 await page.goto("https://google.com", {
-	waitUntil: ["domcontentloaded", "networkidle2"],
+  waitUntil: ["domcontentloaded", "networkidle2"],
 })
 ```
 
@@ -335,12 +336,12 @@ Useful when dealing with more complex webapps.
 await page.type("input[type=text]", search)
 
 const [response] = await Promise.all([
-	page.waitForNavigation(),
-	page.click("input[type=submit]"),
+  page.waitForNavigation(),
+  page.click("input[type=submit]"),
 ])
 
 if (!response.ok()) {
-	throw "Couldn't get response"
+  throw "Couldn't get response"
 }
 
 await page.goto(response.url())
@@ -352,22 +353,22 @@ This part will be different for every website.
 
 ```typescript
 // this part is very specific to the page you're scraping
-  const searchResults = await page.$$(".rc")
+const searchResults = await page.$$(".rc")
 
-  let links = await Promise.all(
-    searchResults.map(async (result) => {
-      return {
-        url: await result.$eval("a", (node) => node.getAttribute("href")),
-        title: await result.$eval("h3", (node) => node.innerHTML),
-        description: await result.$eval("span.st", (node) => node.innerHTML),
-      }
-    })
-  )
+let links = await Promise.all(
+  searchResults.map(async (result) => {
+    return {
+      url: await result.$eval("a", (node) => node.getAttribute("href")),
+      title: await result.$eval("h3", (node) => node.innerHTML),
+      description: await result.$eval("span.st", (node) => node.innerHTML),
+    }
+  })
+)
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(links),
-  }
+return {
+  statusCode: 200,
+  body: JSON.stringify(links),
+}
 ```
 
 When the results page loads, we:
@@ -390,13 +391,13 @@ I left out project configuration boilerplate. You can find those details in othe
 
 Taking screenshots is a similar process as scraping. Instead of parsing the page, you call `.screenshot()` and get an image.
 
-Our example returns that image directly, but you might want to upload to S3 instead and return a URL. *Do not use AWS Lambda to serve images in production.*
+Our example returns that image directly, but you might want to upload to S3 instead and return a URL. _Do not use AWS Lambda to serve images in production._
 
 ### 1. tell API Gateway to serve binary
 
-First, we tell API Gateway that it's okay to serve binary data. 
+First, we tell API Gateway that it's okay to serve binary data.
 
-I do not recommend this in production unless you have a great reason. Like a dynamic image that changes every time. 
+I do not recommend this in production unless you have a great reason. Like a dynamic image that changes every time.
 
 ```yaml
 # serverless.yml
@@ -499,47 +500,47 @@ Code looks the same up to when we load the results page. Type a query, hit submi
 Then we do something different – measure the size of our results div.
 
 ```typescript
-  // this part is specific to the page you're screenshotting
-  const element = await page.$("#main")
+// this part is specific to the page you're screenshotting
+const element = await page.$("#main")
 
-  if (!element) {
-    throw "Couldn't find results div"
-  }
+if (!element) {
+  throw "Couldn't find results div"
+}
 
-  const boundingBox = await element.boundingBox()
-  const imagePath = `/tmp/screenshot-${new Date().getTime()}.png`
+const boundingBox = await element.boundingBox()
+const imagePath = `/tmp/screenshot-${new Date().getTime()}.png`
 
-  if (!boundingBox) {
-    throw "Couldn't measure size of results div"
-  }
+if (!boundingBox) {
+  throw "Couldn't measure size of results div"
+}
 ```
 
 We look for results and grab their `boundingBox()`. Tells us the `x, y` coordinates and `width, height` size.
 
 That way we can take a more focused screenshot and save on file size.
 
-We set up an `imagePath` in `/tmp`. This lets us write to a file on Lambda's hard drive, *but it will not stay there.* As soon as the lambda turns off, the file is gone.
+We set up an `imagePath` in `/tmp`. This lets us write to a file on Lambda's hard drive, _but it will not stay there._ As soon as the lambda turns off, the file is gone.
 
 ```typescript
-  await page.screenshot({
-    path: imagePath,
-    clip: boundingBox,
-  })
+await page.screenshot({
+  path: imagePath,
+  clip: boundingBox,
+})
 ```
 
 We take a screenshot with `page.screenshot()`. Saves to a file.
 
 ```typescript
-  const data = fs.readFileSync(imagePath).toString("base64")
+const data = fs.readFileSync(imagePath).toString("base64")
 
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "image/png",
-    },
-    body: data,
-    isBase64Encoded: true,
-  }
+return {
+  statusCode: 200,
+  headers: {
+    "Content-Type": "image/png",
+  },
+  body: data,
+  isBase64Encoded: true,
+}
 ```
 
 We then read the file into a Base64-encoded string and return a response.
