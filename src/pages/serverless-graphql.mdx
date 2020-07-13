@@ -1,8 +1,9 @@
 export const title = "Using GraphQL"
 
-export const description = "Learn why GraphQL, how GraphQL, does it replace REST, how to choose, and implement with Serverless"
+export const description =
+  "Learn why GraphQL, how GraphQL, does it replace REST, how to choose, and implement with Serverless"
 
-export const image = '/chapter_headers/serverless-graphql.png'
+export const image = "/chapter_headers/serverless-graphql.png"
 
 # Using GraphQL
 
@@ -13,45 +14,43 @@ Say you're building an app. It needs data from a server. What do you do?
 You make a `fetch()` request.
 
 ```javascript
-fetch('https://swapi.co/api/people/1/')
-	.then(res => res.json())
-	.then(console.log)
+fetch("https://swapi.co/api/people/1/")
+  .then((res) => res.json())
+  .then(console.log)
 ```
 
 And you get eeeevery piece of info about Luke Skywalker.
 
 ```json
 {
-	"name": "Luke Skywalker",
-	"height": "172",
-	"mass": "77",
-	"hair_color": "blond",
-	"skin_color": "fair",
-	"eye_color": "blue",
-	"birth_year": "19BBY",
-	"gender": "male",
-	"homeworld": "https://swapi.co/api/planets/1/",
-	"films": [
-		"https://swapi.co/api/films/2/",
-		"https://swapi.co/api/films/6/",
-		"https://swapi.co/api/films/3/",
-		"https://swapi.co/api/films/1/",
-		"https://swapi.co/api/films/7/"
-	],
-	"species": [
-		"https://swapi.co/api/species/1/"
-	],
-	"vehicles": [
-		"https://swapi.co/api/vehicles/14/",
-		"https://swapi.co/api/vehicles/30/"
-	],
-	"starships": [
-		"https://swapi.co/api/starships/12/",
-		"https://swapi.co/api/starships/22/"
-	],
-	"created": "2014-12-09T13:50:51.644000Z",
-	"edited": "2014-12-20T21:17:56.891000Z",
-	"url": "https://swapi.co/api/people/1/"
+  "name": "Luke Skywalker",
+  "height": "172",
+  "mass": "77",
+  "hair_color": "blond",
+  "skin_color": "fair",
+  "eye_color": "blue",
+  "birth_year": "19BBY",
+  "gender": "male",
+  "homeworld": "https://swapi.co/api/planets/1/",
+  "films": [
+    "https://swapi.co/api/films/2/",
+    "https://swapi.co/api/films/6/",
+    "https://swapi.co/api/films/3/",
+    "https://swapi.co/api/films/1/",
+    "https://swapi.co/api/films/7/"
+  ],
+  "species": ["https://swapi.co/api/species/1/"],
+  "vehicles": [
+    "https://swapi.co/api/vehicles/14/",
+    "https://swapi.co/api/vehicles/30/"
+  ],
+  "starships": [
+    "https://swapi.co/api/starships/12/",
+    "https://swapi.co/api/starships/22/"
+  ],
+  "created": "2014-12-09T13:50:51.644000Z",
+  "edited": "2014-12-20T21:17:56.891000Z",
+  "url": "https://swapi.co/api/people/1/"
 }
 ```
 
@@ -62,74 +61,74 @@ And what's this about Luke's species being `1`? What the heck is `1`?
 Okay, another fetch request.
 
 ```javascript
-fetch('https://swapi.co/api/species/1/')
-	.then(res => res.json())
-	.then(console.log)
+fetch("https://swapi.co/api/species/1/")
+  .then((res) => res.json())
+  .then(console.log)
 ```
 
 You get a bunch of data about humans. Great.
 
 ```json
 {
-	"name": "Human",
-	"classification": "mammal",
-	"designation": "sentient",
-	"average_height": "180",
-	"skin_colors": "caucasian, black, asian, hispanic",
-	"hair_colors": "blonde, brown, black, red",
-	"eye_colors": "brown, blue, green, hazel, grey, amber",
-	"average_lifespan": "120",
-	"homeworld": "https://swapi.co/api/planets/9/",
-	"language": "Galactic Basic",
-	"people": [
-		"https://swapi.co/api/people/1/",
-		"https://swapi.co/api/people/4/",
-		"https://swapi.co/api/people/5/",
-		"https://swapi.co/api/people/6/",
-		"https://swapi.co/api/people/7/",
-		"https://swapi.co/api/people/9/",
-		"https://swapi.co/api/people/10/",
-		"https://swapi.co/api/people/11/",
-		"https://swapi.co/api/people/12/",
-		"https://swapi.co/api/people/14/",
-		"https://swapi.co/api/people/18/",
-		"https://swapi.co/api/people/19/",
-		"https://swapi.co/api/people/21/",
-		"https://swapi.co/api/people/22/",
-		"https://swapi.co/api/people/25/",
-		"https://swapi.co/api/people/26/",
-		"https://swapi.co/api/people/28/",
-		"https://swapi.co/api/people/29/",
-		"https://swapi.co/api/people/32/",
-		"https://swapi.co/api/people/34/",
-		"https://swapi.co/api/people/43/",
-		"https://swapi.co/api/people/51/",
-		"https://swapi.co/api/people/60/",
-		"https://swapi.co/api/people/61/",
-		"https://swapi.co/api/people/62/",
-		"https://swapi.co/api/people/66/",
-		"https://swapi.co/api/people/67/",
-		"https://swapi.co/api/people/68/",
-		"https://swapi.co/api/people/69/",
-		"https://swapi.co/api/people/74/",
-		"https://swapi.co/api/people/81/",
-		"https://swapi.co/api/people/84/",
-		"https://swapi.co/api/people/85/",
-		"https://swapi.co/api/people/86/",
-		"https://swapi.co/api/people/35/"
-	],
-	"films": [
-		"https://swapi.co/api/films/2/",
-		"https://swapi.co/api/films/7/",
-		"https://swapi.co/api/films/5/",
-		"https://swapi.co/api/films/4/",
-		"https://swapi.co/api/films/6/",
-		"https://swapi.co/api/films/3/",
-		"https://swapi.co/api/films/1/"
-	],
-	"created": "2014-12-10T13:52:11.567000Z",
-	"edited": "2015-04-17T06:59:55.850671Z",
-	"url": "https://swapi.co/api/species/1/"
+  "name": "Human",
+  "classification": "mammal",
+  "designation": "sentient",
+  "average_height": "180",
+  "skin_colors": "caucasian, black, asian, hispanic",
+  "hair_colors": "blonde, brown, black, red",
+  "eye_colors": "brown, blue, green, hazel, grey, amber",
+  "average_lifespan": "120",
+  "homeworld": "https://swapi.co/api/planets/9/",
+  "language": "Galactic Basic",
+  "people": [
+    "https://swapi.co/api/people/1/",
+    "https://swapi.co/api/people/4/",
+    "https://swapi.co/api/people/5/",
+    "https://swapi.co/api/people/6/",
+    "https://swapi.co/api/people/7/",
+    "https://swapi.co/api/people/9/",
+    "https://swapi.co/api/people/10/",
+    "https://swapi.co/api/people/11/",
+    "https://swapi.co/api/people/12/",
+    "https://swapi.co/api/people/14/",
+    "https://swapi.co/api/people/18/",
+    "https://swapi.co/api/people/19/",
+    "https://swapi.co/api/people/21/",
+    "https://swapi.co/api/people/22/",
+    "https://swapi.co/api/people/25/",
+    "https://swapi.co/api/people/26/",
+    "https://swapi.co/api/people/28/",
+    "https://swapi.co/api/people/29/",
+    "https://swapi.co/api/people/32/",
+    "https://swapi.co/api/people/34/",
+    "https://swapi.co/api/people/43/",
+    "https://swapi.co/api/people/51/",
+    "https://swapi.co/api/people/60/",
+    "https://swapi.co/api/people/61/",
+    "https://swapi.co/api/people/62/",
+    "https://swapi.co/api/people/66/",
+    "https://swapi.co/api/people/67/",
+    "https://swapi.co/api/people/68/",
+    "https://swapi.co/api/people/69/",
+    "https://swapi.co/api/people/74/",
+    "https://swapi.co/api/people/81/",
+    "https://swapi.co/api/people/84/",
+    "https://swapi.co/api/people/85/",
+    "https://swapi.co/api/people/86/",
+    "https://swapi.co/api/people/35/"
+  ],
+  "films": [
+    "https://swapi.co/api/films/2/",
+    "https://swapi.co/api/films/7/",
+    "https://swapi.co/api/films/5/",
+    "https://swapi.co/api/films/4/",
+    "https://swapi.co/api/films/6/",
+    "https://swapi.co/api/films/3/",
+    "https://swapi.co/api/films/1/"
+  ],
+  "created": "2014-12-10T13:52:11.567000Z",
+  "edited": "2015-04-17T06:59:55.850671Z",
+  "url": "https://swapi.co/api/species/1/"
 }
 ```
 
@@ -141,12 +140,12 @@ What about all of Luke's starships? There's just 2 and yet that's 2 more API req
 
 ```javascript
 fetch("https://swapi.co/api/starships/12/")
-	.then(res => res.json())
-	.then(console.log)
-	
+  .then((res) => res.json())
+  .then(console.log)
+
 fetch("https://swapi.co/api/starships/22/")
-	.then(res => res.json())
-	.then(console.log)
+  .then((res) => res.json())
+  .then(console.log)
 ```
 
 I don't even wanna know how much data those dump out ...
@@ -183,9 +182,7 @@ And the API returns what you wanted with a single request.
   "data": {
     "Person": {
       "name": "Luke Skywalker",
-      "hairColor": [
-        "BLONDE"
-      ],
+      "hairColor": ["BLONDE"],
       "species": [
         {
           "name": "Human"
@@ -206,9 +203,9 @@ And the API returns what you wanted with a single request.
 
 Wait what 😲
 
-An API mechanism that gives you total flexibility on the frontend, slashes API requests to almost nothing, *and doesn't transfer a bunch of data you don't need?*
+An API mechanism that gives you total flexibility on the frontend, slashes API requests to almost nothing, _and doesn't transfer a bunch of data you don't need?_
 
-That's amazing! 
+That's amazing!
 
 You write a query, specify what you want, send to an endpoint, and GraphQL figures out the rest. Want different params? Just say so. Want multiple models? Got it. Wanna go deep? You can.
 
@@ -224,7 +221,7 @@ You can [try it out on graph.cool's public playground](https://swapi.graph.cool/
 
 <div id="lock" />
 
-## What *is* GraphQL
+## What _is_ GraphQL
 
 GraphQL is an open-source data query and manipulation language for APIs, and a runtime for fulfilling queries with existing data. [[1]](https://en.wikipedia.org/wiki/GraphQL)
 
@@ -236,7 +233,7 @@ GraphQL's main benefit is its declarative nature.
 
 On the client, you describe what you want using its shape and GraphQL figures out how to get it. On the server, you write resolver functions for specific sub-queries and GraphQL combines them into the full result.
 
-So while REST queries can be declarative on the client, GraphQL is declarative on both ends. For reads *and* writes.
+So while REST queries can be declarative on the client, GraphQL is declarative on both ends. For reads _and_ writes.
 
 ### GraphQL queries
 
@@ -244,9 +241,9 @@ GraphQL queries fetch data. They follow this pattern:
 
 ```graphql
 query {
-	what_you_want {
-		its_property
-	}
+  what_you_want {
+    its_property
+  }
 }
 ```
 
@@ -256,14 +253,14 @@ Write fields side-by-side to create the effect of executing multiple queries wit
 
 ```graphql
 query {
-	what_you_want {
-		its_property
-	}
-	other_thing_you_want {
-		its_property {
-			property_of_property
-		}
-	}
+  what_you_want {
+    its_property
+  }
+  other_thing_you_want {
+    its_property {
+      property_of_property
+    }
+  }
 }
 ```
 
@@ -280,7 +277,7 @@ query queryName($filterProp: "value") {
 }
 ```
 
-`$filterProp` defines a new variable that the `field()` lookup uses to filter results for those matching `"value"`. 
+`$filterProp` defines a new variable that the `field()` lookup uses to filter results for those matching `"value"`.
 
 GraphQL comes with basic equality filters built-in and you're encouraged to add more abilities in your resolvers. Many projects choose to support sorting, greater-than, not-equals, etc.
 
@@ -290,9 +287,9 @@ GraphQL mutations are used to write data. They follow this pattern:
 
 ```graphql
 mutation {
-	what_youre_updating(argument: "value", argument2: "value 2") {
-		prop_you_want_back
-	}
+  what_youre_updating(argument: "value", argument2: "value 2") {
+    prop_you_want_back
+  }
 }
 ```
 
@@ -307,7 +304,7 @@ mutation mutationName($argument: "value") {
 	what_youre_updating(argument: $argument) {
 		prop_you_want_back
 	}
-	
+
 	other_field(argument: $argument) {
 		return_prop
 	}
@@ -316,9 +313,9 @@ mutation mutationName($argument: "value") {
 
 ## GraphQL vs. REST, which to use when
 
-The GraphQL vs. REST debate is a false dichotomy. 
+The GraphQL vs. REST debate is a false dichotomy.
 
-People like to say GraphQL is *replacing* REST and that's simply not the case. GraphQL is *augmenting* REST.
+People like to say GraphQL is _replacing_ REST and that's simply not the case. GraphQL is _augmenting_ REST.
 
 Will GraphQL become the future default API layer? Yes, probably.
 
@@ -326,7 +323,7 @@ Should you rip out your existing REST API and rewrite everything for GraphQL? Pl
 
 GraphQL doesn't care where data comes from. Relational database, NoSQL database, files, a REST API, another GraphQL API ... doesn't matter. If you can write a function to fetch data in response to a query, that's all you need.
 
-In fact, [you can start using GraphQL *without* changing your existing server](https://swizec.com/blog/how-you-can-start-using-graphql-today-without-changing-the-backend/swizec/9350) with a GraphQL middle layer. Create a GraphQL server and make it talk to your REST API.
+In fact, [you can start using GraphQL _without_ changing your existing server](https://swizec.com/blog/how-you-can-start-using-graphql-today-without-changing-the-backend/swizec/9350) with a GraphQL middle layer. Create a GraphQL server and make it talk to your REST API.
 
 ![](giphy:wow)
 
@@ -334,24 +331,24 @@ In fact, [you can start using GraphQL *without* changing your existing server](h
 
 When building a typical CRUD – Create, Read, Update, Delete – API, I like to ask 6 questions:
 
-1. Is this a new project? *Default to GraphQL*
-2. Do I know in advance what clients are going to need? *REST is great*
-3. Am I fetching small subsets of large data? *GraphQL*
-4. Am I generating new values for each request? *REST*
-5. Updating a few properties on an object? *GraphQL*
-6. Submitting large payloads to be saved? *REST*
+1. Is this a new project? _Default to GraphQL_
+2. Do I know in advance what clients are going to need? _REST is great_
+3. Am I fetching small subsets of large data? _GraphQL_
+4. Am I generating new values for each request? _REST_
+5. Updating a few properties on an object? _GraphQL_
+6. Submitting large payloads to be saved? _REST_
 
-Use upserts to deal with Create *and* Update. Avoid deletes – update a `deleted` flag instead and use soft deletes.
+Use upserts to deal with Create _and_ Update. Avoid deletes – update a `deleted` flag instead and use soft deletes.
 
 ### Should you expose your entire data model verbatim?
 
 No.
 
-Exposing your full data model is a common mistake in API design for both GraphQL and REST. 
+Exposing your full data model is a common mistake in API design for both GraphQL and REST.
 
 Define a logical API using [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design) instead. How your backend stores data for max performance and good database design differs from how your consumers think about that data.
 
-Exposing server internals like that is a leaky abstraction and might lead to performance and security issues. *And* it makes your API hard to use.
+Exposing server internals like that is a leaky abstraction and might lead to performance and security issues. _And_ it makes your API hard to use.
 
 There's also the question of derived and computed properties with complex business logic. You don't want to re-implement those on the client using raw data from your database.
 
@@ -368,7 +365,7 @@ To create a GraphQL lambda, you follow a 4 step process:
 3. Specify your schema
 4. Add your resolvers
 
-We created a [simple REST api](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) in the previous chapter, let's recreate the same functionality with GraphQL. Full [code on GitHub](https://github.com/Swizec/serverless-handbook/tree/master/examples/serverless-graphql-example)
+We created a [simple REST api](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) in the previous chapter, let's recreate the same functionality with GraphQL. Full [code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-graphql-example)
 
 Apollo creates a GraphQL playground for us. You can try my implementation here:
 
@@ -471,7 +468,7 @@ const schema = gql`
 `
 ```
 
-We used to let users store and retrieve arbitrary JSON blobs and we can't do that with GraphQL. So we define an `Item` type with an arbitrary `body` string. 
+We used to let users store and retrieve arbitrary JSON blobs and we can't do that with GraphQL. So we define an `Item` type with an arbitrary `body` string.
 
 You can use that to store serialized JSON objects.
 
@@ -527,11 +524,11 @@ Means you can call `getItem` on DynamoDB, or run a SQL query for a relational da
 
 One niggle to note 👉 DynamoDB considers `name` and `id` reserved attributes. We remap them to `itemName` and `itemId` when saving and have to map them back to pretty GraphQL attributes when reading.
 
-This is what I meant by *"You don't want to expose raw database details to your API"* :)
+This is what I meant by _"You don't want to expose raw database details to your API"_ :)
 
 #### updateItem()
 
-The `updateItem()` mutation is our most complex. 
+The `updateItem()` mutation is our most complex.
 
 It creates a new item when you don't provide an `id` and updates an existing item when you do. If the item isn't found, it throws an error.
 
@@ -647,7 +644,7 @@ const resolvers = {
 }
 ```
 
-That tells Apollo how to map queries and mutations to their resolvers. We could use generic global names because this is a small project. 
+That tells Apollo how to map queries and mutations to their resolvers. We could use generic global names because this is a small project.
 
 You'll want to namespace this in bigger apps.
 

@@ -1,8 +1,9 @@
 export const title = "Lambda pipelines for serverless data processing"
 
-export const description = "Learn how to build a robust massively distributed data, event, or message processing pipeline"
+export const description =
+  "Learn how to build a robust massively distributed data, event, or message processing pipeline"
 
-export const image = '/chapter_headers/lambda-workflows.png'
+export const image = "/chapter_headers/lambda-workflows.png"
 
 # Lambda pipelines for serverless data processing
 
@@ -61,13 +62,12 @@ Let's say you're building an adder. Multiply every number by 2 then sum.
 Using functional programming patterns in JavaScript, you'd write something like this:
 
 ```javascript
-const result = 
-	[1,2,3,4,5] // input array
-		.map(n => n*2) // multiply each by 2
-		.reduce((sum, n) => sum+n, 0); // sum together
+const result = [1, 2, 3, 4, 5] // input array
+  .map((n) => n * 2) // multiply each by 2
+  .reduce((sum, n) => sum + n, 0) // sum together
 ```
 
-Each of those steps is independent. 
+Each of those steps is independent.
 
 The `n => n*2` function doesn't need to know anything other than its `n`. The `(sum, n) => sum+n` function only needs the current `sum` and `n`.
 
@@ -98,10 +98,9 @@ Let's build that adder and learn how to construct a robust massively distributed
 This is the JavaScript code we're distributing.
 
 ```javascript
-const result = 
-	[1,2,3,4,5] // input array
-		.map(n => n*2) // multiply each by 2
-		.reduce((sum, n) => sum+n, 0); // sum together
+const result = [1, 2, 3, 4, 5] // input array
+  .map((n) => n * 2) // multiply each by 2
+  .reduce((sum, n) => sum + n, 0) // sum together
 ```
 
 Following principles from the [Architecture Principles](/serverless-architecture-principles) chapter, we're building a system that is:
@@ -118,13 +117,13 @@ We're going to use 3 [Serverless Elements](/serverless-elements) to get there:
 2. queues
 3. storage
 
-You can see the [full code on GitHub](https://github.com/Swizec/serverless-handbook/tree/master/examples/serverless-data-pipeline-example). I'll share the important parts here.
+You can see the [full code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-data-pipeline-example). I'll share the important parts here.
 
 Throughout, I'll share some ideas how you can make the system even more robust.
 
 ### The elements
 
-We're using 3 lambdas, 2 queues, and 2 DynamoDB tables. 
+We're using 3 lambdas, 2 queues, and 2 DynamoDB tables.
 
 **3 Lambdas**
 
@@ -147,7 +146,7 @@ Messages only vanish when your Lambda accepts a message, fails to process it, an
 
 You can configure max retries and how long a message should stick around. When it exceeds those deadlines, you can configure a so-called Dead Letter Queue to store the message instead.
 
-DLQ's are useful for alternate processing of bad messages. Send an alert to yourself, store it in a different table, *something* that helps you debug what's going on.
+DLQ's are useful for alternate processing of bad messages. Send an alert to yourself, store it in a different table, _something_ that helps you debug what's going on.
 
 **2 tables**
 
@@ -181,7 +180,6 @@ We define the queue like this:
 # serverless.yml
 resources:
   Resources:
-
     TimesTwoQueue:
       Type: "AWS::SQS::Queue"
       Properties:
@@ -189,9 +187,9 @@ resources:
         VisibilityTimeout: 60
 ```
 
-It's an SQS queue postfixed with the current stage so we can split between production and development. 
+It's an SQS queue postfixed with the current stage so we can split between production and development.
 
-The [`VisibilityTimeout`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html) says that when your Lambda accepts a message, it has 60 seconds to process it. After that SQS will assume you never *actually* received the message and give it to someone else.
+The [`VisibilityTimeout`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html) says that when your Lambda accepts a message, it has 60 seconds to process it. After that SQS will assume you never _actually_ received the message and give it to someone else.
 
 Distributed systems are fun like that.
 
@@ -241,15 +239,15 @@ We turn each element of the input array into a processing packet and send it to 
 ```typescript
 // src/timesTwo.ts
 
-  for (let packetValue of array) {
-    await sendSQSMessage(process.env.timesTwoQueueURL!, {
-      arrayId,
-      packetId: uuidv4(),
-      packetValue,
-      arrayLength: array.length,
-      packetContains: 1,
-    })
-  }
+for (let packetValue of array) {
+  await sendSQSMessage(process.env.timesTwoQueueURL!, {
+    arrayId,
+    packetId: uuidv4(),
+    packetValue,
+    arrayLength: array.length,
+    packetContains: 1,
+  })
+}
 ```
 
 Each packet contains:
@@ -262,7 +260,7 @@ Each packet contains:
 
 Almost everything here is metadata to help our processing pipeline. `packetValue` is the real data.
 
-[`sendSQSMessage`](https://github.com/Swizec/serverless-handbook/blob/master/examples/serverless-data-pipeline-example/src/utils.ts#L11) is a helper method that sends and SQS message using the AWS SDK.
+[`sendSQSMessage`](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-data-pipeline-example/src/utils.ts#L11) is a helper method that sends and SQS message using the AWS SDK.
 
 ### Step 2 – the map
 
@@ -362,43 +360,43 @@ To store results, we iterate over them, fire a DynamoDB `updateItem` query, and 
 ```typescript
 // src/timesTwo.ts
 
-  // store each result in scratchpad table
-  // in theory it's enough to put them on the queue
-  // an intermediary table makes the reduce step easier to implement
-  await Promise.all(
-    packets.map((packet) =>
-      db.updateItem({
-        TableName: process.env.SCRATCHPAD_TABLE!,
-        Key: { arrayId: packet.arrayId, packetId: packet.packetId },
-        UpdateExpression:
-          "SET packetValue = :packetValue, arrayLength = :arrayLength, packetContains = :packetContains",
-        ExpressionAttributeValues: {
-          ":packetValue": packet.packetValue,
-          ":arrayLength": packet.arrayLength,
-          ":packetContains": packet.packetContains,
-        },
-      })
-    )
+// store each result in scratchpad table
+// in theory it's enough to put them on the queue
+// an intermediary table makes the reduce step easier to implement
+await Promise.all(
+  packets.map((packet) =>
+    db.updateItem({
+      TableName: process.env.SCRATCHPAD_TABLE!,
+      Key: { arrayId: packet.arrayId, packetId: packet.packetId },
+      UpdateExpression:
+        "SET packetValue = :packetValue, arrayLength = :arrayLength, packetContains = :packetContains",
+      ExpressionAttributeValues: {
+        ":packetValue": packet.packetValue,
+        ":arrayLength": packet.arrayLength,
+        ":packetContains": packet.packetContains,
+      },
+    })
   )
+)
 ```
 
 Each entry in this table is uniquely identified with a combination of `arrayId` and `packetId`.
 
-*Triggering* the next step happens in another loop.
+_Triggering_ the next step happens in another loop.
 
 ```typescript
 // src/timesTwo.ts
 
-  // trigger next step in calculation
-  const uniqueArrayIds = Array.from(
-    new Set(packets.map((packet) => packet.arrayId))
-  )
+// trigger next step in calculation
+const uniqueArrayIds = Array.from(
+  new Set(packets.map((packet) => packet.arrayId))
+)
 
-  await Promise.all(
-    uniqueArrayIds.map((arrayId) =>
-      sendSQSMessage(process.env.reduceQueueURL!, arrayId)
-    )
+await Promise.all(
+  uniqueArrayIds.map((arrayId) =>
+    sendSQSMessage(process.env.reduceQueueURL!, arrayId)
   )
+)
 ```
 
 We use an ES6 Set to get a list of unique array ids from our input message. You never know what gets jumbled up on the queue and you might receive multiple inputs in parallel.
@@ -409,7 +407,7 @@ For each unique input, we trigger a reduce lambda via `ReduceQueue`. Having a si
 
 ### Step 3 – reduce
 
-Combining intermediary steps into the final result is the most complex part of our example. 
+Combining intermediary steps into the final result is the most complex part of our example.
 
 The simplest approach is to take the entire input and combine in 1 step. With large datasets this becomes impossible, however. Especially if combining elements is a costly operation.
 
@@ -556,7 +554,7 @@ async function reduceArray(arrayId: string) {
 
 Gets 2 entries from the DynamoDB table[^2] and combines them into a new packet.
 
-This packet *must* have a new `packetId`. It's a new entry into the faux processing queue on DynamoDB.
+This packet _must_ have a new `packetId`. It's a new entry into the faux processing queue on DynamoDB.
 
 Insert that back and if that succeeds, remove the previous 2 elements using their `arrayId/packetId` combination.
 
@@ -571,5 +569,4 @@ Usually slow downs happen where you have to introduce throttling to limit how fa
 ✌️
 
 [^1]: Our dataloss happened because of our use of Postgres. Sometimes in some cases it would fail to insert a row, but wouldn't throw an error. We mitigated that with some workarounds and some of the problem remained. At that point we decided this was okay enough.
-
 [^2]: We use a `Limit: 2` argument to limit how much of the table we scan through. Don't need more than 2, don't read more than 2. Keeps everything snappy

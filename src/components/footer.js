@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, Link } from "rebass"
 
-export default props => (
+export default (props) => (
   <Box as="footer" py={5} color="background" bg="text">
     <Box
       sx={{
@@ -11,14 +11,21 @@ export default props => (
       }}
     >
       Built by
-      <Link href="https://swizec.com" variant="nav" style={{ textDecoration: "underline" }}>
+      <Link
+        href="https://swizec.com"
+        variant="nav"
+        style={{ textDecoration: "underline" }}
+      >
         Swizec
       </Link>
       with ❤️
       <Link href="/" variant="nav">
         Serverless Handbook
       </Link>
-      <Link href="https://github.com/Swizec/serverless-handbook" variant="nav">
+      <Link
+        href="https://github.com/Swizec/serverlesshandbook.dev"
+        variant="nav"
+      >
         GitHub
       </Link>
     </Box>
