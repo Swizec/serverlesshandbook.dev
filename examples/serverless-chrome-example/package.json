@@ -1,0 +1,31 @@
+{
+  "name": "serverless-chrome-example",
+  "version": "1.0.0",
+  "description": "AWS Lambda example of using Chrome Puppeteer",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && serverless deploy"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Swizec/serverless-handbook.git"
+  },
+  "author": "Swizec",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Swizec/serverless-handbook/issues"
+  },
+  "homepage": "https://github.com/Swizec/serverless-handbook#readme",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.58",
+    "@types/puppeteer": "^3.0.1",
+    "aws-lambda": "^1.0.6",
+    "chrome-aws-lambda": "^3.1.1",
+    "puppeteer": "3.1.0",
+    "puppeteer-core": "3.1.0"
+  }
+}

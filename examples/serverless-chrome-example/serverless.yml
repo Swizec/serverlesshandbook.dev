@@ -1,0 +1,34 @@
+service: serverless-chrome-example
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  apiGateway:
+    binaryMediaTypes:
+      - "*/*"
+
+functions:
+  scraper:
+    handler: dist/scraper.handler
+    memorysize: 2536
+    timeout: 30
+    events:
+      - http:
+          path: scraper
+          method: GET
+          cors: true
+
+  screenshot:
+    handler: dist/screenshot.handler
+    memorysize: 2536
+    timeout: 30
+    events:
+      - http:
+          path: screenshot
+          method: GET
+          cors: true
+
+package:
+  exclude:
+    - node_modules/puppeteer/.local-chromium/**
