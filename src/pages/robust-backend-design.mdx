@@ -1,9 +1,198 @@
 export const title = "Robust backend design"
 
-export const description = "Learn how to build a robust backend design in the serverless approach"
+export const description = "Why The Two Generals mean your backend will never be perfect. How do you avoid errors and build robust code?"
 
 export const image = '/chapter_headers/robust-backend-design.png'
 
 # Robust backend design
 
 ![](../images/chapter_headers/robust-backend-design.svg)
+
+Imagine you're a Roman general leading a vast and powerful army. You're about to attack a city 😱
+
+But you can't do it alone. 
+
+Your buddy with an equally vast and powerful army hides behind a hill on the other side of the city. You need their help to win.
+
+Attack together and you win. Attack alone and you lose.
+
+How do you co-ordinate attacks and capture the city?
+
+![Two generals problem](../images/two-generals.png)
+
+You can't use smoke signals. City would know your plan. You can't shout that far and there's no internet.
+
+A messenger is your best bet. They'll run over there, deliver your message, and come back with confirmation.
+
+Unless they get caught. 🤔
+
+Messenger might make it to your friend, deliver the message, and get caught coming back with confirmation. You'll never know.
+
+Do you send more messengers until one makes it back? How will your buddy know for certain that the messenger made it back? Buddy can't attack alone either.
+
+This puzzle is known as the [Two Generals' Problem](https://en.wikipedia.org/wiki/Two_Generals%27_Problem) and there is no solution.
+
+When communicating over a lossy connection there is no sequence of messages you can send that guarantees 100% certainty. Best you can do is try enough times until you're *"Pretty sure."*
+
+And that's why distributed systems are hard.
+
+You *cannot* have 100% reliability in any part of the system. As soon as you have servers talking to each other, you're doomed to probabilities.
+
+Serverless systems are always distributed. 😅
+
+## Build a robust backend
+
+> A robust backend keeps chugging along in the face of failure.
+
+As we mentioned in the [Architecture Principles chapter](https://serverlesshandbook.dev/serverless-architecture-principles), your backend follows 3 core principles:
+
+1. Everything can and will fail
+2. Your system should work anyway
+3. Failures should be easy to fix
+
+You get there with a combination of error recovery, error isolation, and knowing when your system needs help.
+
+As the architecture principles chapter mentioned:
+
+- **isolate errors** when an error happens it should be confined to the smallest area possible without bringing down the rest of your system
+- **retry until success** many errors are transient and go away when you try again
+- **make operations replayable** triggering the same operation multiple times should produce the same result
+- **make your system debuggable** store enough information about your actions so you can look back later
+- **remove unprocessable requests** make sure bad requests don't kill your system or get in the way of valid requests
+- **alert the engineer when something is wrong** errors can be part of normal operation, but when there's too much your system should cry out in pain and tell you where it hurts
+
+In this chapter we'll talk about how. 
+
+## Isolate errors
+
+[In March 2017, Amazon S3 went down](https://www.theverge.com/2017/3/2/14792442/amazon-s3-outage-cause-typo-internet-server) and took with it much of the internet. The root cause was a typo.
+
+Engineers were testing what happens when a couple servers go offline. Typo took out too many servers. Remaining servers became overwhelmed with requests and started failing one by one.
+
+Soon enough the whole system was down.
+
+And because much of AWS relies on S3 to store files ... much of AWS went down. And because much of the internet runs on AWS ... it went down.
+
+AWS wasn't able to even update their status dashboard because error icons live on S3.
+
+![](giphy:eesh)
+
+Your goal is reducing inter-dependency. What can you do to make moving pieces less dependent on each other?
+
+In your car, for example, the brakes keep working even if your brake lights go out. The two systems work together, but are independent.
+
+Although funnily, [if your radio gets hacked, so does your steering](https://www.wired.com/2015/07/hackers-remotely-kill-jeep-highway/). Oops.
+
+Inter-dependency can be subtle and hard to spot. The specifics are different each time.
+
+Here are some general rules:
+
+1. Give each operation a single responsibility
+2. Do the whole thing in one go start to finish
+3. Avoid direct dependency
+
+Serverless functions solve a lot of these problems out of the box. Each invocation lives on its own server, runs only the code you need, and is isolated from the rest of your code.
+
+Your job then is to ensure these functions are small, replayable, and have a single responsibility.
+
+You can see how this works in the [Lambda Pipelines for distributed data processing](http://serverlesshandbook.dev/lambda-pipelines) chapter. We build 2 lambdas that each do a step in the process and communicate through a queue.
+
+## Keep retrying
+
+Retrying requests is built into the serverless model. 
+
+AWS will [retry every lambda invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html) if the call fails. The exact number depends on who's calling.
+
+API Gateway proxies requests from end users which makes retrying harder than an SQS queue with all the time in the world.
+
+Retries happen for two reasons:
+
+1. Lambda never got the message
+2. Lambda failed to process the message
+
+#1 is out of your control. Two generals problem struck between request and your code. Shit happens.
+
+#2 means you should *always* throw an error when something goes wrong. Do not pretend all is well when it isn't. 
+
+Both SQS – Simple Queue Service – and SNS – Simple Notification Service – support retries out of the box. They're the most common ways to communicate between AWS services.
+
+The details of how retries work with each service differ. You can read more about [How SNS works](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) and [How SQS works](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html) in AWS docs.
+
+Both follow this pattern:
+
+1. Message accepted into SQS / SNS
+2. Message stored in multiple locations
+3. Message sent to your lambda
+4. Wait for lambda to process or fail
+5. If processed, remove message
+6. If failed, retry ... sometimes thousands of times
+
+Waiting to delete the message until after confirmation is crucial. Otherwise you run the risk of losing data.
+
+Keep this in mind on your end and never mark something as processed until you're certain ✌️
+
+### Build replayable operations
+
+Your code could retry for any reason. Make sure that's not a problem.
+
+Follow this 4 step algorithm:
+
+1. Verify work needs doing
+2. Do the work
+3. Mark work as done
+4. Verify marking it done worked
+
+That last part is weird. Two Generals Problem may strike between you and your database 😉
+
+In pseudocode, each of your lambda functions follows this pattern:
+
+```javascript
+function processMessage(messageId) {
+	let message = db.get(messageId)
+	
+	if (!message.processed) {
+		try {
+			doTheWork(message)
+		} catch(error) {
+			throw error
+		}
+		message.processed = true
+		
+		db.save(message)
+		
+		if (db.get(messageId).processed) {
+			return success
+		} else {
+			throw "Processing failed"
+		}
+	}
+	
+	return success
+}
+```
+
+This guards against all failure modes:
+
+1. Processing retried, but wasn't needed
+2. Work failed
+3. Saving work failed
+
+Make sure `doTheWork` throws an error, if it fails to save. Common cause of spooky dataloss. ✌️
+
+## Be debuggable
+
+![](giphy:sherlock_holmes)
+
+Debugging distributed systems is hard. More an art than a science.
+
+You'll need to know your system inside-out. And if you don't, you'll have to learn. Tease it apart bit by bit.
+
+What helps in your quest is the ability to re-run any part of your system at any time. Without fear of destroying data.
+
+
+
+## Remove bad requests
+
+## Alert an engineer
+
+## Control your flow
