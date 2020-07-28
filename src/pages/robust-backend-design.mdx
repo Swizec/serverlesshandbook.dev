@@ -1,6 +1,6 @@
 export const title = "Robust backend design"
 
-export const description = "Why The Two Generals mean your backend will never be perfect. How do you avoid errors and build robust code?"
+export const description = "The Two Generals paradox means your backend can't be perfect. So how do you build code that works?"
 
 export const image = '/chapter_headers/robust-backend-design.png'
 
@@ -14,7 +14,7 @@ But you can't do it alone.
 
 Your buddy with an equally vast and powerful army hides behind a hill on the other side of the city. You need their help to win.
 
-Attack together and you win. Attack alone and you lose.
+Attack together and you win. Attack alone and you die.
 
 How do you co-ordinate attacks and capture the city?
 
@@ -22,21 +22,21 @@ How do you co-ordinate attacks and capture the city?
 
 You can't use smoke signals. City would know your plan. You can't shout that far and there's no internet.
 
-A messenger is your best bet. They'll run over there, deliver your message, and come back with confirmation.
+A messenger is your best bet. They'll run over there, deliver your message, come back with confirmation.
 
 Unless they get caught. 🤔
 
 Messenger might make it to your friend, deliver the message, and get caught coming back with confirmation. You'll never know.
 
-Do you send more messengers until one makes it back? How will your buddy know for certain that the messenger made it back? Buddy can't attack alone either.
+Do you send more messengers until one makes it back? How will your buddy know for certain that any messenger made it back? Remember, your buddy can't attack alone either.
 
-This puzzle is known as the [Two Generals' Problem](https://en.wikipedia.org/wiki/Two_Generals%27_Problem) and there is no solution.
+This puzzle is known as the [Two Generals' Problem](https://en.wikipedia.org/wiki/Two_Generals%27_Problem) and **there is no solution**.
 
-When communicating over a lossy connection there is no sequence of messages you can send that guarantees 100% certainty. Best you can do is try enough times until you're *"Pretty sure."*
+When communicating over a lossy connection there is no messaging algorithm that guarantees 100% certainty. Best you can do is try until you're *"Pretty sure."*
 
 And that's why distributed systems are hard.
 
-You *cannot* have 100% reliability in any part of the system. As soon as you have servers talking to each other, you're doomed to probabilities.
+You *cannot* have 100% reliability in any part of the system. As soon as servers talk to each other, you're doomed to probabilities.
 
 Serverless systems are always distributed. 😅
 
@@ -44,7 +44,7 @@ Serverless systems are always distributed. 😅
 
 > A robust backend keeps chugging along in the face of failure.
 
-As we mentioned in the [Architecture Principles chapter](https://serverlesshandbook.dev/serverless-architecture-principles), your backend follows 3 core principles:
+As we mentioned in the [Architecture Principles chapter](https://serverlesshandbook.dev/serverless-architecture-principles), your backend follows 3 principles:
 
 1. Everything can and will fail
 2. Your system should work anyway
@@ -52,52 +52,128 @@ As we mentioned in the [Architecture Principles chapter](https://serverlesshandb
 
 You get there with a combination of error recovery, error isolation, and knowing when your system needs help.
 
-As the architecture principles chapter mentioned:
+The strategies mentioned in [Architecture Principles](https://serverlesshandbook.dev/serverless-architecture-principles) were:
 
-- **isolate errors** when an error happens it should be confined to the smallest area possible without bringing down the rest of your system
-- **retry until success** many errors are transient and go away when you try again
-- **make operations replayable** triggering the same operation multiple times should produce the same result
-- **make your system debuggable** store enough information about your actions so you can look back later
-- **remove unprocessable requests** make sure bad requests don't kill your system or get in the way of valid requests
-- **alert the engineer when something is wrong** errors can be part of normal operation, but when there's too much your system should cry out in pain and tell you where it hurts
+- isolate errors 
+- retry until success
+- make operations replayable
+- be debuggable
+- remove bad requests
+- alert the engineer when something's wrong
+- control your flow
 
-In this chapter we'll talk about how. 
+This chapter talks about how.
 
 ## Isolate errors
 
-[In March 2017, Amazon S3 went down](https://www.theverge.com/2017/3/2/14792442/amazon-s3-outage-cause-typo-internet-server) and took with it much of the internet. The root cause was a typo.
+[In March 2017, Amazon S3 went down](https://www.theverge.com/2017/3/2/14792442/amazon-s3-outage-cause-typo-internet-server) and took with it half the internet. The root cause was a typo.
 
-Engineers were testing what happens when a couple servers go offline. Typo took out too many servers. Remaining servers became overwhelmed with requests and started failing one by one.
+AWS Engineers were testing what happens when a few servers go offline. A typo took out too many and the rest got overwhelmed. Then they started failing one by one.
 
-Soon enough the whole system was down.
+Soon the whole system was down.
 
-And because much of AWS relies on S3 to store files ... much of AWS went down. And because much of the internet runs on AWS ... it went down.
+And because AWS relies on S3 to store files ... much of AWS went down. And because half the internet runs on AWS ... it went down.
 
-AWS wasn't able to even update their status dashboard because error icons live on S3.
+AWS couldn't even update their status dashboard because error icons live on S3.
 
 ![](giphy:eesh)
 
-Your goal is reducing inter-dependency. What can you do to make moving pieces less dependent on each other?
+To isolate errors you have to reduce inter-dependency. Always think: *"What can I do to make moving pieces less dependent on each other?"*
 
-In your car, for example, the brakes keep working even if your brake lights go out. The two systems work together, but are independent.
+In your car, for example, the brakes keep working even if your brake lights go out. The systems work together, but independently.
 
-Although funnily, [if your radio gets hacked, so does your steering](https://www.wired.com/2015/07/hackers-remotely-kill-jeep-highway/). Oops.
+Although, [if your radio gets hacked, so does your steering](https://www.wired.com/2015/07/hackers-remotely-kill-jeep-highway/). Oops.
 
 Inter-dependency can be subtle and hard to spot. The specifics are different each time.
 
-Here are some general rules:
+Here are 3 general rules:
 
 1. Give each operation a single responsibility
-2. Do the whole thing in one go start to finish
-3. Avoid direct dependency
+2. Do the whole operation in one atomic go
+3. Avoid coupling
 
-Serverless functions solve a lot of these problems out of the box. Each invocation lives on its own server, runs only the code you need, and is isolated from the rest of your code.
+Serverless functions come optimized for this approach out of the box. They encourage you to keep code light and isolated 🤘
 
-Your job then is to ensure these functions are small, replayable, and have a single responsibility.
+### Give each operation a single responsibility
 
-You can see how this works in the [Lambda Pipelines for distributed data processing](http://serverlesshandbook.dev/lambda-pipelines) chapter. We build 2 lambdas that each do a step in the process and communicate through a queue.
+Think of serverless code like a function. How big are your functions? How much do they do?
 
-## Keep retrying
+Say you were building a basic math module. Would you write a function that performs plus *and* minus?
+
+```typescript
+function doMath(a: number, b: number, op: 'plus' | 'minus') {
+	if (op === 'plus') {
+		return a+b
+	}else{
+		return a-b
+	}
+}
+```
+
+That looks odd to me. Plus and minus are distinct operations. 
+
+You'd write 2 functions instead:
+
+```typescript
+function plus(a: number, b: number) {
+	return a + b
+}
+
+function minus(a: number, b: number) {
+	return a - b
+}
+```
+
+That's much easier to work with.
+
+Splitting your code into distinct operations is an art. Big functions are hard to debug and too many small functions gets hard to understand.
+
+My rule is that when I use *and* to describe a function, I need a new function.
+
+### Do the whole operation in one atomic go
+
+Atomic operations guarantee correctness. You perform an action start to finish without distraction.
+
+Say you were taking an important memory medicine.
+
+You grab the pill bottle, take out a pill, put it on your desk, get an email notification and start reading. You knock the pill off your desk and it's lost.
+
+10 minutes later you look down and there's no pill. Did you take it?
+
+![](giphy:hmmm)
+
+Same thing happens when your lambdas try to do too much. Your code can get distracted, halfway failures happen, and you're left with a corrupt state.
+
+Recovering from corrupt state like a half-written database table is difficult.
+
+Instead, try to avoid distractions. Keep operations small, go start to finish, delegate. Let another process read email.
+
+### Avoid coupling
+
+With small atomic operations and delegating heavy work to other functions, you're primed for another mistake: Direct dependency.
+
+Like this:
+
+```javascript
+function myLambda() {
+	// read from db
+	// prep the thing
+	
+	await anotherLambda(data)
+	
+	// save the stuff
+}
+```
+
+You're coupling your `myLambda` function to your `anotherLambda` function. If `anotherLambda` fails, the whole process fails.
+
+Instead, try decoupling these with a queue. Turn it into a process. `myLambda` does a little, pushes to the queue, `anotherLambda` does the rest.
+
+![Decoupled operations through a queue](../images/coupled_decoupled.png)
+
+You can see this in practice with the code we build in the [Lambda Pipelines for distributed data processing](http://serverlesshandbook.dev/lambda-pipelines) chapter. 2 lambdas each doing a step of the process talking to each other with a queue.
+
+## Retry until success
 
 Retrying requests is built into the serverless model. 
 
@@ -105,16 +181,16 @@ AWS will [retry every lambda invocation](https://docs.aws.amazon.com/lambda/late
 
 API Gateway proxies requests from end users which makes retrying harder than an SQS queue with all the time in the world.
 
-Retries happen for two reasons:
+Retries can happen for two reasons:
 
 1. Lambda never got the message
 2. Lambda failed to process the message
 
-#1 is out of your control. Two generals problem struck between request and your code. Shit happens.
+#1 is out of your control. Two generals problem struck between request and your code. Shit happens. 💩
 
-#2 means you should *always* throw an error when something goes wrong. Do not pretend all is well when it isn't. 
+#2 means you should *always* throw an error when something goes wrong. Do not pretend. 
 
-Both SQS – Simple Queue Service – and SNS – Simple Notification Service – support retries out of the box. They're the most common ways to communicate between AWS services.
+Both SQS – Simple Queue Service – and SNS – Simple Notification Service – support retries out of the box. They're the most common ways AWS services communicate.
 
 The details of how retries work with each service differ. You can read more about [How SNS works](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) and [How SQS works](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html) in AWS docs.
 
@@ -127,9 +203,9 @@ Both follow this pattern:
 5. If processed, remove message
 6. If failed, retry ... sometimes thousands of times
 
-Waiting to delete the message until after confirmation is crucial. Otherwise you run the risk of losing data.
+Waiting to delete the message until after confirmation is crucial. Otherwise you might lose data.
 
-Keep this in mind on your end and never mark something as processed until you're certain ✌️
+Keep this in mind and never mark something as processed until you're certain ✌️
 
 ### Build replayable operations
 
@@ -144,7 +220,7 @@ Follow this 4 step algorithm:
 
 That last part is weird. Two Generals Problem may strike between you and your database 😉
 
-In pseudocode, each of your lambda functions follows this pattern:
+In pseudocode, your functions follow this pattern:
 
 ```javascript
 function processMessage(messageId) {
@@ -187,12 +263,121 @@ Debugging distributed systems is hard. More an art than a science.
 
 You'll need to know your system inside-out. And if you don't, you'll have to learn. Tease it apart bit by bit.
 
-What helps in your quest is the ability to re-run any part of your system at any time. Without fear of destroying data.
+Keeping your code re-runnable helps. Keeping your data stored helps. Having easy access to all this helps.
 
+When debugging distributed systems I like to follow this approach:
 
+1. Look at the data
+2. Find which step of the process failed
+3. Get the data that failed
+4. Run the step that failed
+5. Look at logs
+
+You can't use a debugger or step through your code. Logs are your savior. Add as many as possible.
+
+Then run the code and see what happens. Keep adding print statements until you figure out where it breaks.
+
+Local tests can help.
+
+Write a test that runs your function with the bad data. See what happens. When fixed, you've got verification that it works.
+
+Unless the bug is specific to your live environment 🙃
+
+Being debuggable therefore means:
+
+1. Safely replayable operations
+2. Keep intermediate data long enough
+3. Manually executable with specific requests
+4. Identifiable and traceable requests (AWS adds requestId to every log)
+5. Locally executable for unit testing
 
 ## Remove bad requests
 
+Requests can include what's called a poison pill – a piece of corrupt data you can never process. They can swamp your system with infinite retries.
+
+Say you want to process requests in sequence.
+
+9 requests go great, the 10th is a poison pill. Your code gets stuck trying and retrying for days.
+
+Meanwhile users 11 to 11,000 storm your email saying the service is down. But it's not down, it's stuck.
+
+The solution are [dead letter queues](https://en.wikipedia.org/wiki/Dead_letter_queue). Queues designed to hold bad messages you couldn't process.
+
+Each queue-facing Lambda gets *two* queues:
+
+1. The normal trigger queue
+2. A dead letter queue for bad requests
+
+Like this in your `serverless.yml`:
+
+```yaml
+# serverless.yml
+
+functions:
+    worker:
+        handler: dist/lambdas/worker.handler
+        events:
+		        # triggering from SQS events
+            - sqs:
+                  arn:
+                      Fn::GetAtt:
+                          - WorkerQueue
+                          - Arn
+                  batchSize: 1
+                  
+resources:
+	Resources:
+        WorkerQueue:
+            Type: "AWS::SQS::Queue"
+            Properties:
+                QueueName: "WorkerQueue-${self:provider.stage}"
+                # send to deadletter after 10 retries
+                RedrivePolicy:
+                    deadLetterTargetArn:
+                        Fn::GetAtt:
+                            - WorkerDLQueue
+                            - Arn
+                    maxReceiveCount: 10
+        WorkerDLQueue:
+            Type: "AWS::SQS::Queue"
+            Properties:
+                QueueName: "WorkerDLQueue-${self:provider.stage}"
+                # keep messages for a long time to help debug
+                MessageRetentionPeriod: 1209600 # 14 days
+```
+
+You have a worker lambda that runs from an SQS queue. When it fails, messages are retried.
+
+Now all you need is an alarm on dead letter queue size to remind you *"Hey something's wrong, you should check"*. 
+
+Bug in your code? Fix the bug, re-run worker from dead letter queue. No messages are lost.
+
+Bad messages? Drop 'em like it's hot.
+
 ## Alert an engineer
 
+The challenge with serverless systems is that you can't see what's going on. And you're not sitting there staring at logs.
+
+![](giphy:the_matrix_looking_at_logs)
+
+That would be silly, you've got work to do.
+
+Instead, you need a monitoring system. A way to keep tabs on your services and send you alerts. Email for small problems, slack for big problems, and text message for critical problems.
+
+At least that's what works for me.
+
+AWS has basic monitoring built-in, Datadog is great for more control. More on monitoring in the [Monitoring serverless apps chapter](https://serverlesshandbook.dev/serverless-monitoring)
+
 ## Control your flow
+
+Control your flow means looking at the performance of your system as a whole.
+
+Writing fast code is great, but if your super fast lambda feeds into a slow lambda, you're going to have a bad day. Work piles up, systems stop, customers complain.
+
+You want to ensure a smooth flow through your whole system.
+
+Computer science talks about this through [Queuing theory](https://en.wikipedia.org/wiki/Queueing_theory) and [stochastic modeling](https://en.wikipedia.org/wiki/Stochastic_process). Business folk talk about [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints).
+
+It's a huge field :)
+
+We'll talk more about it in the [Serverless performance](https://serverlesshandbook.dev/serverless-performance) chapter.
