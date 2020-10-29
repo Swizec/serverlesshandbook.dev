@@ -1,9 +1,14 @@
-import { Box, Flex, Button } from "rebass"
-import { Banner, NavGrid, Container, Grid, LogoGrid, Image } from ".."
-import Logo from "../components/logo"
-import GumroadButton from "../components/GumroadButton"
-import Avatar from "../components/avatar"
 import { graphql } from "gatsby"
+import { Box, Flex, Button } from "rebass"
+import {
+  Avatar,
+  Banner, 
+  NavGrid, 
+  Container,
+  Grid,
+  GumroadButton,
+  GumroadOverlay
+} from 'course-platform'
 import HomeTitle from "../components/home-title"
 
 export const pageQuery = graphql`
@@ -101,7 +106,7 @@ export const pageQuery = graphql`
   </Box>
 </Box>
 
-<Grid py={5} sx={{ fontWeight: 'bold' }}>
+<Grid gap={2} py={3} sx={{ fontWeight: 'bold' }}>
 
 - Get started with Serverless backend technologies
 - Build your first backends, or your 10th in a new way ;)

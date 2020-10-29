@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, Flex } from "rebass"
-import GumroadButton from "./GumroadButton"
+import {GumroadButton} from "course-platform"
 import * as coverImg from '../images/cover.svg'
 
 const HomeTitle = () => (
@@ -21,7 +21,7 @@ const HomeTitle = () => (
     </Box>
 
     <Box sx={{marginTop: '10px'}}>
-      <GumroadButton  >
+      <GumroadButton>
         <a
           className="gumroad-button"
           href="https://gum.co/qdNn?wanted=true"

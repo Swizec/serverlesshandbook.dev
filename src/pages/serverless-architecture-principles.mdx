@@ -4,8 +4,6 @@ export const description = "Learn how to design a serverless system that keeps w
 
 export const image = "/chapter_headers/architecture-principles.png"
 
-import { Giphy } from "../components/giphy"
-
 # Architecture principles
 
 ![](../images/chapter_headers/architecture-principles.svg)
@@ -35,7 +33,7 @@ Back to my desk, my heart sank: 3% of all API requests were failing. For reasons
 
 Every user action, every background process on the web, on iOS *and* on Android, every time you opened our site or accessed the app 👉 3% chance of failure. At our usual 10 requests per second, that's 18 errors every minute!
 
-<Giphy search="oh crap" />
+![](giphy:oh-crap)
 
 Wanna know the best part?
 
@@ -79,7 +77,7 @@ So what does *99.95% monthly uptime percentage* mean in practice?
 > 
 > “Availability” is calculated for each 5-minute interval as the percentage of Requests processed by Lambda that do not fail with Errors and relate solely to the provisioned Lambda functions. If you did not make any Requests in a given 5-minute interval, that interval is assumed to be 100% available.
 
-<Giphy search="head scratch" />
+![](giphy:head-scratch)
 
 Let's run the numbers.
 
@@ -101,7 +99,7 @@ Pretty good right?
 
 *1069 errors per day.*
 
-<Giphy search="oof" />
+![](giphy:oof)
 
 ## How to design a resilient architecture
 
