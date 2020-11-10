@@ -15,7 +15,7 @@
     "dependencies": {
         "@mdx-js/mdx": "^1.1.4",
         "@mdx-js/react": "^1.1.4",
-        "course-platform": "*",
+        "@swizec/gatsby-theme-course-platform": "^1.0.0",
         "gatsby": "^2.23.3",
         "gatsby-plugin-manifest": "^2.2.23",
         "gatsby-plugin-mdx": "^1.0.22",

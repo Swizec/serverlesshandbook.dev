@@ -13,7 +13,7 @@ module.exports = {
     },
   },
   plugins: [
-    "course-platform",
+    "@swizec/gatsby-theme-course-platform",
     {
       resolve: "gatsby-plugin-manifest",
       options: {

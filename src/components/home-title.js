@@ -1,6 +1,6 @@
 import React from "react"
 import { Box, Flex } from "rebass"
-import {GumroadButton} from "course-platform"
+import {GumroadButton} from "@swizec/gatsby-theme-course-platform"
 import * as coverImg from '../images/cover.svg'
 
 const HomeTitle = () => (

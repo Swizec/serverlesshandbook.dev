@@ -9,10 +9,10 @@ import {
     Header,
     Reactions,
     SkipLink
-} from "course-platform"
+} from "@swizec/gatsby-theme-course-platform"
 import Nav from "./nav"
-import { default as PaywallCopy } from "../../components/paywall"
-import QuickThanks from "../../components/quickthanks"
+import { default as PaywallCopy } from "../../../components/paywall"
+import QuickThanks from "../../../components/quickthanks"
 
 const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
