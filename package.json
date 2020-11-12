@@ -13,12 +13,8 @@
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
     },
     "dependencies": {
-        "@mdx-js/mdx": "^1.1.4",
-        "@mdx-js/react": "^1.1.4",
         "@swizec/gatsby-theme-course-platform": "^1.0.0",
         "gatsby": "^2.23.3",
-        "gatsby-plugin-manifest": "^2.2.23",
-        "gatsby-plugin-mdx": "^1.0.22",
         "react": "^16.8.6",
         "react-dom": "^16.8.6"
     },
