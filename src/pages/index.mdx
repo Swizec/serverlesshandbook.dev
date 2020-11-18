@@ -2,13 +2,13 @@ import { graphql } from "gatsby"
 import { Box, Flex, Button } from "rebass"
 import {
   Avatar,
-  Banner, 
-  NavGrid, 
+  Banner,
+  NavGrid,
   Container,
   Grid,
   GumroadButton,
-  GumroadOverlay
-} from '@swizec/gatsby-theme-course-platform'
+  GumroadOverlay,
+} from "@swizec/gatsby-theme-course-platform"
 import HomeTitle from "../components/home-title"
 
 export const pageQuery = graphql`
@@ -46,10 +46,13 @@ export const pageQuery = graphql`
 
 <Banner>
 
+
 <HomeTitle />
 
-<Box my='auto' />
-<NavGrid>
+<Box my="auto" />
+
+<NavGrid style={{fontFamily:'Neuton, sans-serif'}}>
+
 
 - [Getting Started](/getting-started)
 - [Serverless Pros & Cons](/serverless-pros-cons)
@@ -74,7 +77,9 @@ export const pageQuery = graphql`
 </NavGrid>
 </Banner>
 
+
 <Container py={5}>
+
 
 <Box width={[1, 1, 1 / 2]} sx={{ margin: "0 auto" }}>
   <Box
@@ -108,6 +113,7 @@ export const pageQuery = graphql`
 
 <Grid gap={2} py={3} sx={{ fontWeight: 'bold' }}>
 
+
 - Get started with Serverless backend technologies
 - Build your first backends, or your 10th in a new way ;)
 - Designed for frontend engineers diving into backend tech for the first time
@@ -121,6 +127,7 @@ export const pageQuery = graphql`
 
 </Grid>
 
+
 <Box sx={{ textAlign: "center" }}>
   <GumroadButton>
     <Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
@@ -130,6 +137,7 @@ export const pageQuery = graphql`
 </Box>
 
 <Grid width={448} py={5}>
+
 
 - > “I work with React but I want to learn the other technologies and how to use them with react”
 
@@ -157,6 +165,7 @@ export const pageQuery = graphql`
 
 </Grid>
 
+
 ## Get Started
 
 <GumroadButton>
@@ -166,3 +175,4 @@ export const pageQuery = graphql`
 </GumroadButton>
 
 </Container>
+
