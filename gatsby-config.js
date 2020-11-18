@@ -1,4 +1,3 @@
-
 module.exports = {
   siteMetadata: {
     title: `Serverless Handbook`,
@@ -28,6 +27,6 @@ module.exports = {
         icon: "./static/icon.png",
       },
     },
-    "gatsby-plugin-offline",
+    // "gatsby-plugin-offline",
   ],
 }
