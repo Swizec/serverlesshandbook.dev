@@ -17303,6 +17303,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeface-lato@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/typeface-lato/-/typeface-lato-1.1.13.tgz#630ec75394d7fd2c63148005e6e23f2d8014e931"
+  integrity sha512-sTn5k3+fagGOi8FQfN2MPeUiTdvG0Z3LVqCaQdsg2sYa0fzNteFZussizdwiPxF45OoFN3zdU/ci+PtjolNSPQ==
+
 typeface-merriweather-sans@^0.0.72:
   version "0.0.72"
   resolved "https://registry.yarnpkg.com/typeface-merriweather-sans/-/typeface-merriweather-sans-0.0.72.tgz#7fe0c291f71a61050215d4c1c73b9b5556622a85"
@@ -17312,6 +17317,21 @@ typeface-merriweather@^0.0.72:
   version "0.0.72"
   resolved "https://registry.yarnpkg.com/typeface-merriweather/-/typeface-merriweather-0.0.72.tgz#2b990f5293252052d51d170c82d3892319ff0555"
   integrity sha512-gO0+fcZ1fTyKUsYY1ltYOOTI6FmBGeEdyIfeQg9NL8aInndk0feiJJVJsKHm/DiyYrnQEezraAQhz/KQoqMGtw==
+
+typeface-merriweather@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/typeface-merriweather/-/typeface-merriweather-1.1.13.tgz#c6f0564bc0346174f4da8daf282d27bfa802f06f"
+  integrity sha512-ho6xe/y/uHIKVXsFtK+dJfRCD5KZqJCMYTCcXfuCwQHQbeQ83a7hVkxfRMTEIjZOSXw5SevOjnwJuZ5QgWEHiw==
+
+typeface-neuton@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/typeface-neuton/-/typeface-neuton-1.1.13.tgz#2582b1b588e29d216a05a493e14f0faf2b9c6d0f"
+  integrity sha512-7U7/5sEs/30J9vHeFwk3nKs9kkSPSrxJ8027TVYQi6ZfpSL2JfxuNZr8OQ+wsXcRvrjr7CkZ8bzFUDFpowq5ow==
+
+typeface-open-sans@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/typeface-open-sans/-/typeface-open-sans-1.1.13.tgz#32a09ebd7df59601e01ad81216f98ce641eeafd1"
+  integrity sha512-lVGVHvYl7UJDFB9vN8r7NHw3sVm7Rjeow6b9AeABc/J+2mDaCkmcdVtw3QZnsJW39P+xm5zeggIj9gLHYGn9Iw==
 
 typography-breakpoint-constants@^0.16.19:
   version "0.16.19"
@@ -17324,6 +17344,23 @@ typography-theme-parnassus@^0.16.19:
   integrity sha512-Gd3ar5wHNOnEeHlR4cVZy2JpnM4PKYGdJgr05HD+MbGKzj8/Nq2ddiBR7HEJxE9b0g18g/kc8vq2RXVVYucrfw==
   dependencies:
     compass-vertical-rhythm "^1.2.1"
+    gray-percentage "^2.0.0"
+    typography-breakpoint-constants "^0.16.19"
+
+typography-theme-stow-lake@^0.16.19:
+  version "0.16.19"
+  resolved "https://registry.yarnpkg.com/typography-theme-stow-lake/-/typography-theme-stow-lake-0.16.19.tgz#423b2d7bae6abaaf5fb607de046d57f9d0a356e9"
+  integrity sha512-0Fyllx2k+fsn/bIiEedUXonPBA3ORM8XOlD/GRdsIMDqYT4vrhxrQ1i0Kfwbh7/Fdsho+fWq4C5GlCPj2Ok6Hg==
+  dependencies:
+    compass-vertical-rhythm "^1.2.1"
+    gray-percentage "^2.0.0"
+    typography-breakpoint-constants "^0.16.19"
+
+typography-theme-sutro@^0.16.19:
+  version "0.16.19"
+  resolved "https://registry.yarnpkg.com/typography-theme-sutro/-/typography-theme-sutro-0.16.19.tgz#9fb9ca6d4cf4fc101f33ceb3a7b77ae68b443247"
+  integrity sha512-oTOv97G0YGwG6HnzeuA3bXLCiLHY5122qmgqeOSIMSsQOEWHYzbx9gARQWTeTjANiOveIhZAftUezx8ZjEKXSQ==
+  dependencies:
     gray-percentage "^2.0.0"
     typography-breakpoint-constants "^0.16.19"
 

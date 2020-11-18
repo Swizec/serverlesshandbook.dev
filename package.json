@@ -16,7 +16,13 @@
         "@swizec/gatsby-theme-course-platform": "^1.0.0",
         "gatsby": "^2.23.3",
         "react": "^16.8.6",
-        "react-dom": "^16.8.6"
+        "react-dom": "^16.8.6",
+        "typeface-lato": "^1.1.13",
+        "typeface-merriweather": "^1.1.13",
+        "typeface-neuton": "^1.1.13",
+        "typeface-open-sans": "^1.1.13",
+        "typography-theme-stow-lake": "^0.16.19",
+        "typography-theme-sutro": "^0.16.19"
     },
     "engines": {
         "node": "12.x"
