@@ -3,13 +3,13 @@ import { Box, Flex, Button } from "rebass"
 import {
   Avatar,
   Banner,
-  NavGrid,
   Container,
   Grid,
   GumroadButton,
   GumroadOverlay,
 } from "@swizec/gatsby-theme-course-platform"
 import HomeTitle from "../components/home-title"
+import { NavGrid } from "../components/NavgGrid"
 
 export const pageQuery = graphql`
   query {
@@ -51,12 +51,12 @@ export const pageQuery = graphql`
 
 <Box my="auto" />
 
-<NavGrid style={{fontFamily:'Neuton, sans-serif'}}>
+<NavGrid>
 
 
 - [Getting Started](/getting-started)
 - [Serverless Pros & Cons](/serverless-pros-cons)
-- [AWS, Zeit, Netlify, or Firebase](/serverless-flavors)
+- [Choosing Providers](/serverless-flavors)
 - [Create Good serverless DX](/serverless-dx)
 - [Architecture principles](/serverless-architecture-principles)
 - [Lambdas, queues, etc](/serverless-elements)
@@ -65,9 +65,9 @@ export const pageQuery = graphql`
 - [Using GraphQL](/serverless-graphql)
 - [Lambda pipelines](/lambda-pipelines)
 - [Robust backend design](/robust-backend-design)
-- [Monitoring serverless apps](/serverless-monitoring)
+- [Monitoring ](/serverless-monitoring)
 - [Dev, QA, and prod](/dev-qa-prod)
-- [Running Chrome puppeteer](/serverless-chrome-puppeteer)
+- [Using Chrome puppeteer](/serverless-chrome-puppeteer)
 - [Serverless performance](/serverless-performance)
 - [Dealing with authentication](/serverless-authentication)
 - [Handling secrets](/handling-secrets)
@@ -75,6 +75,8 @@ export const pageQuery = graphql`
 - [Glossary](/glossary)
 
 </NavGrid>
+
+
 </Banner>
 
 
