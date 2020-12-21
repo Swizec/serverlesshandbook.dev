@@ -10,15 +10,15 @@ export const image = "/chapter_headers/good-dx.png"
 
 What makes a good developer experience?
 
-Answers on twitter were all over the place, but they shared a common theme:
+Answers on twitter were all over the place and shared a common theme:
 
 > Good developer experience is when tools make your job easier, get out of the way, and let you focus on *your* code
 
 https://twitter.com/Swizec/status/1195742841877610496
 
-So how do you setup a serverless project for good DX?
+How do you setup a serverless project for good DX?
 
-It comes down to 3 things:
+It comes down to 3 features:
 
 1. Infrastructure-as-code
 2. Fast deploys
@@ -28,17 +28,17 @@ It comes down to 3 things:
 
 https://twitter.com/muditameta/status/1195783892512444417
 
-As we touched upon in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) with AWS. When using Netlify and Zeit you don't need Serverless because config-as-code is baked into their philosophies.
+As I mentioned in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) with AWS. When using Netlify and Vercel you don't need Serverless because config-as-code is baked into their philosophies.
 
 You write a configuration file, add it to version control, and that's your infrastructure. *Nothing* happens outside that configuration file.
 
 This means that:
 
 1. **Your deploys are replicable**. Run deploy, get the same result every time. The same functions, the same queues, the same caching servers, everything.
-2. **Same infrastructure in test as in prod** Subtle differences between test environments and production are a waste of your time. Infrastructure-as-code fixes that. Also why Docker got so popular, maybe you've heard of it 😛
-3. **Share infrastructure between the team**. Ever had to ask a team member what environment variable they used for that thing? I have. Always takes 2 hours hunting down the problem before you notice it's a configuration issue.
-4. **Infrastructure that always fits your feature branch** One of the problem on a larger team is building features in parallel that need different infrastructure. Say you added a new queue or cloud function. Instead of setting it up every time you test, you can use infra-as-code to do it for you.
-5. **Spend times in the tools you like, not confusing web UI** We're engineers, we like writing code. Not clicking around a web UI performing repetitive tasks that take 20 minutes.
+2. **Same infrastructure in test as in prod** Subtle differences between test environments and production are a waste of your time. Infrastructure-as-code fixes that. Big part of why Docker got popular.
+3. **Share infrastructure between the team**. Ever had to ask a team member what environment variable they used for a thing? I have. After 2 hours of digging into the problem to realize it's a configuration issue.
+4. **Infrastructure that always fits your feature branch** A common problem on a bigger team are features with different infrastructures. Say you added a new queue or cloud function. Instead of setting it up every time you test, you can use infra-as-code to do it for you.
+5. **Spend times in the tools you like, not confusing web UI** We're engineers, we like building things. Not clicking around a web UI doing repetitive tasks that take 20 minutes.
 
 ## Fast deploys
 
