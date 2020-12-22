@@ -1,4 +1,4 @@
-export const title = "Lambdas, queues, etc"
+export const title = "Elements of serverless – lambdas, queues, gateways, and more"
 
 export const description = "Learn about the elements of your serverless ecosystem and how they fit together"
 
@@ -14,15 +14,15 @@ Let me explain.
 
 ## Lambda – a cloud function
 
-"Lambda" comes from [lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus), a mathematical definition of functional programming Alonzo Church introduced in the 1930s. It is the alternative to Turing's [turing machines](https://en.wikipedia.org/wiki/Turing_machine) for describing a system that can [solve any solvable problem](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis). Turing machines describe iterative step-by-step programming, lambda calculus describes functions-calling-functions functional programming.
+"Lambda" comes from [lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus), a mathematical definition of functional programming Alonzo Church introduced in the 1930s. It is an alternative to Turing's [turing machines](https://en.wikipedia.org/wiki/Turing_machine) for describing a system that can [solve any solvable problem](https://en.wikipedia.org/wiki/Church%E2%80%93Turing_thesis). Turing machines describe iterative step-by-step programming, lambda calculus describes functions-calling-functions functional programming.
 
-Both approaches are equal in power.
+Both are equal in power.
 
-No wonder that AWS decided to name their cloud functions AWS Lambda. As the platform's popularity grew, the word "lambda" morphed into a generic term for cloud functions and the core building block of serverless computing.
+AWS named their cloud functions AWS Lambda. As the platform grew in popularity, the word "lambda" morphed into a generic term for cloud functions and the core building block of serverless computing.
 
-**A lambda is a function.** In this context, a function running as its own tiny server when triggered by an event.
+**A lambda is a function.** In this context, a function running as its own tiny server triggered by an event.
 
-Here's a lambda function (yes just like ATM Machine) that returns `"Hello world"` in response to an HTTP event.
+Here's a lambda function that returns `"Hello world"` in response to an HTTP event.
 
 ```typescript
 // src/handler.ts
@@ -37,20 +37,20 @@ export const handler = async (event: APIGatewayEvent) => {
 }
 ```
 
-A TypeScript file exports a function called `handler`. The function accepts an event and returns a response. The AWS Lambda machinery takes care of the rest.
+The TypeScript file exports a function called `handler`. The function accepts an event and returns a response. The AWS Lambda machinery handles the rest.
 
 Because this is a user-facing API method, it accepts an AWS API Gateway event and returns an HTTP style response. Status code and body.
 
-Other providers and services will have different events and expect different responses, but **a lambda always follows this pattern 👉 function with an event and a return value.**
+Other providers and services have different events and expect different responses, but **a lambda always follows this pattern 👉 function with an event and a return value.**
 
 ### Considerations with lambda functions
 
-Your functions should follow functional programming practices:
+Your functions should follow functional programming principles:
 
-- **idempotent** – multiple invocations with the same inputs must produce the same result
-- **pure** – a function can't rely on anything it isn't fetching itself. Your environment does not persist, data in local memory can vanish any time. Rely on the arguments you're given and nothing else.
-- **light on side-effects** – you need *some* side-effects to make changes to your system. Make sure those come in the form of invoking other functions and services. *State inside your lambda does not persist*
-- **do one thing and one thing only** – small functions focused on a single task are easiest to understand and combine
+- **idempotent** – multiple calls with the same inputs produce the same result
+- **pure** – rely on the arguments you're given and nothing else. Your environment does not persist, data in local memory might vanish.
+- **light on side-effects** – you need side-effects to make changes like writing to a database. Make sure those come in the form of calling other functions and services. *State inside your lambda does not persist*
+- **do one thing and one thing only** – small functions focused on one task are easiest to understand and combine
 
 Small functions work together to produce extraordinary results. Like this example of [combining Twilio and AWS Lambda to answer the door](https://swizec.com/blog/how-i-answer-the-door-with-aws-lambda-and-twilio/swizec/9255).
 
@@ -69,11 +69,11 @@ functions:
                   cors: true
 ```
 
-Define a `helloworld` function and say it's handled by the `handler` method exported from the `dist/helloworld` file. Notice that we're running a build step for TypeScript so while the code is in `src/`, we run it from `dist/`.
+Define a `helloworld` function and say it maps to the `handler` method exported from `dist/helloworld`. We're using a build step for TypeScript the code is in `src/`, but we run it from `dist/`.
 
-`events` lists triggers to fire this function. An HTTP GET request on the path `/helloworld` for us.
+`events` lists triggers that run this function. An HTTP GET request on the path `/helloworld` in this case.
 
-Other common triggers include Queues, S3 changes, and CloudWatch events. At least in the AWS world.
+Other typical triggers include Queues, S3 changes, CloudWatch events, and DynamoDB listeners. At least on AWS.
 
 ## Queue
 
@@ -83,34 +83,34 @@ You can think of the queue data structure as a list of items.
 
 ![](../images/queue.png)
 
-`enqueing` adds items to the back of a queue, `dequeing` takes them out the front. Items in the middle wait their turn. Just like a lunch-time burrito queue at a food truck. First come first serve, or FIFO for short (first in first out).
+`enqueing` adds items to the back of a queue, `dequeing` takes them out the front. Items in the middle wait their turn. Like a lunch-time burrito queue. First come first serve, FIFO for short (first in first out).
 
 <div id="lock" />
 
 **A messaging queue takes this data structure and scales it into a service.** 
 
-Different implementations of messaging queues exist and they all share these core properties:
+Different implementations exist and they all share these core properties:
 
-- **persistent storage** – queues have to be reliable so they store messages in a database. Redis is common for its speed, Postgres works, too. You could even write to a file. Most queues prioritize speed and use in-memory storage.
-- **a worker process** – once you have messages, you need to process them. A process can periodically check, if there's something new [(polling)](https://en.wikipedia.org/wiki/Polling_(computer_science)). Another approach is triggering this check every time a message arrives.
-- **a trigger API** – when the queue sees a new message, it triggers your code. In serverless that means running your lambda, in traditional environments it's another worker process.
-- **a retry/error policy** – most queues help you deal with errors. When you fail to process a message, it goes back on the queue and gets retried later.
+- **persistent storage** – queues have to be reliable and store messages in a database. Most queues prioritize speed and use in-memory storage like Redis.
+- **a worker process** – once you have messages, you need to process them. A process periodically checks, if there's something new [(polling)](https://en.wikipedia.org/wiki/Polling_(computer_science)). Another approach is to trigger this check every time a message arrives.
+- **a trigger API** – when the queue sees a new message, it runs your code. In serverless that means running your lambda, in traditional environments it's another worker process.
+- **a retry/error policy** – queues help you deal with errors. When you fail to process a message, it goes back on the queue and gets retried later.
 
-Many modern queues add time to the mix. You can *schedule* messages for later. 2 seconds, 2 minutes, 2 days, whatever you want. Some queues limit how long messages can stay.
+Many modern queues add time to the mix. You can *schedule* messages for later. 2 seconds, 2 minutes, 2 days, ... Some queues limit how long messages can stick around.
 
-**Time is particularly useful when dealing with errors.**
+### Time helps with errors
 
-Server processes can [fail for any reason at any time](/architecture-principles). The error is often temporary so queues use an [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) when retrying. Giving your system more and more time to recover from issues.
+Server processes can [fail for any reason at any time](/architecture-principles). For temporary errors a queue can use [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) when retrying. Giving your system more and more time to recover from issues.
 
-Try to process a message. It fails. Try again 1 second later. Fails. Retry in 2 seconds. Fail. 4 seconds ...
+Try to process a message. It fails. Try after 1 second. Fails. Retry in 2 seconds. Fail. 4 seconds ...
 
-I've seen corrupt messages, also known as poison pills, backing off as far as days into the future. We'll talk about dealing with unprocessable messages in the [Robust Backend Design](/robust-backend-design) chapter.
+I've seen corrupt messages, known as poison pills, backing off days into the future. We about handling unprocessable messages in the [Robust Backend Design](/robust-backend-design) chapter.
 
 ### Defining a queue
 
-AWS SimpleQueueService is a great queue service I've found in the AWS serverless ecosystem. More powerful alternatives exist, but they require more setup, more upkeep, and have features you might not need.
+AWS SimpleQueueService is a great queue service for the AWS serverless ecosystem. More powerful alternatives exist, but require more setup, more upkeep, and have features you might not need.
 
-> Always use the simplest and smallest service that solves your problem until you know *why* you need something better ✌️
+> Always use the simplest and smallest service that solves your problem until you know *why* you need more ✌️
 
 Using the serverless framework, you define an SQS queue in the `resources` section like this:
 
@@ -123,11 +123,11 @@ resources:
                 QueueName: "MyQueue-${self:provider.stage}"
 ```
 
-A resource name `MyQueue` of the SQS Queue type with a queue name of `MyQueue-{stage}`. Adding the stage to your queue name allows you to deploy to different logical environments without collisions.
+A resource named `MyQueue` of the SQS Queue type with a queue name of `MyQueue-{stage}`. Adding the stage to your queue name allows different logical environments without collisions. More on that in [the Dev, QA, and Prod chapter](/dev-qa-prod)
 
-Make sure you use correct capitalization. 
+Make sure you use correct capitalization. The second `Resources` must be capitalized, so do `Type`, `Properties`, and `QueueName`. 
 
-The second `Resources` must be capitalized, so do `Type`, `Properties`, and `QueueName`. That's because you're dropping a layer below Serverless and writing AWS's native Serverless Application Model (SAM) configuration. It's what the serverless framework compiles configuration to before deploying.
+Capitalization matters because you're dropping a layer below Serverless and writing AWS's native Serverless Application Model (SAM) configuration. It's what your config compiles to before deploying.
 
 ### Processing a queue
 
@@ -146,11 +146,11 @@ functions:
                   batchSize: 1
 ```
 
-A lambda triggered each time `MyQueue` has a new message to process. With a `batchSize` of 1, each message is processed on its own lambda – a good practice for initial implementations. More about batch sizes in the [Lambda Workflows](/lambda-workflows) and [Robust Backend Design](/robust-backend-design) chapters.
+A lambda triggered each time `MyQueue` has a new message to process. With a `batchSize` of 1, each message runs its own lambda – a good practice for initial implementations. More about batch sizes in the [Lambda Workflows](/lambda-workflows) and [Robust Backend Design](/robust-backend-design) chapters.
 
-The weird yaml syntax reads as: *an SQS event fired by a queue with the ARN identifier of getAttribute(Arn) from MyQueue*. Amazon Resource Names, ARN, are unique identifiers for each resource in your AWS account.
+The strange yaml syntax reads as: *an SQS event fired by a queue with the ARN identifier of getAttribute(Arn) from MyQueue*. Amazon Resource Names, ARN, are unique identifiers for each resource in your AWS account.
 
-That `myQueue.handler` lambda would look like this:
+The `myQueue.handler` lambda would look like this:
 
 ```typescript
 import { SQSEvent, SQSRecord } from "aws-lambda";
@@ -168,46 +168,58 @@ export const handler = async (event: SQSEvent) => {
 };
 ```
 
-An async function that accepts an `SQSEvent`, which contains multiple messages depending on `batchSize`. Never assume the total number because the setting might change without warning.
+An async function that accepts an `SQSEvent`, which contains multiple messages depending on `batchSize`. Never assume the total number because that setting might change.
 
-Extract messages into an array of strings and process them. Throw an error when something goes wrong so SQS can retry. Return true on success.
+Extract messages into an array of strings and process with a loop. Throw an error when something goes wrong so SQS can retry. Return true on success.
+
+### SNS
+
+A useful alternative to SQS is the Simple Notification Service – SQS. Similar behavior, except you can't store messages on the queue.
+
+With SNS each message sends *once*. If you don't catch it, it's gone.
+
+But unlike SQS, each message can trigger multiple services.
 
 ## API Gateway
 
-You might not realize this, but most servers don't talk directly to the internet.
+You might not realize this, but servers don't talk directly to the internet.
 
 ![](giphy:whaaat)
 
-Most servers are protected by a [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) – a server specializing in taking raw internet requests and routing them to application servers.
+Most servers are protected by a [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) – a server that specializes in taking raw internet requests and routes them to application servers.
 
 ![](../images/api-gateway.png)
 
 Requests come from the wild internet into the proxy. The proxy then decides:
 
 - is this a valid request?
-- will this request break stuff?
+- will this request break the system?
 - which type of server can handle this?
 - which instance of that server should do it?
 
-Validating requests can involve everything from checking for denial of service attacks, verifying permissions, and even A/B testing or firewall protection.
+Validating requests can involve checking for denial of service attacks, verifying permissions, firewall protection, and even A/B testing.
 
-Once verified the request is passed to an instance of your application server. I say instance because this is where [horizontal scaling](https://en.wikipedia.org/wiki/Scalability#HORIZONTAL-SCALING) comes into play.
+Once verified the request goes to an instance of your application server. This is where [horizontal scaling](https://en.wikipedia.org/wiki/Scalability#HORIZONTAL-SCALING) comes into play.
 
-Amazon calls its reverse proxies API Gateways. Different providers might have different names and they all perform the same function: Take request from the internet and pass it on to your lambda. Often on a fresh new container for near infinite scale. 🤘
+Amazon calls their reverse proxy service API Gateway. 
+
+Other providers might have different names and they all perform the same function: Take request from the internet and pass it on to your lambda.
 
 ## Static file storage – S3
 
-The serverless world is ephemeral which means you can't save files just anywhere. 
+The serverless world is ephemeral which means you can't save files just anywhere.
 
-Adding them to your code makes spinning up new containers slow. Can't save locally either because your server goes away after each request.
+Adding large files to your code makes running new containers slow. And you can't save locally because your server disappears after each request.
 
 Static file storage services solve that problem. 
 
-AWS S3 is the most common. Some of you might remember FTP. Most other services I've seen use S3 behind the scenes. Perhaps because it's really cheap to save files there.
+AWS S3 is the most common. Other hosting services often act as an S3 abstraction. Pundits have called S3 the 8th wonder of the world.
 
-You can think of S3 as a hard drive with an API. Read and write files, get their URL, stuff like that.
+https://twitter.com/QuinnyPig/status/1220805676168970246
 
-Each file gets a URL served by a server optimized for static files. No code, no nothing. Just a raw file flying through HTTP.
+You can think of S3 as a hard drive with an API. Read and write files, get their URL, etc.
+
+Each file gets a URL backed by a server optimized for static files. No code, no dynamic changes. A raw file flying through HTTP.
 
 ## Static file server – CDN
 
@@ -215,33 +227,33 @@ Each file gets a URL served by a server optimized for static files. No code, no 
 
 CDNs – [content delivery networks](https://en.wikipedia.org/wiki/Content_delivery_network) – are the next step in static file storage. They're like a distributed caching system.
 
-Where S3 serves files from a central location, a CDN serves those same files from as close to the end user as possible. Reducing round-trip times and speeding up your website.
+Where S3 serves files from a central location, a CDN serves those same files from as close to the end user as possible. Speeding up your website by reducing latency.
 
-Configuration from your end goes something like this:
+Configuration on your end goes like this:
 
 1. Point the CDN to your static file URL
 2. The CDN gives you a new URL
 3. Use *that* URL in your client-side code
 
-You can often automate this part with build tools. Netlify and Zeit both handle it for you.
+You can automate this part with build tools. Netlify and Vercel both handle it for you.
 
-Now when a browser requests a file, the URL resolves to the physically nearest server. Request goes to that server, if it finds the file, it serves that request. If there's no file, the CDN server fetches it from your original source, saves it locally, and *then* sends it back to the user.
+Now when a browser requests a file, the URL resolves to the physically nearest server. Request goes to that server and if the file is there, it's served. If there's no file, the CDN goes to your original source, caches the file, and *then* sends it back to the user.
 
-And just like that JavaScript, HTML, images, CSS, and others are fast to load anywhere in the world. 👌
+And now your JavaScript, HTML, images, fonts, and CSS are fast to load anywhere in the world. 👌
 
 ## Logging
 
-Logging is one of the hardest problems in a distributed multi-service world. You can't just print to the console or write to a local file.
+Logging is one of the hardest problems in a distributed multi-service world. You can't print to the console or write to a local file.
 
-Nobody's looking at the console and files vanish after every request.
+You can't see the console and files vanish after every request.
 
-So what do you do?
+What do you do?
 
-You use a logging service and send logs to an API that collects them in a central location. Often these logs are organized by service so they're easier to follow.
+You use a logging service to send logs to a central location.
 
-Implementing a logging service yourself can be tricky (I've done it, do not recommend) and the AWS ecosystem has you covered with CloudWatch. Mostly. The UI tools for reading logs aren't the best and there's power user stuff you can't do, but it's a great start.
+Implementing a logging service yourself is tricky (I've done it, do not recommend) and the AWS ecosystem has you covered with CloudWatch. The UI tools for reading logs lack filtering and graphing features you'd want as a power user, but it's a great start.
 
-Anything you `console.log` is collected in CloudWatch alongside some default logs. 
+Anything you `console.log` is collected in CloudWatch alongside default logs.
 
 # Those are the important elements
 
@@ -254,5 +266,4 @@ Now you know the most important elements of your serverless ecosystem:
 - CDN for serving static files
 - logging to keep track
 
-There's a bunch more to discover, but that's the core. Next chapter we're gonna look at storing your data.
-
+There's a bunch more to discover, but that's the core. Next chapter we look at storing your data.
