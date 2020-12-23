@@ -1,11 +1,11 @@
-export const title = "Using GraphQL"
+export const title = "Serverless GraphQL API"
 
 export const description =
   "Learn why GraphQL, how GraphQL, does it replace REST, how to choose, and implement with Serverless"
 
 export const image = "/chapter_headers/serverless-graphql.png"
 
-# Using GraphQL
+# Serverless GraphQL API
 
 ![](../images/chapter_headers/serverless-graphql.svg)
 
@@ -14,7 +14,7 @@ Say you're building an app. It needs data from a server. What do you do?
 You make a `fetch()` request.
 
 ```javascript
-fetch("https://swapi.co/api/people/1/")
+fetch("https://swapi.dev/api/people/1/")
   .then((res) => res.json())
   .then(console.log)
 ```
@@ -31,42 +31,42 @@ And you get eeeevery piece of info about Luke Skywalker.
   "eye_color": "blue",
   "birth_year": "19BBY",
   "gender": "male",
-  "homeworld": "https://swapi.co/api/planets/1/",
+  "homeworld": "https://swapi.dev/api/planets/1/",
   "films": [
-    "https://swapi.co/api/films/2/",
-    "https://swapi.co/api/films/6/",
-    "https://swapi.co/api/films/3/",
-    "https://swapi.co/api/films/1/",
-    "https://swapi.co/api/films/7/"
+    "https://swapi.dev/api/films/2/",
+    "https://swapi.dev/api/films/6/",
+    "https://swapi.dev/api/films/3/",
+    "https://swapi.dev/api/films/1/",
+    "https://swapi.dev/api/films/7/"
   ],
-  "species": ["https://swapi.co/api/species/1/"],
+  "species": ["https://swapi.dev/api/species/1/"],
   "vehicles": [
-    "https://swapi.co/api/vehicles/14/",
-    "https://swapi.co/api/vehicles/30/"
+    "https://swapi.dev/api/vehicles/14/",
+    "https://swapi.dev/api/vehicles/30/"
   ],
   "starships": [
-    "https://swapi.co/api/starships/12/",
-    "https://swapi.co/api/starships/22/"
+    "https://swapi.dev/api/starships/12/",
+    "https://swapi.dev/api/starships/22/"
   ],
   "created": "2014-12-09T13:50:51.644000Z",
   "edited": "2014-12-20T21:17:56.891000Z",
-  "url": "https://swapi.co/api/people/1/"
+  "url": "https://swapi.dev/api/people/1/"
 }
 ```
 
-Well that's annoying ... all you wanted was his name and hair color. Why's the API sending you all this crap? 🤦‍♂️
+Frustrating ... all you wanted was his name and hair color. Why's the API sending you all this crap? 🤦‍♂️
 
 And what's this about Luke's species being `1`? What the heck is `1`?
 
-Okay, another fetch request.
+You make another fetch request.
 
 ```javascript
-fetch("https://swapi.co/api/species/1/")
+fetch("https://swapi.dev/api/species/1/")
   .then((res) => res.json())
   .then(console.log)
 ```
 
-You get a bunch of data about humans. Great.
+You get data about humans. Great.
 
 ```json
 {
@@ -78,79 +78,79 @@ You get a bunch of data about humans. Great.
   "hair_colors": "blonde, brown, black, red",
   "eye_colors": "brown, blue, green, hazel, grey, amber",
   "average_lifespan": "120",
-  "homeworld": "https://swapi.co/api/planets/9/",
+  "homeworld": "https://swapi.dev/api/planets/9/",
   "language": "Galactic Basic",
   "people": [
-    "https://swapi.co/api/people/1/",
-    "https://swapi.co/api/people/4/",
-    "https://swapi.co/api/people/5/",
-    "https://swapi.co/api/people/6/",
-    "https://swapi.co/api/people/7/",
-    "https://swapi.co/api/people/9/",
-    "https://swapi.co/api/people/10/",
-    "https://swapi.co/api/people/11/",
-    "https://swapi.co/api/people/12/",
-    "https://swapi.co/api/people/14/",
-    "https://swapi.co/api/people/18/",
-    "https://swapi.co/api/people/19/",
-    "https://swapi.co/api/people/21/",
-    "https://swapi.co/api/people/22/",
-    "https://swapi.co/api/people/25/",
-    "https://swapi.co/api/people/26/",
-    "https://swapi.co/api/people/28/",
-    "https://swapi.co/api/people/29/",
-    "https://swapi.co/api/people/32/",
-    "https://swapi.co/api/people/34/",
-    "https://swapi.co/api/people/43/",
-    "https://swapi.co/api/people/51/",
-    "https://swapi.co/api/people/60/",
-    "https://swapi.co/api/people/61/",
-    "https://swapi.co/api/people/62/",
-    "https://swapi.co/api/people/66/",
-    "https://swapi.co/api/people/67/",
-    "https://swapi.co/api/people/68/",
-    "https://swapi.co/api/people/69/",
-    "https://swapi.co/api/people/74/",
-    "https://swapi.co/api/people/81/",
-    "https://swapi.co/api/people/84/",
-    "https://swapi.co/api/people/85/",
-    "https://swapi.co/api/people/86/",
-    "https://swapi.co/api/people/35/"
+    "https://swapi.dev/api/people/1/",
+    "https://swapi.dev/api/people/4/",
+    "https://swapi.dev/api/people/5/",
+    "https://swapi.dev/api/people/6/",
+    "https://swapi.dev/api/people/7/",
+    "https://swapi.dev/api/people/9/",
+    "https://swapi.dev/api/people/10/",
+    "https://swapi.dev/api/people/11/",
+    "https://swapi.dev/api/people/12/",
+    "https://swapi.dev/api/people/14/",
+    "https://swapi.dev/api/people/18/",
+    "https://swapi.dev/api/people/19/",
+    "https://swapi.dev/api/people/21/",
+    "https://swapi.dev/api/people/22/",
+    "https://swapi.dev/api/people/25/",
+    "https://swapi.dev/api/people/26/",
+    "https://swapi.dev/api/people/28/",
+    "https://swapi.dev/api/people/29/",
+    "https://swapi.dev/api/people/32/",
+    "https://swapi.dev/api/people/34/",
+    "https://swapi.dev/api/people/43/",
+    "https://swapi.dev/api/people/51/",
+    "https://swapi.dev/api/people/60/",
+    "https://swapi.dev/api/people/61/",
+    "https://swapi.dev/api/people/62/",
+    "https://swapi.dev/api/people/66/",
+    "https://swapi.dev/api/people/67/",
+    "https://swapi.dev/api/people/68/",
+    "https://swapi.dev/api/people/69/",
+    "https://swapi.dev/api/people/74/",
+    "https://swapi.dev/api/people/81/",
+    "https://swapi.dev/api/people/84/",
+    "https://swapi.dev/api/people/85/",
+    "https://swapi.dev/api/people/86/",
+    "https://swapi.dev/api/people/35/"
   ],
   "films": [
-    "https://swapi.co/api/films/2/",
-    "https://swapi.co/api/films/7/",
-    "https://swapi.co/api/films/5/",
-    "https://swapi.co/api/films/4/",
-    "https://swapi.co/api/films/6/",
-    "https://swapi.co/api/films/3/",
-    "https://swapi.co/api/films/1/"
+    "https://swapi.dev/api/films/2/",
+    "https://swapi.dev/api/films/7/",
+    "https://swapi.dev/api/films/5/",
+    "https://swapi.dev/api/films/4/",
+    "https://swapi.dev/api/films/6/",
+    "https://swapi.dev/api/films/3/",
+    "https://swapi.dev/api/films/1/"
   ],
   "created": "2014-12-10T13:52:11.567000Z",
   "edited": "2015-04-17T06:59:55.850671Z",
-  "url": "https://swapi.co/api/species/1/"
+  "url": "https://swapi.dev/api/species/1/"
 }
 ```
 
-That's a lot of data just to get the word `"Human"` out of the [Star Wars API](https://swapi.co/) ...
+That's a lot of JSON to get the word `"Human"` out of the [Star Wars API](https://swapi.dev/) ...
 
 ![](giphy:eyeroll)
 
-What about all of Luke's starships? There's just 2 and yet that's 2 more API requests ...
+What about Luke's starships? There's 2 and that means 2 more API requests ...
 
 ```javascript
-fetch("https://swapi.co/api/starships/12/")
+fetch("https://swapi.dev/api/starships/12/")
   .then((res) => res.json())
   .then(console.log)
 
-fetch("https://swapi.co/api/starships/22/")
+fetch("https://swapi.dev/api/starships/22/")
   .then((res) => res.json())
   .then(console.log)
 ```
 
-I don't even wanna know how much data those dump out ...
+Wanna know how much JSON that dumps? Try a guess. 🙄
 
-You've just made **4 API requests** and transferred a shitload of data to find out that Luke Skywalker is human, has blond hair, and flies an X-Wing and an Imperial Shuttle.
+You made **4 API requests** and transferred a shitload of data to find out that Luke Skywalker is human, has blond hair, and flies an X-Wing and an Imperial Shuttle.
 
 And guess what, you didn't cache anything. How often do you think this data changes? Once a year? Twice?
 
@@ -162,82 +162,82 @@ Here's what the same process looks like with GraphQL.
 
 ```graphql
 query luke {
-  Person(name: "Luke Skywalker") {
+  // id found through allPeople query
+  person(id: "cGVvcGxlOjE=") {
+    name
     name
     hairColor
     species {
       name
     }
-    starships {
-      name
+    starshipConnection {
+      starships {
+        name
+      }
     }
   }
 }
 ```
 
-And the API returns what you wanted with a single request.
+And the API returns what you wanted with 1 request.
 
 ```json
 {
   "data": {
-    "Person": {
+    "person": {
       "name": "Luke Skywalker",
-      "hairColor": ["BLONDE"],
-      "species": [
-        {
-          "name": "Human"
-        }
-      ],
-      "starships": [
-        {
-          "name": "X-wing"
-        },
-        {
-          "name": "Imperial shuttle"
-        }
-      ]
+      "hairColor": "blond",
+      "species": null,
+      "starshipConnection": {
+        "starships": [
+          {
+            "name": "X-wing"
+          },
+          {
+            "name": "Imperial shuttle"
+          }
+        ]
+      }
     }
   }
 }
 ```
 
-Wait what 😲
+An API mechanism that gives you flexibility on the frontend, slashes API requests, _and doesn't transfer data you don't need?_
 
-An API mechanism that gives you total flexibility on the frontend, slashes API requests to almost nothing, _and doesn't transfer a bunch of data you don't need?_
+😲
 
-That's amazing!
+Write a query, say what you want, send to an endpoint, GraphQL figures out the rest. Want different params? Just say so. Want multiple models? Got it. Wanna go deep? You can.
 
-You write a query, specify what you want, send to an endpoint, and GraphQL figures out the rest. Want different params? Just say so. Want multiple models? Got it. Wanna go deep? You can.
+Without changes on the server. Within reason.
 
-All without making any changes on the server. Within reason.
-
-Many GraphQL libraries add caching so you don't make the same calls too often. Some even consolidate queries so that making 10 requests real fast gets wrapped into a single API call. 😲
+GraphQL client libraries can add caching to avoid duplicate requests. And because queries are structured, clients can merge queries into 1 API call.
 
 I fell in love the moment it clicked.
 
 ![](https://media.giphy.com/media/7FyMQm2vBiTjG/giphy.gif)
 
-You can [try it out on graph.cool's public playground](https://swapi.graph.cool/)
+You can [try it on graphql.org's public playground](http://graphql.org/swapi-graphql)
 
 <div id="lock" />
 
 ## What _is_ GraphQL
 
-GraphQL is an open-source data query and manipulation language for APIs, and a runtime for fulfilling queries with existing data. [[1]](https://en.wikipedia.org/wiki/GraphQL)
+GraphQL is an open-source data query and manipulation language for APIs and a runtime for fulfilling queries with existing data. [[1]](https://en.wikipedia.org/wiki/GraphQL)
 
-Often touted as a replacement for REST, GraphQL is really a different approach to building an API. Better suited for common use-cases and with its own set of drawbacks.
+Touted as a replacement for REST, GraphQL is really a different approach to APIs. Better common use-cases and with its own drawbacks.
 
-Don't let the propaganda fool you 👉 you can and should use both REST and GraphQL. Most real world projects need both.
+Don't let the propaganda fool you 👉 you can and *should* use both REST *and* GraphQL. Depends what you're doing.
 
-GraphQL's main benefit is its declarative nature.
+GraphQL's benefit is its declarative nature.
 
-On the client, you describe what you want using its shape and GraphQL figures out how to get it. On the server, you write resolver functions for specific sub-queries and GraphQL combines them into the full result.
+On the client, you describe the shape of what you want and GraphQL figures it out. On the server, you write resolver functions for sub-queries and GraphQL combines them into the full result.
 
-So while REST queries can be declarative on the client, GraphQL is declarative on both ends. For reads _and_ writes.
+REST queries can be declarative on the client, GraphQL is declarative on both ends. For reads _and_ writes.
 
 ### GraphQL queries
 
-GraphQL queries fetch data. They follow this pattern:
+GraphQL queries fetch data. Following this pattern:
 
 ```graphql
 query {
@@ -247,9 +247,9 @@ query {
 }
 ```
 
-You nest fields – often representing database models – and their properties into queries to describe the data-shape you're looking for. You can go as deep as you want.
+You nest fields – representing your models – and properties into queries to describe what you're looking for. You can go as deep as you want.
 
-Write fields side-by-side to create the effect of executing multiple queries with a single API request.
+Write fields side-by-side to execute multiple queries with a single API request.
 
 ```graphql
 query {
@@ -266,7 +266,7 @@ query {
 
 This is where the power and flexibility come from.
 
-With variables you can create dynamic queries and even construct complex filters to further limit the scope of your result.
+With variables you can create dynamic queries and build complex filters to limit the scope of your result.
 
 ```graphql
 query queryName($filterProp: "value") {
@@ -279,11 +279,11 @@ query queryName($filterProp: "value") {
 
 `$filterProp` defines a new variable that the `field()` lookup uses to filter results for those matching `"value"`.
 
-GraphQL comes with basic equality filters built-in and you're encouraged to add more abilities in your resolvers. Many projects choose to support sorting, greater-than, not-equals, etc.
+GraphQL comes with basic equality filters built-in and you're encouraged to add more in your resolvers. Typical projects choose to support sorting, greater-than, not-equals, etc.
 
 ### GraphQL mutations
 
-GraphQL mutations are used to write data. They follow this pattern:
+GraphQL mutations write data. Following this pattern:
 
 ```graphql
 mutation {
@@ -293,11 +293,11 @@ mutation {
 }
 ```
 
-Similar to a query with arguments, you specify what you're updating and pass-in the update arguments. What's available depends on how mutation resolvers are implemented on the server.
+Like a query with arguments, you specify what you're updating and pass the update arguments. What's available depends on how mutation resolvers are implemented on the server.
 
-The mutation body specifies which properties you want returned. You can nest these as deep as you'd like.
+The mutation body specifies what you'd like returned. Same as a query.
 
-Just like queries, you can specify multiple mutations side-by-side and use variables.
+Like queries, you can put mutations side-by-side and use variables.
 
 ```
 mutation mutationName($argument: "value") {
@@ -311,23 +311,23 @@ mutation mutationName($argument: "value") {
 }
 ```
 
-## GraphQL vs. REST, which to use when
+## GraphQL vs. REST, which to use and when
 
 The GraphQL vs. REST debate is a false dichotomy.
 
-People like to say GraphQL is _replacing_ REST and that's simply not the case. GraphQL is _augmenting_ REST.
+People like to say GraphQL is _replacing_ REST and that's not the case. GraphQL is _augmenting_ REST.
 
-Will GraphQL become the future default API layer? Yes, probably.
+Will GraphQL become the default API layer? It might.
 
-Should you rip out your existing REST API and rewrite everything for GraphQL? Please don't.
+Should you rip out your REST API and rewrite for GraphQL? Please don't.
 
-GraphQL doesn't care where data comes from. Relational database, NoSQL database, files, a REST API, another GraphQL API ... doesn't matter. If you can write a function to fetch data in response to a query, that's all you need.
+GraphQL doesn't care where data comes from. Relational database, NoSQL database, files, a REST API, another GraphQL API ... All you need is a function that reads data in response to a query.
 
-In fact, [you can start using GraphQL _without_ changing your existing server](https://swizec.com/blog/how-you-can-start-using-graphql-today-without-changing-the-backend/swizec/9350) with a GraphQL middle layer. Create a GraphQL server and make it talk to your REST API.
+You can [start using GraphQL without changing your existing server](https://swizec.com/blog/how-you-can-start-using-graphql-today-without-changing-the-backend/swizec/9350) with a GraphQL middle layer. Create a GraphQL server on top of your REST API.
 
 ![](giphy:wow)
 
-### So how do you choose between REST and GraphQL?
+### How do you choose between REST and GraphQL?
 
 When building a typical CRUD – Create, Read, Update, Delete – API, I like to ask 6 questions:
 
@@ -338,19 +338,19 @@ When building a typical CRUD – Create, Read, Update, Delete – API, I like t
 5. Updating a few properties on an object? _GraphQL_
 6. Submitting large payloads to be saved? _REST_
 
-Use upserts to deal with Create _and_ Update. Avoid deletes – update a `deleted` flag instead and use soft deletes.
+Use upserts to deal with Create and Update. Avoid deletes.
 
 ### Should you expose your entire data model verbatim?
 
 No.
 
-Exposing your full data model is a common mistake in API design for both GraphQL and REST.
+Exposing your full data model is a common mistake in API design. 
 
-Define a logical API using [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design) instead. How your backend stores data for max performance and good database design differs from how your consumers think about that data.
+Define a clean API using [domain driven design](https://en.wikipedia.org/wiki/Domain-driven_design). How your backend stores data for max performance and good database design differs from how clients think about that data.
 
-Exposing server internals like that is a leaky abstraction and might lead to performance and security issues. _And_ it makes your API hard to use.
+An "access to everything" API style is hard to use, leads to security issues, is difficult to maintain, and tightly couples servers and clients. You'll have to update both server and client for any DB change. 
 
-There's also the question of derived and computed properties with complex business logic. You don't want to re-implement those on the client using raw data from your database.
+Then there's the question of derived and computed properties with complex business logic. You don't want to re-implement those on the client using raw data from your database.
 
 ## How to create a serverless GraphQL server
 
