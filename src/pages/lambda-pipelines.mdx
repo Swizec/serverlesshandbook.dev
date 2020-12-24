@@ -1,7 +1,7 @@
 export const title = "Lambda pipelines for serverless data processing"
 
 export const description =
-  "Learn how to build a robust massively distributed data, event, or message processing pipeline"
+  "Build a robust massively distributed data, event, or message processing pipeline"
 
 export const image = "/chapter_headers/lambda-workflows.png"
 
@@ -9,45 +9,43 @@ export const image = "/chapter_headers/lambda-workflows.png"
 
 ![](../images/chapter_headers/lambda-workflows.svg)
 
-You get tens of thousands of events every hour. How do you process them?
+You get tens of thousands of events per hour. How do you process that?
 
-You've got a shitload of data. What do you do?
+You've got a ton of data. What do you do?
 
 Users send hundreds of messages per minute. Now what?
 
-You could learn Elixir and Erlang – purpose built languages for message processing used in 4G routers and packet switching networks. But is that really where you want your career to go?
+You could learn Elixir and Erlang – purpose built languages for message processing used in 4G routers and packet switching networks. But is that where you want your career to go?
 
 You could try [Kafka](https://kafka.apache.org/) or [Hadoop](https://hadoop.apache.org/). Tools designed for big data, used by large organizations for mind-boggling amounts of data. Are you ready for that?
 
-Elixir, Erlang, Kafka, Hadoop and such are all wonderful tools. If you know how to use them. For most, they're a pain in the ass with a significant learning curve and plenty of devops work to keep them running.
+Elixir, Erlang, Kafka, Hadoop etc are wonderful tools, if you know how to use them. But there's a significant learning curve and devops work to keep them running.
 
 You have to maintain servers, write code in obscure languages, and deal with problems we're trying to avoid.
 
 ## Serverless data processing
 
-What you can do instead is to use your existing skills to build a data processing pipeline.
+Instead, you can leverage existing skills to build a data processing pipeline.
 
-I've used this approach to process millions of daily events in production with just 0.0007% data loss. A rate of 7 events lost per 1,000,000.[^1]
+I've used this approach to process millions of daily events in production with barely a 0.0007% loss of data. A rate of 7 events lost per 1,000,000.[^1]
 
-We used it to gather business and engineering analytics. Like a distributed `console.log` that writes to a central database.
+We used it to gather business and engineering analytics. A distributed `console.log` that writes to a central database. That's how I know you should never build a distributed logging system unless it's your core business 😉
 
 ![High level architecture for distributed logging and tracing](../images/distributed-logging.png)
 
-This system would accept batches of events, process them to add additional info about user and server state, then save each event for easy retrieval.
+The system accepts batches of events, adds additional info about user and server state, then saves each event for easy retrieval.
 
-It got so cushy, we even use it for tracing and debugging hard to track down bugs in production. Pepper your code with `console.log`, wait for an error, see what happened.
+It was so convenient, we even used it for tracing and debugging in production. Pepper your code with `console.log`, wait for an error, see what happened.
 
 ![](giphy:perfection)
 
-You can build a similar system to process almost anything.
+A similar system can process almost anything.
 
-Works great for problems you can split into independent tasks. Avoid for large inter-dependent operations.
-
-Great for preparing data. Bad for machine learning.
+Great for problems you can split into independent tasks like prepping data. Avoid for large inter-dependent operations like machine learning.
 
 ## Architectures for serverless data processing
 
-You can think of serverless data processing as using `.map` and `.reduce` at scale. Inspired by Google's infamous [MapReduce programming model](https://en.wikipedia.org/wiki/MapReduce). The same approach used by big data processing frameworks behind the scenes.
+Serverless data processing works like `.map` and `.reduce` at scale. Inspired by Google's infamous [MapReduce programming model](https://en.wikipedia.org/wiki/MapReduce). Big data processing frameworks use this.
 
 Work happens in 3 steps:
 
@@ -55,47 +53,45 @@ Work happens in 3 steps:
 2. **Map** over your data
 3. **Reduce** into output format
 
-Let's say you're building an adder. Multiply every number by 2 then sum.
+Say you're building an adder: multiply every number by 2 then sum.
 
 <div id="lock" />
 
-Using functional programming patterns in JavaScript, you'd write something like this:
+Using functional programming patterns in JavaScript, you'd write code like this:
 
 ```javascript
 const result = [1, 2, 3, 4, 5] // input array
-  .map((n) => n * 2) // multiply each by 2
+  .map(n => n * 2) // multiply each by 2
   .reduce((sum, n) => sum + n, 0) // sum together
 ```
 
-Each of those steps is independent.
+Each step is independent.
 
-The `n => n*2` function doesn't need to know anything other than its `n`. The `(sum, n) => sum+n` function only needs the current `sum` and `n`.
+The `n => n*2` function only needs `n`. The `(sum, n) => sum+n` function needs the current `sum` and `n`.
 
-That means you can distribute them. Run each on a separate Lambda in parallel. Thousands at a time.
+That means you can distribute the work. Run each on a separate Lambda in parallel. Thousands at a time.
 
-You go from slow algorithm to as fast as a single operation. With infinite scale, you could process an array of 10,000,000 as fast as an array of 10.
+You go from a slow algorithm to as fast as a single operation, known as [Amdahl's Law](https://en.wikipedia.org/wiki/Amdahl%27s_law). With infinite scale, you could process an array of 10,000,000 as fast as an array of 10.
 
 ![](giphy:mind_blown)
 
-There's limitations of course.
+Lambda limits you to 1000 parallel invocations. Individual steps can be slow (like when transcoding video). And you're limited by the `reduce` step.
 
-Lambda limits you to 1000 invocations in parallel. Individual steps could be slow (like when transcoding video). And you're fundamentally limited by the `reduce` step.
+Performance is best when reduce is un-necessary. Performance is worst when reduce needs to iterate over every element in 1 call and can't be distributed.
 
-Performance is best when reduce is un-necessary. Performance is slowest when reduce needs to iterate over every element in a single call and can't be distributed.
-
-Our adder is commutative so we can split the reduce step into parallel operations using chunks of data.
+Our adder is [commutative](https://en.wikipedia.org/wiki/Commutative_property) and we can parallelize the reduce step using chunks of data.
 
 ![Distributed adder architecture](../images/processing-architecture.png)
 
-In practice you'll find some transformations don't need a reduce step and some need multiple `map` steps. They all follow this basic architecture. :)
+In practice you'll find transformations that don't need a reduce step or require many maps. All follow this basic architecture. :)
 
-And for the comp sci nerds 👉 this has no impact on [big-O complexity](https://en.wikipedia.org/wiki/Big_O_notation). Underlying algorithm is just as complex, you're changing its real-world performance.
+For the comp sci nerds 👉 this has no impact on [big-O complexity](https://en.wikipedia.org/wiki/Big_O_notation). You're changing real-world performance, not the algorithm.
 
 ## Build a distributed data processing pipeline
 
-Let's build that adder and learn how to construct a robust massively distributed data processing pipeline. We're keeping the operation itself simple so we can focus on the architecture.
+Let's build that adder and learn how to construct a robust massively distributed data processing pipeline. We're keeping the operation simple so we can focus on the architecture.
 
-This is the JavaScript code we're distributing.
+Here's the JavaScript code we're distributing.
 
 ```javascript
 const result = [1, 2, 3, 4, 5] // input array
@@ -117,9 +113,7 @@ We're going to use 3 [Serverless Elements](/serverless-elements) to get there:
 2. queues
 3. storage
 
-You can see the [full code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-data-pipeline-example). I'll share the important parts here.
-
-Throughout, I'll share some ideas how you can make the system even more robust.
+You can see the [full code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-data-pipeline-example).
 
 ### The elements
 
@@ -127,35 +121,33 @@ We're using 3 lambdas, 2 queues, and 2 DynamoDB tables.
 
 **3 Lambdas**
 
-1. `sumArray` – this is our API-facing lambda. It accepts a request and kicks off the process
-2. `timesTwo` – this is the map lambda. It accepts a number, multiplies by 2, and triggers the next step.
-3. `reduce` – this lambda combines intermediary steps into the final result. It is the most complex.
+1. `sumArray` is our API-facing lambda. Accepts a request and kicks off the process
+2. `timesTwo` is the map lambda. Accepts a number, multiplies by 2, and triggers the next step.
+3. `reduce` combines intermediary steps into the final result. It's the most complex.
 
-Our lambdas are all written in TypeScript and each does just 1 part of the process. That keeps them easier to understand.
+Our lambdas are written in TypeScript and each does 1 part of the process.
 
 **2 Queues**
 
-1. `TimesTwoQueue` – holds messages from `sumArray` and uses them to trigger `timesTwo`.
-2. `ReduceQueue` – holds messages from `timesTwo` and uses them to trigger `reduce`. Also used by `reduce` to trigger itself.
+1. `TimesTwoQueue` holds messages from `sumArray` and calls `timesTwo`.
+2. `ReduceQueue` holds messages from `timesTwo` and calls `reduce`, which also uses the queue to trigger itself.
 
-We're using [SQS – Simple Queue Service – queues](https://aws.amazon.com/sqs/) for their reliability. An SQS queue stores messages for up to 14 days and keeps retrying your Lambda until it succeeds.
+We're using [SQS – Simple Queue Service – queues](https://aws.amazon.com/sqs/) for their reliability. An SQS queue stores messages for up to 14 days and keeps retrying until your Lambda succeeds.
 
-When something goes wrong, you don't have to think about it. There's almost no chance a message gets lost.
+When something goes wrong there's little chance a message gets lost unless you're eating errors. If your code doesn't throw, SQS interprets that as success.
 
-Messages only vanish when your Lambda accepts a message, fails to process it, and doesn't throw an error. SQS interprets this as success.
+You can configure max retries and how long a message should stick around. When it exceeds those deadlines, you can configure a Dead Letter Queue to store the message.
 
-You can configure max retries and how long a message should stick around. When it exceeds those deadlines, you can configure a so-called Dead Letter Queue to store the message instead.
-
-DLQ's are useful for alternate processing of bad messages. Send an alert to yourself, store it in a different table, _something_ that helps you debug what's going on.
+DLQ's are useful for processing bad messages. Send an alert to yourself, store it in a different table, debug what's going on.
 
 **2 tables**
 
-1. `scratchpad table` for intermediary results from `timesTwo`. Using a table made `reduce` easier to implement and debug.
+1. `scratchpad table` for intermediary results from `timesTwo`. A table made `reduce` easier to implement and debug.
 2. `sums table` for final results
 
 ### Step 1 – the API
 
-Before you can process data, you need to get data into the system. We use a [Serverless REST API](/serverless-rest-api) for this purpose.
+You first need to get data into the system. We use a [Serverless REST API](/serverless-rest-api) for this.
 
 ```yaml
 # serverless.yml
@@ -172,9 +164,9 @@ functions:
         Ref: TimesTwoQueue
 ```
 
-`sumArray` is an endpoint that accepts POST requests and pipes them into the `sumArray.handler` function. We give it the URL for our `TimesTwoQueue` as an environment variable.
+`sumArray` is an endpoint that accepts POST requests and pipes them into the `sumArray.handler` function. We set the URL for our `TimesTwoQueue` as an environment variable.
 
-We define the queue like this:
+Define the queue like this:
 
 ```yaml
 # serverless.yml
@@ -187,13 +179,13 @@ resources:
         VisibilityTimeout: 60
 ```
 
-It's an SQS queue postfixed with the current stage so we can split between production and development.
+It's an SQS queue postfixed with the current stage, which helps us split between production and development.
 
-The [`VisibilityTimeout`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html) says that when your Lambda accepts a message, it has 60 seconds to process it. After that SQS will assume you never _actually_ received the message and give it to someone else.
+The [`VisibilityTimeout`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html) says that when your Lambda accepts a message, it has 60 seconds to process. After that SQS assumes you never received the message and tries again.
 
 Distributed systems are fun like that.
 
-The `sumArray.ts` Lambda accepting requests looks like this:
+The `sumArray.ts` Lambda that accepts requests looks like this:
 
 ```typescript
 // src/timesTwo.ts
@@ -230,7 +222,7 @@ export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
 }
 ```
 
-Get API request, create an `arrayId`, parse JSON body, iterate over the input, return success and the new `arrayId`. Consumers can use this ID to later identify their result.
+Get API request, create an `arrayId`, parse JSON body, iterate over the input, return success and the new `arrayId`. Consumers can late use this ID identify their result.
 
 ### Triggering the next step
 
@@ -254,17 +246,17 @@ Each packet contains:
 
 - `arrayId` to identify which input it belongs to
 - `packetId` to identify the packet itself
-- `packetValue` as the value. You could use this to store entire JSON blobs or whatever is meaningful to you.
+- `packetValue` as the value. You could use this to store entire JSON blobs.
 - `arrayLength` to help `reduce` know how many packets to expect
 - `packetContains` to help `reduce` know when it's done
 
-Almost everything here is metadata to help our processing pipeline. `packetValue` is the real data.
+Most properties are metadata to help our processing pipeline. `packetValue` is the data.
 
-[`sendSQSMessage`](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-data-pipeline-example/src/utils.ts#L11) is a helper method that sends and SQS message using the AWS SDK.
+[`sendSQSMessage`](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-data-pipeline-example/src/utils.ts#L11) is a helper method that sends an SQS message using the AWS SDK.
 
 ### Step 2 – the map
 
-Our map step uses the `timesTwo` lambda, which handles each packet in isolation.
+Our map step uses the `timesTwo` lambda and handles each packet in isolation.
 
 ```yaml
 # serverless.yml
@@ -283,11 +275,11 @@ functions:
         Ref: ReduceQueue
 ```
 
-`timesTwo` handles events from the `TimesTwoQueue` using the `timesTwo.handler` method. It gets the `reduceQueueURL` as an environment variable so it can trigger the next step.
+`timesTwo` handles events from the `TimesTwoQueue` using the `timesTwo.handler` method. It gets the `reduceQueueURL` as an environment variable to trigger the next step.
 
-AWS and SQS ensure our lambda gets called and keeps retrying when something goes wrong. Perfect to let you re-deploy when there's a bug ✌️
+AWS and SQS call our lambda and keep retrying when something goes wrong. Perfect to let you re-deploy when there's a bug ✌️
 
-The lambda itself looks like this:
+The lambda looks like this:
 
 ```typescript
 // src/timesTwo.ts
@@ -342,20 +334,20 @@ export const handler = async (event: SQSEvent) => {
 
 Accept an event from SQS, parse JSON body, do the work, store intermediary results, trigger `reduce` step for each input.
 
-Depending on your `batchSize` config, SQS might call your lambda with multiple messages. This is to help you optimize cost and find the right balance between number of executions and execution time.
+SQS might call your lambda with multiple messages depending on your `batchSize` config. This helps you optimize cost and find the right balance between the number of executions and execution time.
 
-### Triggering the next step
+### Trigger the next step
 
-Triggering the next step happens in 2 parts here
+Triggering the next step happens in 2 parts
 
 1. store intermediary result
 2. trigger next lambda
 
-Storing intermediary results makes implementing the next lambda easier and means we're kind of implementing a queue on top of DynamoDB. That's okay because it also makes the system easier to debug.
+Storing intermediary results makes implementing the next lambda easier. We're building a faux queue on top of DynamoDB. That's okay because it makes the system easier to debug.
 
-Something went weird? Check the intermediary table, see what's up.
+Something went wrong? Check intermediary table, see what's up.
 
-To store results, we iterate over them, fire a DynamoDB `updateItem` query, and await all queries to finish.
+We iterate over results, fire a DynamoDB `updateItem` query, and await the queries.
 
 ```typescript
 // src/timesTwo.ts
@@ -403,17 +395,17 @@ We use an ES6 Set to get a list of unique array ids from our input message. You 
 
 Distributed systems are fun :)
 
-For each unique input, we trigger a reduce lambda via `ReduceQueue`. Having a single `reduce` stream makes some things easier for this example. You should go for parallelism in real life.
+For each unique input, we trigger a reduce lambda via `ReduceQueue`. A single `reduce` stream makes this example easier. You should try for parallelism in production.
 
 ### Step 3 – reduce
 
 Combining intermediary steps into the final result is the most complex part of our example.
 
-The simplest approach is to take the entire input and combine in 1 step. With large datasets this becomes impossible, however. Especially if combining elements is a costly operation.
+The simplest approach is to take the entire input and combine in 1 step. With large datasets this becomes impossible. Especially if combining elements is a big operation.
 
-Instead, you can combine 2 elements at a time and run your reduce step in parallel.
+You could combine 2 elements at a time and run the reduce step in parallel.
 
-Fine-tuning for number of invocations and speed of execution will result in an N somewhere between 2 and All. Best numbers depend on what exactly you're doing.
+Fine-tuning for number of invocations and speed of execution will result in an N somewhere between 2 and All. Optimal numbers depend on what you're doing.
 
 Our reduce function uses the `scratchpad table` as a queue:
 
@@ -426,7 +418,7 @@ Like this:
 
 ![How rows in the scratchpad table get combined](../images/reduce-table.png)
 
-At each invocation we take 2 packets like this:
+At each invocation we take 2 packets:
 
 ```
 {
@@ -461,7 +453,7 @@ And combine them into a new packet
 
 When the count of included packets – `packetContains` – matches the total array length – `arrayLength` – we know this is the final result and write it into the results table.
 
-Like I said, this is the complicated bit.
+Like I said, this is the complicated part.
 
 ### The reduce step code
 
@@ -481,7 +473,7 @@ export const handler = async (event: SQSEvent) => {
 }
 ```
 
-Grab `arrayId`s from the SQS event and wait until all `reduceArray` calls are done.
+Grab `arrayId`s from the SQS event and wait until `reduceArray` calls are done.
 
 Then the `reduceArray` function does its job:
 
@@ -554,19 +546,19 @@ async function reduceArray(arrayId: string) {
 
 Gets 2 entries from the DynamoDB table[^2] and combines them into a new packet.
 
-This packet _must_ have a new `packetId`. It's a new entry into the faux processing queue on DynamoDB.
+This packet _must_ have a new `packetId`. It's a new entry for the faux processing queue on DynamoDB.
 
-Insert that back and if that succeeds, remove the previous 2 elements using their `arrayId/packetId` combination.
+Insert that back and if it succeeds, remove the previous 2 elements using their `arrayId/packetId` combination.
 
-If our new `packetContains` is greater than or equal to the total `arrayLength`, we know the computation is now complete. Write results to the final table.
+If our new `packetContains` is greater than or equal to the total `arrayLength`, we know the computation is complete. Write results to the final table.
 
 ## Conclusion
 
-In conclusion, Lambda processing pipeline are a powerful tool that can help you process large amounts of data or user events in near real-time. I have yet to find a way to swamp one of these in production so it started lagging.
+Lambda processing pipelines are a powerful tool that can process large amounts of data in near real-time. I have yet to find a way to swamp one of these in production.
 
-Usually slow downs happen where you have to introduce throttling to limit how fast you're processing because a downstream system can't take that much load.
+Slow downs happen where you have to introduce throttling to limit processing because a downstream system can't take the load.
 
 ✌️
 
-[^1]: Our dataloss happened because of our use of Postgres. Sometimes in some cases it would fail to insert a row, but wouldn't throw an error. We mitigated that with some workarounds and some of the problem remained. At that point we decided this was okay enough.
+[^1]: Our dataloss happened because of Postgres. Sometimes it would fail to insert a row, but wouldn't throw an error. We mitigated with various workarounds but a small loss remained. At that point we decided it was good enough.
 [^2]: We use a `Limit: 2` argument to limit how much of the table we scan through. Don't need more than 2, don't read more than 2. Keeps everything snappy
