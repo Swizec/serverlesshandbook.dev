@@ -356,16 +356,16 @@ Then there's the question of derived and computed properties with complex busine
 
 ![Example create mutation from server below](../images/graphql-playground.png)
 
-There's many ways you can go about this. The most pleasant approach I've found is with [Apollo](https://www.apollographql.com/)'s [apollo-server-lambda](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-lambda) package, specifically designed for this purpose.
+There's many ways to build a GraphQL server, the nicest I've found is with [Apollo](https://www.apollographql.com/)'s [apollo-server-lambda](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-lambda) package.
 
-To create a GraphQL lambda, you follow a 4 step process:
+You follow a 4 step process:
 
-1. Add to your `serverless.yml` file
+1. Add lambda to your `serverless.yml` file
 2. Initialize the Apollo server
 3. Specify your schema
-4. Add your resolvers
+4. Add resolvers
 
-We created a [simple REST api](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) in the previous chapter, let's recreate the same functionality with GraphQL. Full [code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-graphql-example)
+We created a [small REST API](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) in the previous chapter, now let's recreate it with GraphQL. [Full code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-graphql-example)
 
 Apollo creates a GraphQL playground for us. You can try my implementation here:
 
@@ -374,11 +374,11 @@ Apollo creates a GraphQL playground for us. You can try my implementation here:
   style={{ width: "120%", border: 0, height: "600px" }}
 ></iframe>
 
-Make sure to change the URL inside the playground to: `https://yrqqg5l31m.execute-api.us-east-1.amazonaws.com/dev/graphql`. Apollo always drops the `/dev/` part for some reason.
+Change the URL inside the playground to: `https://yrqqg5l31m.execute-api.us-east-1.amazonaws.com/dev/graphql`. Apollo drops the `/dev/` part.
 
 ### serverless.yml
 
-We define a new Lambda function in our `functions:` section.
+We define a new function in the `functions:` section.
 
 ```yaml
 # serverless.yml
@@ -397,15 +397,13 @@ functions:
           cors: true
 ```
 
-I like to use the `/graphql` endpoint for everything, but you could split the API into sections and use different lambdas for different areas.
+I like to use the `/graphql` endpoint for everything. You can split the API into sections and use a lambdas per section.
 
-Make sure to define both `GET` and `POST` endpoints. `GET` serves the Apollo playground and `POST` handles the queries and mutations.
-
-And I recommend enabling CORS, so you can talk to the server from wherever you host your client.
+Make sure to define both `GET` and `POST` endpoints. `GET` serves the Apollo playground, `POST` handles the queries and mutations.
 
 ### initialize Apollo server
 
-Every Apollo server needs a schema, a resolvers object, and the initialized server. You can add more bells and whistles later. This is what you need to get started:
+Every Apollo server needs a schema, a resolvers object, and the initialized server. Like this:
 
 ```typescript
 // src/graphql.ts
@@ -425,23 +423,21 @@ const server = new ApolloServer({ typeDefs: schema, resolvers })
 
 export const handler = server.createHandler({
   cors: {
-    origin: "*", // for security in production, lock this to your real endpoints
+    origin: "*", // for security in production, lock this to your real URLs
     credentials: true,
   },
 })
 ```
 
-This server won't run yet because the `schema` and `resolvers` are mismatched. Resolvers have fields that the schema does not.
+This server won't run because the `schema` and `resolvers` don't match. Resolvers have fields that the schema does not.
 
-But that's the basic shape.
-
-We'll add type definitions to the schema and a resolver for each `Query` and `Mutation` we add.
+We'll add type definitions to the schema and a resolver for each `Query` and `Mutation`.
 
 ### specify your schema
 
-Schema defines the broad shape of your API. It specifies every type of object your server returns and all query and mutation definitions.
+Your schema defines the shape of your API. Every type of object your server returns and every query and mutation definition.
 
-You get a type-safe API because GraphQL ensures objects follow this schema. Both when coming into the API and flying out.
+You get a type-safe API because GraphQL ensures objects follow this schema. Both when coming into the API and when flying out.
 
 To mimic our [CRUD API from before](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest), we use a schema like this:
 
@@ -468,21 +464,21 @@ const schema = gql`
 `
 ```
 
-We used to let users store and retrieve arbitrary JSON blobs and we can't do that with GraphQL. So we define an `Item` type with an arbitrary `body` string.
+With REST, users could store and retrieve arbitrary JSON blobs. GraphQL doesn't support that. Instead, we define an `Item` type with an arbitrary `body` string.
 
 You can use that to store serialized JSON objects.
 
-We also specify that each item will have an `id`, a `name`, and a couple timestamps managed by the server. Those help you with debugging later on.
+Each item will have an `id`, a `name`, and a few timestamps managed by the server. Those help with debugging.
 
-Our one `item()` query lets us retrieve items and requires an `id` to work. That's the exclamation point after `String`.
+Our one `item()` query lets you retrieve items and requires an `id` to work. That's the exclamation point after `String`.
 
-Then we have a mutation for upserting items and a mutation for deleting. We'll implement hard deletes to keep parity with the CRUD implementation from the REST chapter.
+Then we have a mutation for upserting items and a mutation for deleting.
 
 ### create your resolvers
 
 We have 1 query and 2 mutations. That means we'll need 3 resolver functions.
 
-We can mostly copy these from the [REST implementation](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) as the only difference is how we get arguments.
+We can copy these from the [REST implementation](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest). Only difference is how we get arguments.
 
 I like to put queries in a `src/queries.ts` file and mutations in a `src/mutations.ts`. You can organize this by model as your implementation grows.
 
@@ -516,11 +512,11 @@ export const item = async (_: any, args: { id: string }) => {
 }
 ```
 
-We can ignore Apollo's first resolver argument for now. The second argument is where query and mutation arguments live.
+We can ignore Apollo's first resolver argument. The second argument is where query and mutation arguments come in.
 
-Since `id` is a required param, you don't have to check for nulls. GraphQL will handle that before ever calling your resolver.
+Since `id` is a required param, you don't have to check for nulls. GraphQL handles that before calling your resolver.
 
-Means you can call `getItem` on DynamoDB, or run a SQL query for a relational database, and return the result. GraphQL handles the rest.
+You can call `getItem` on DynamoDB, or run a SQL query for a relational database, and return the result. GraphQL handles the rest.
 
 One niggle to note 👉 DynamoDB considers `name` and `id` reserved attributes. We remap them to `itemName` and `itemId` when saving and have to map them back to pretty GraphQL attributes when reading.
 
@@ -528,11 +524,11 @@ This is what I meant by _"You don't want to expose raw database details to your 
 
 #### updateItem()
 
-The `updateItem()` mutation is our most complex.
+The `updateItem()` mutation is our upsert.
 
-It creates a new item when you don't provide an `id` and updates an existing item when you do. If the item isn't found, it throws an error.
+It creates a new item when you don't send an `id` and updates the existing item when you do. If no item is found, the mutation throws an error.
 
-And it keeps `createdAt` and `updatedAt` timestamps up to date.
+And it handles `createdAt` and `updatedAt` timestamps.
 
 ```
 // src/mutations.ts
@@ -590,21 +586,23 @@ export const updateItem = async (_: any, args: ItemArgs) => {
 
 We take the id from arguments or create a new one with `uuidv4()`.
 
-Then we try to find the item. If we could, we change `createdAt` to its old value so we don't overwrite. Otherwise we throw an error so users don't create new items by accident when providing bad identifiers.
+Then we try to find the item. 
 
-We define the `updateValues` then use some gnarly looking DynamoDB code to generate UPDATE expressions and attributes. This part is going to look gnarly no matter what DB you use, I think.
+If found, we change `createdAt` to the existing value. Otherwise we throw an error. Helps you avoid creating new items by accident because DynamoDB always upserts.
 
-In the end, we return whatever the database spat out and let GraphQL handle the rest.
+We define the `updateValues` and build a DynamoDB UPDATE query. This can look gnarly no matter what DB you use.
+
+In the end, we return the object our database spat out and let GraphQL handle the rest.
 
 #### deleteItem()
 
-The `deleteItem()` mutation is again a simple one. GraphQL and the database do most of the work for us.
+The `deleteItem()` mutation is simple. GraphQL and the database do the work for us.
 
 ```typescript
 // src/mutations.ts
 
 export const deleteItem = async (_: any, args: { id: string }) => {
-  // DynamoDB handles deleting already deleted files, no error :)
+  // DynamoDB handles deleting already deleted objects, no error :)
   const item = await db.deleteItem({
     TableName: process.env.ITEM_TABLE!,
     Key: {
@@ -619,11 +617,9 @@ export const deleteItem = async (_: any, args: { id: string }) => {
 
 We take the `id` from mutation arguments, ask our database to delete the row, and return the old attributes.
 
-That's it :)
-
 ### add resolvers to the GraphQL server
 
-You add these resolver to your `graphql.ts` like so:
+We built the resolvers, now we add them to `graphql.ts`:
 
 ```typescript
 // src/graphql.ts
@@ -644,25 +640,25 @@ const resolvers = {
 }
 ```
 
-That tells Apollo how to map queries and mutations to their resolvers. We could use generic global names because this is a small project.
+This tells Apollo how to map queries and mutations to resolvers. We can use generic names because this is a small project.
 
-You'll want to namespace this in bigger apps.
+You'll want to namespace in bigger apps.
 
 ### Try it out
 
-Run `yarn deploy` and voila, a GraphQL server. You even get an Apollo playground you can use to make sure everything's working.
+Run `yarn deploy` and you get a GraphQL server. There's even an Apollo playground that helps you test.
 
 <iframe
   src="https://yrqqg5l31m.execute-api.us-east-1.amazonaws.com/dev/graphql"
   style={{ width: "120%", border: 0, height: "600px" }}
 ></iframe>
 
-Make sure to change the URL inside the playground to: `https://yrqqg5l31m.execute-api.us-east-1.amazonaws.com/dev/graphql`. Apollo always drops the `/dev/` part for some reason.
+Make sure you change the URL inside the playground to: `https://yrqqg5l31m.execute-api.us-east-1.amazonaws.com/dev/graphql`. Apollo drops the `/dev/` part.
 
 ## GraphQL no-code services
 
-There are various GraphQL no-code services out there that look at your database and magic a GraphQL server into existence. I have not researched these yet.
+Wiring up GraphQL can get tedious. Lots of repetitive code.
 
-I'll let you know as soon as I do :)
+Various no-code and low-code solutions showed up that do the work for you. Look at your database and magic a GraphQL server into existence.
 
-My gut says that you'd want more control over your backend and API design than what these services likely provide.
+They tend to exhibit the *expose entire DB as API* problem. But they can be a good starting point.
