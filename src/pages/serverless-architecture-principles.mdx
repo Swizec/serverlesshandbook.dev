@@ -171,18 +171,16 @@ Catches errors in the retry system itself. ✌️
 
 ### A debuggable system is a good system
 
-Small actions that store *"Yes Did It"* state for each piece of data are easier to debug, too.
+Small actions that store *"Yes Did It"* state for each piece of data are easier to debug. You can look at your database to see which step failed.
 
-You can look at your database to see which step failed. The flags tell you.
+Replayability lets you can trigger the failed action for that data and see what happens.
 
-Then, because of replayability, you can trigger the failed action for that data and see what happens.
+Since actions are functions and your messages are plain data, you can test locally. Unit tests are great, running production code on production data in your terminal, that's wow.
 
-Since actions are functions and your messages are plain data, you can test locally. Unit tests are great, running production code on production data in your terminal, wow.
-
-And if that's not enough, add a logging. A well-placed `console.log` can do wonders.
+And if that's not enough, add logging. A well-placed `console.log` can do wonders.
 
 ## To recap
 
 Build your system out of small isolated pieces that talk to each other via queues.
 
-Next chapter we dive into queues and lambdas in more detail, and talk about how to tie them together into a system.
+Next chapter we dive into queues and lambdas, and talk about how to tie them together into a system.
