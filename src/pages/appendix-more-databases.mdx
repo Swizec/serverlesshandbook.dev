@@ -1,0 +1,527 @@
+export const title = "Appendix: Databases in more detail"
+
+export const description = "Serverless systems don't have a hard drive ... where do you keep your data?"
+
+export const image = '/chapter_headers/databases.png'
+
+# Appendix: Databases in more detail
+
+Read the additional details and insights that didn't fit into the main chapter on databases.
+
+## Flat file database
+
+![](../images/flat-file.png)
+
+The simplest way to store data is a [flat file database](https://en.wikipedia.org/wiki/Flat-file_database). Even if you call it "just organized files".
+
+Serverless systems don't have drives to store files so these flat file databases aren't a popular choice. You'd have to use S3 or similar, which negates some of the built-in advantages.
+
+We mention them here because they're often a great choice and most engineers forget they exist.
+
+### Advantages of flat files
+
+Compared to other databases, flat files have zero overhead. Your data goes straight to storage without your database adding any logic on top.
+
+This gives flat files amazing write performance. As long as you're adding data to the end of a file.
+
+Optimizing file access for speed comes down to your operating system. Performance mostly has to do with [memory paging](https://en.wikipedia.org/wiki/Paging), [filesystem](https://en.wikipedia.org/wiki/File_system) configuration, [direct memory access](https://en.wikipedia.org/wiki/Direct_memory_access), and hardware-level optimizations.
+
+The end result is:
+
+- **fast append performance**, because you stream data from memory to drive without processor involvement
+- **fast read performance for common reads**, because computers use their memory as read-through cache. Once you read a file, subsequent reads come from much faster memory
+- **fast search for predicted lookups**, because you can structure your files in a way that makes common lookups instant
+- **great scalability**, because you can spread your data over as many servers as you'd like
+
+### Disadvantages of flat files
+
+Where flat files struggle are data updates. 
+
+To add a line at the beginning of a file, you have to move the whole thing. To change a line in the middle, you have to update everything that comes after.
+
+Another problem is lack of a query interface. 
+
+You have to read all your files to compare, analyze, and search. If you didn't think of a use-case beforehand, you're left with a slow search through everything.
+
+- **slow data updates**, because you often have to rewrite more than just the changes
+- **no data shape guarantees**, because you can store individual  data items any way you like. If you change your schema, you have to deal with inconsistencies, or rewrite your data
+- **slow broad reads**, because you lose benefits of read-through-cache, if you read data across your entire database with random patterns
+- **no ACID compliance** unless you build it yourself at the application layer
+
+### How to use flat files
+
+A flat-file database happens any time you write data to files in a structured manner. Photos on your phone are a great example. 
+
+When you take a photo, your phone stores it as a file. Filenames often follow a naming convention – `IMG_0001`, `IMG_0002`, etc. Some cameras add dates.
+
+Now you can sequentially access photos. Start at the beginning, go until the end. You can even keep track of how far you've gotten so you can jump ahead next time.
+
+What about finding all photos from a certain date?
+
+That's why images contain [EXIF metadata](https://en.wikipedia.org/wiki/Exif) – information about date, time, GPS location, even phone orientation. It's all stored in the file in a structured way.
+
+To find images from a certain date, you can search through your files and look at the metadata they contain. 
+
+#### Hierarchical and flat file organization
+
+You can speed up seek operations by adding common search keys to your file names.
+
+A good example is organizing photos by year - month - date. Each year is a directory containing directories for months. Each of those contains directories for days. Those contain photos.
+
+Hierarchical storage slashes search speed by a huge factor. You can jump right into a specific category (date).
+
+But hierarchical storage makes scanning harder. Counting all images now requires a recursive search through directories.
+
+A better approach might be encoding your meta data in the filename. Something like `IMG_${year}-${month}-${day}-001.jpg`.
+
+Gives you quick access to specific dates *and* fast scans across many. 👌
+
+### When you should store data in flat files
+
+Due to its low overhead, flat file storage is a great choice when you're looking for speed and simplicity.
+
+**Use flat files when:**
+
+1. You need fast append-only writes
+2. You have simple querying requirements
+3. You read data more often than you write data
+4. You write data that you rarely read
+
+**Avoid flat files when:**
+
+1. You need to cross-reference data or use complex queries
+2. You need fast access across your entire database
+3. Your data often changes
+
+No. 3 is the flat file database killer.
+
+The most common use cases for flat files are logs, large datasets, and large binary files (image, video, etc).
+
+You often append logs and rarely read them. You store large datasets as structured files for easy sharing. You save images and rarely update, and they contain orders of magnitude more binary data than structured metadata.
+
+## Relational databases – RDBMS
+
+![](../images/relational_generic.png)
+
+[Relational databases](https://en.wikipedia.org/wiki/Relational_database) are the most common type of database people think of when you say "database". Data lives in a structured data model and many features exist to optimize performance.
+
+Choosing a relational database for your business data is almost always the right decision. 
+
+### Advantages of relational databases
+
+Relational databases have been around since the 1970's. They're battle tested, reliable, and can adapt to almost any workload.
+
+Some modern solutions incorporate features from the NoSQL universe to become even more versatile. [Postgres](https://en.wikipedia.org/wiki/PostgreSQL) is a great example since it often outperforms NoSQL solutions on performance benchmarks.
+
+The defining feature of relational databases is their relational data model. The relational data model makes it easy to model complex data using small isolated concepts. Everything else stems from there.
+
+**Decades of research have gone into optimizing relational database performance**. Down to features like reserving empty space on a hard drive so data commonly used together sits together to make access faster 🤯
+
+With a relational database, you get:
+
+- **fast write performance**, because most systems write to memory first and save to drive later
+- **fast read performance**, because you can build lookup data structures [(indexes)](https://en.wikipedia.org/wiki/Database_index) for common queries
+- **flexible querying**, because you can use a query language (usually SQL) to access any data in any configuration
+- **strict ACID compliance**, because it's a core design objective
+- some **logical data validation**, because you can describe the shape of your data and have the database enforce its consistency
+
+### Disadvantages of relational databases
+
+Benefits of relational databases come with the downside of being harder to use, requiring more expertise to tune performance, and some loss in flexibility.
+
+You can create a database that's fast as lightning, or shoot yourself in the foot.
+
+Main disadvantages are:
+
+- **high level of complexity**, because it's easy to get started and the fine-tuning rabbit hole goes forever deep
+- **performance traps at scale**, because a database that's blazing fast at 10,000 entries, might crawl to a halt at 10,000,000 entries
+- **tradeoffs between read and write performance**, because you can get more read performance by sacrificing write performance and vice-versa. Mostly to do with index building
+- **data shape inflexibility**, because with a typical configuration, you have to redefine the shape of your data every time you add a property
+- **lack of horizontal scalability**, because relational databases can't give you most of their benefits when split across many servers
+
+A common solution for flexibility is to add a blobby JSON field to every model. You lose automatic data integrity and performance optimization on that field, but gain the flexibility to store any data in any shape. Perfect use-case for less important metadata.
+
+### How to use a relational DB
+
+We'll focus on the basics here. You should approach the rest with just-in-time learning – run into a problem, learn how to solve it. ✌️
+
+You start with a database server.
+
+#### A database server
+
+Since you don't want to run your own servers (the whole point of serverless), you'll need a provider. 3rd party services are okay, if your serverless provider doesn't offer their own.
+
+Using a "native" service cuts down on network overhead and makes your system faster. With some luck, your provider runs the database and cloud functions in the same datacenter. Perhaps even on the same physical machine. 🤘
+
+In the AWS world, I've found [RDS – Relational Database Service](https://aws.amazon.com/rds/) works great. Gives you a stable provisioned database server.
+
+Despite giving you a reserved database instance, RDS still offers advantages over rolling your own:
+
+- drive space grows as necessary
+- regular updates run automatically
+- if a server falls over, RDS brings up a new one with the same data
+- automatic backups
+- easy restore from backup
+- optional multi-zone replication for extra reliability (copies your DB over several data centers)
+
+A more serverless version of RDS is [Amazon Aurora DB](https://aws.amazon.com/rds/aurora/). Implemented as a layer on top of RDS, it scales your database based on usage. Even shutting down when nothing's happening. Less expensive for intermittent workloads *and* you don't have to predict how much power you'll need.
+
+When choosing which relational database software to use, **always choose Postgres**. It's open source, crazy fast, and with great support for modern NoSQL features.
+
+https://twitter.com/Swizec/status/1210371195889049600
+
+#### Model your data
+
+The next step is to model your data.
+
+*How* to model your data is as much an art as it is a science. Sort of a mix between [domain modeling](https://en.wikipedia.org/wiki/Domain_model) and [object modeling](https://en.wikipedia.org/wiki/Object_model).
+
+Models also known as tables store each property as a column. Model instances live as rows inside those tables.
+
+Let's say you're building a blog. You have `authors` and `posts`.
+
+Each author has an `id` (automatically assigned), a `created_at` timestamp, and a `name`. Each post also has an `id` (automatically assigned), a `created_at` timestamp, a `title`, and some `content`.
+
+Ids are numbers, timestamps are timestamps, the rest is text. A relational database ensures that's always true so you can expect valid data.
+
+To create a connection between models, you use a [foreign key](https://en.wikipedia.org/wiki/Foreign_key). A column that points to the identifier of a different table.
+
+For `authors` and `posts` you get a schema like this:
+
+![](../images/relational.png)
+
+Which in SQL – [Standard Query Language](https://en.wikipedia.org/wiki/SQL) – looks something like this:
+
+```sql
+CREATE TABLE IF NOT EXISTS "authors" (
+	"id" serial,
+	"created_at" timestamp,
+	"name" text,
+	PRIMARY KEY( id )
+);
+
+CREATE TABLE IF NOT EXISTS "posts" (
+	"id" serial,
+	"created_at" timestamp,
+	"title" text,
+	"content" text,
+	"author_id" integer,
+	PRIMARY KEY( id, author_id ),
+	FOREIGN KEY ( author_id ) REFERENCES authors( id )
+);
+```
+
+That creates 2 empty tables in your database and connects them via a foreign key. Postgres automatically increments identifiers and ensures uniqueness as you insert new rows.
+
+Having the `posts` table "belong to" (point at) the `authors` table means each author can have multiple posts.
+
+#### Query your data
+
+You interact with a relational database primarily through [SQL](https://en.wikipedia.org/wiki/SQL). Many web server frameworks come with an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping) – object-relational-mapping – layer on top of SQL that simplifies common operations.
+
+Regardless of using an ORM, you'll have to know SQL for anything complex. At least have an understanding of how it works.
+
+A basic query that fetches all `authors` looks like this:
+
+```sql
+SELECT * FROM authors;
+```
+
+Writing keywords in all caps is customary but not required. I think it stems from ye olden times before syntax highlighting.
+
+To fetch just names, you'd do this:
+
+```sql
+SELECT name FROM authors;
+```
+
+Select *what* from *where*. SQL is meant to be readable as natural English. Used to be the main user interface after all.
+
+To fetch authors created after a certain date, something like this:
+
+```sql
+SELECT name FROM authors WHERE created_at >= '2019-12-26';
+```
+
+You can put almost any condition in a `WHERE` clause.
+
+Where life gets real tricky real fast is selecting data from multiple tables. You have to use [SQL joins](https://en.wikipedia.org/wiki/Join_(SQL)), which are based on set arithmetic. 
+
+If you want a list of post titles and dates with each author:
+
+```sql
+SELECT a.name, p.title, p.created_at
+FROM authors a, posts po
+WHERE p.author_id = a.id;
+```
+
+This is called an [inner join](https://en.wikipedia.org/wiki/Join_(SQL)#Inner_join) where you take a cartesian join combining every row in `authors` with every row in `posts` and filter away the non-matches.
+
+Those are some basics that cover most use-cases. It takes some practice to use SQL effectively so practice away :)
+
+#### Speed up your data
+
+Relational databases use a [query planner](https://en.wikipedia.org/wiki/Query_plan) to execute SQL queries as efficiently as possible. You often don't even have to think about performance.
+
+Common ways to speed up your database include:
+
+1. **Adding indexes** – data structures that help your database find data matching specific queries. Depending on the type of index you choose, it can behave like a directory tree, or like a hash table
+2. **Denormalization** – storing properties often used together in the same table even if it means duplicating some data. Like having an author name field in each post.
+3. **Partitioning** – telling your database how to chunk a large table into files so common lookups read from the same physical file
+
+Tuning a relational database for performance is a whole field of software engineering so I wouldn't worry about it too much. Learn about it when you need to ✌️
+
+### When you should store data in a relational DB
+
+Choosing a relational database is almost always the correct choice.
+
+**Use relational DBs when:**
+
+1. You don't know how you're using your data
+2. You benefit from data integrity
+3. You need good performance up to hundreds of million entries
+4. Your app fits in a single data center (availability zone)
+5. You often use different objects together
+
+**Avoid relational DBs when:**
+
+1. You're storing lots of binary data (images, video)
+2. You don't care about data integrity
+3. You don't want to invest in initial setup
+4. You just need a quick way to save some data
+5. You have so much data it doesn't fit on 1 server
+
+This makes relational databases the perfect choice for most applications. You wouldn't use them to store files, but should consider it for metadata about those files. They're also not a great choice for fast append-only writes like logs or tweets.
+
+I wouldn't worry about number 5. If you ever reach the scale where your data doesn't fit in a single database, you'll have a team to solve the problem for you :)
+
+## The NoSQL approach
+
+![](../images/nosql.png)
+
+"NoSQL" is a broad range of technologies built for different purposes with different design goals in mind. A sort of catch-all for any database that doesn't use relational data models.
+
+Yes even flat file storage is a sort of NoSQL database.
+
+Wikipedia offers [a great description of NoSQL databases](https://en.wikipedia.org/wiki/NoSQL)
+
+> The data structures used by NoSQL databases are different from those used by default in relational databases, making some operations faster in NoSQL. The particular suitability of a given NoSQL database depends on the problem it must solve.
+
+This variety is where NoSQL differs most from relational databases. Where relational databases aim to fit most use cases, NoSQL often aims to solve a specific problem.
+
+### Flavors of NoSQL
+
+You can classify NoSQL databases in 4 broad categories:
+
+1. **key:value store** that works like a dictionary. A unique key points to a stored value. Offers fast read/write performance and is often used as a caching layer in front of a relational database. Some solutions offer sortable keys so you can perform data scans.
+2. **document store** that maps unique keys to documents. Basically key:value stores that allow complex values. They often support a query language that lets you search based on value contents, not just the key.
+3. **graph database** that stores graph data structures efficiently. Useful for data models with a lot of circular references like social graphs or road maps.
+4. **wide column database** that is a sort of mix between a document store and a relational database. Keys map to objects that all fit a schema, but that schema isn't prescriptive. There's no guarantee every object has every column, but you always know every column that might exist.
+
+Everything else is a variation on these themes. Most modern databases support multiple models.
+
+You can stringify JSON objects into a key:value store to create a document store without querying support. Or you can store simple values in a document DB to create a key:value store with too much overhead.
+
+There's nothing stopping you from forcing a graph to live inside a table database either. 😉
+
+### Which NoSQL flavor should you pick?
+
+It really depends. What are you trying to do?
+
+I would prioritize a hosted fully managed database solution that my serverless provider offers. This cuts down on networking overhead, just like the RDBMS section, and makes your life easier because there's one less thing to manage.
+
+Then I would pick whatever fits my use case.
+
+**Use key:value stores** when you need blazing fast data with low overhead. Great for implementing caching layers and queue systems. [Redis](https://en.wikipedia.org/wiki/Redis) is a great choice here. [Memcached](https://en.wikipedia.org/wiki/Memcached), if you just need cache.
+
+I often use Redis *and* Memcached in real world projects.
+
+**Use a document DB or wide column store** when you want a generic database for business data that isn't a relational database. You get the benefit of flexibility and horizontal scalability. No schemas to prepare in advance and little thought about optimizing queries. 
+
+You pay for that 3 years down the line with inconsistent data. Learned my lesson ✌️
+
+[MongoDB](https://en.wikipedia.org/wiki/MongoDB) is a good document/object store. [Amazon DynamoDB](https://en.wikipedia.org/wiki/Amazon_DynamoDB) and [Google's Bigtable](https://en.wikipedia.org/wiki/Bigtable) are great examples of wide column stores.
+
+**Use a graph DB** when you're *actually* storing graph data. While you can fit a graph into any database (I've tried), you're going to benefit from graph querying support that comes with a real graph DB. They're optimized for just that use-case.
+
+Haven't had a good excuse to use one yet, but I've heard [Neo4j](https://en.wikipedia.org/wiki/Neo4j) is great.
+
+**My favorite advantage of most NoSQL databases** is their wonderful integration with the JavaScript/TypeScript ecosystem. Most let you store JSON blobs, which means there's no translation between JavaScript objects and database objects.
+
+That makes your life much easier compared to a SQL-based solution.
+
+### Disadvantages of NoSQL databases
+
+Disadvantages of NoSQL mostly come from its advantages. Funny how that works.
+
+The simplicity of key:value stores gives you speed at the cost of not being able to store complex data.
+
+The write speed of document databases comes at the cost of some ACID compliance. Often using the [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) model to write fast and propagate to other instances and objects later.
+
+The ease of schema-less development comes at the cost of inconsistent data. If you want entries to look the same, you often have to take care of it yourself.
+
+NoSQL databases also struggle with relational data. And it turns out most real world data is relational.
+
+You *can* store relational data in a NoSQL database, but it can be cumbersome to query. Often there's no support for joins so you have to search through different parts of your database and assemble objects by hand.
+
+### How to use a NoSQL DB
+
+How to use a NoSQL DB depends on which database you pick. I recommend using an official library.
+
+Serverless Handbook focuses on the AWS ecosystem with the serverless framework, so we're going to look at DynamoDB. 
+
+DynamoDB is a great choice for saving JSON data, scales well, works fast, and is pretty cheap to use. And unlike RDS, you can set it up using `serverless.yml`.
+
+#### Create a DynamoDB table
+
+To define a new DynamoDB table, add this to your config.
+
+```yaml
+provider:
+    environment:
+        DATA_TABLE: ${self:service}-data-${self:provider.stage}
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DATA_TABLE}"
+```
+
+Using environment variables for table names makes them easier to use. Postfixing with the stage lets you replicate configuration between development and production without messing up your data.
+
+`iamRoleStatements` give your app permission to use this table.
+
+You then need to create the actual table:
+
+```yaml
+resources:
+    Resources:
+        DataTable:
+            Type: "AWS::DynamoDB::Table"
+            Properties:
+                AttributeDefinitions:
+                    - AttributeName: dataId
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: dataId
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 1
+                    WriteCapacityUnits: 1
+                TableName: ${self:provider.environment.DATA_TABLE}
+```
+
+You're defining an AWS resource of type `DynamoDB::Table` with a required `dataId` column that's going to be used as a key. `HASH` keys give you key:value lookups, `RANGE` keys are easier to scan through.
+
+Each table can have 2 keys at most.
+
+Name your table using the environment variable defined earlier for consistency. ✌️
+
+#### Save some data
+
+Saving data to a DynamoDB table can be a little cumbersome with Amazon's default SDK. There doesn't seem to be a clear best library so I've been writing small wrappers myself.
+
+You save data using upserts: If a key exists, the data is updated. If it doesn't, it's created. I recommend using [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) for identifiers.
+
+Something like this:
+
+```typescript
+export const createData = async (_: any, params: CreateDataParams) => {
+    const dataId = uuidv4();
+
+    const result = await updateItem({
+        TableName: process.env.DATE_TABLE!,
+        Key: {
+            dataId
+        },
+        UpdateExpression: "SET dataName = :dataName, createdAt = :createdAt",
+        ExpressionAttributeValues: {
+            ":dataName": params.dataName,
+            ":createdAt": new Date().toISOString()
+        },
+        ReturnValues: "ALL_NEW"
+    });
+
+    return result.Attributes;
+};
+```
+
+Create an identifier with the uuid library, run an update expression on the appropriate table. Return the entire new row.
+
+`UpdateExpression` and `ExpressionAttributeValues` is split into two objects to help DynamoDB prevent injection attacks. Also helps with performance.
+
+`updateItem` is a wrapper I built around the official SDK. You can [see the code on GitHub](https://github.com/Swizec/markdownlandingpage.com/blob/master/server/src/dynamodb.ts#L35). I'll turn it into a library once I'm happy with the ergonomics.
+
+You now have data saved in the database.
+
+**To update this data** you have to create a similar method that gets your `dataId` as a parameter and uses it to run an `updateItem` query. Make sure you aren't always creating a new identifier.
+
+#### Read some data
+
+Unlike with a relational database, you have a choice of *scanning* and *getting*. A scan lets you search for entries that match a criteria. Getting lets you fetch an exact entry.
+
+Something like this:
+
+```typescript
+export const allDataWithName = async ({ dataName }) => {
+    const result = await scanItems({
+        TableName: process.env.DATA_TABLE!,
+        FilterExpression: "#dataName = :dataName",
+        ExpressionAttributeNames: {
+          "#dataName": "dataName"
+        },
+        ExpressionAttributeValues: {
+          ":dataName": dataName
+        }
+    });
+
+    return result.Items;
+};
+```
+
+`scanItems` is again [a little helper method I wrote](https://github.com/Swizec/markdownlandingpage.com/blob/master/server/src/dynamodb.ts#L73). It needs to do more because this is quite cumbersome.
+
+But it lets you *scan* through a table looking for entries that fit a criteria. 
+
+You can use the `getItem` approach when you know exactly what you're looking for.
+
+```typescript
+export const data = async ({ dataId }) => {
+    const result = await getItem({ Key: { dataId } });
+
+    if (!result.Item) {
+        return {};
+    }
+
+    return result.Item
+};
+```
+
+Notice how we get a JavaScript object that we can return without modification. That's the beauty of NoSQL. ✌️
+
+## Blockchain
+
+![](../images/blockchain.png)
+
+Blockchain is the new kid on the block. Usually mixed up with cryptocurrencies and financial speculation, it's actually a solid way to share and store data.
+
+You've probably used one before 👉 git.
+
+That's right, [git](https://en.wikipedia.org/wiki/Git) and [The Blockchain](https://en.wikipedia.org/wiki/Blockchain) share the same underlying data structure: a merkle tree.
+
+A [merkle tree](https://en.wikipedia.org/wiki/Merkle_tree) stores data in a cryptographically verified sequence of blocks. Each new block contains a cryptographic hash of the previous block.
+
+That means you can always verify your data. Follow the chain and validate every hash. Once you reach the initial block, you know your chain is valid.
+
+As a result you don't need a central authority to tell you the current state of your data. Clients can independently decide, if the data they have is valid. Often by assuming the longest valid chain is correct.
+
+Adding a consensus algorithm makes the process even more robust. When you add new data, how many servers have to agree that the data is valid? 
+
+The result is a slow, but robustly decentralized database. 
+
+I wouldn't use the blockchain to store real data just yet, but it's an exciting space to watch. [Blockstack](https://blockstack.org/) is a great way to get started.
