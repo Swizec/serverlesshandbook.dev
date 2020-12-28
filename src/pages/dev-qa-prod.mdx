@@ -1,6 +1,6 @@
 export const title = "Dev, QA, and prod"
 
-export const description = "Learn how Dev, QA and prod works in the serverless approach"
+export const description = "How do you test and share code without breaking user experience?"
 
 export const image = '/chapter_headers/dev-qa-prod.png'
 
@@ -26,9 +26,9 @@ You don't have to worry about corrupting user data. No concerns about disrupting
 
 If nobody noticed the bug, was the bug even there?
 
-A word of caution: It's easy to fill your database full of crappy data. Try to start production clean. 
+A word of caution: It's easy to fill your database with crappy data. Try to start production clean. 
 
-Thank me later when counting users is easy instead of a 5 step process. You'd be surprised how hard it can become to answer *"How many users do we have?"*.
+Thank me later when counting users isn't a 5 step process. You'd be surprised how hard it can get to answer *"How many users do we have?"*.
 
 ## Localhost vs. Production
 
@@ -36,11 +36,11 @@ Once you have users, you need a way to distinguish production from development. 
 
 Localhost is for development, production is for production. Run a copy of production on your machine and test.
 
-As your system grows this gets trickier and trickier. You need to host a database, run queues, caching layers, etc.
+The bigger your system, the trickier this gets. You need to host a database, run queues, caching layers, etc.
 
 You can get close with the [LocalStack plugin for the Serverless Framework](https://www.serverless.com/plugins/serverless-localstack). But only production is like production. ✌️
 
-Besides, you can't show off localhost to a friend or coworker.
+Plus you can't show off localhost to a friend or coworker.
 
 ## The 3 stage split
 
@@ -53,13 +53,13 @@ A common solution to the production vs. development problem is the 3 stage split
 
 You build and test on localhost. Get fast iteration and reasonable certainty that your code works.
 
-You then push to development. A deployed environment that's like production, but frothy. Changes frequently, data is irrelevant, used by many developers.
+You then push to development. A deployed environment that's like production, but frothy. Changes frequently, data is irrelevant, used by everyone on the team.
 
-The development environment helps you test your code with others' work. You can show off to a friend, coworker, or product manager to get early feedback.
+The development environment helps you test your code with others' work. You can show off to a friend, coworker, or product manager for early feedback.
 
 When that works, you push to staging. A more stable environment used to test code right before it ships. Features are production ready, early feedback incorporated.
 
-Staging is the playground for your QA team and final sign-off from product managers.
+Staging is the playground for QA and final sign-off from product managers.
 
 Then you push to production. 🚀
 
@@ -78,11 +78,11 @@ provider:
 	stage: dev
 ```
 
-Deploy with `sls deploy` and you create the `dev` stage. 
+Deploy with `sls deploy` and that creates or updates the `dev` stage. 
 
-With the serverless framework, stages work via namespacing. Every resource uses the stage as part of its name and URL.
+Stages work via name-spacing. Every resource embeds the stage as part of its name and URL. Keep that in mind when naming resources manually.
 
-Make sure you keep that in mind when naming resources manually. When naming a queue for example:
+Like when naming a queue:
 
 ```yaml
 # serverless.yml
@@ -95,9 +95,11 @@ resources:
         QueueName: "TimesTwoQueue-${self:provider.stage}"
 ```
 
+Current stage is embedded in the string through the `${self:provider.stage}` variable.
+
 ### Dynamic stages
 
-Editing the stage in `serverless.yml` every time you deploy is annoying. You can pass it in the command line instead.
+Editing the stage in `serverless.yml` on every deploy is annoying. Pass it in the command line instead.
 
 ```yaml
 # serverless.yml
@@ -110,7 +112,7 @@ provider:
 
 Deploy with `sls deploy --stage prod` to deploy to production. Defaults to `dev`.
 
-Use a new stage to set up a new environment, or an existing stage to update. The framework figures it out for you.
+Use a new stage to set up a new environment, existing stage to update. The framework figures it out for you.
 
 Make sure stage names match any [`.env.X` configuration files](/handling-secrets).
 
@@ -126,7 +128,7 @@ Bob meanwhile is fixing bugs and keeping the lights on. He needs to merge his wo
 
 How can Bob and Alice both work together?
 
-There are 2 answers:
+There's 2 solutions:
 
 1. Deploy previews
 2. Feature flags
@@ -135,21 +137,21 @@ With infrastructure-as-code, deploy previews are the simple solution. Create a n
 
 You get an isolated environment with all the working bits and pieces. Automate it with GitHub Actions to create a new stage for every pull request.
 
-That's the model Netlify and Vercel support. Every pull request gets automatically deployed on a new copy of production with every update. 👌
+That's the model Netlify and Vercel champion. Every pull request is automatically deployed on a new copy of production with every update. 👌
 
 ## Trunk-based development
 
 A popular approach in large teams is trunk-based development.
 
-Everyone works on the main branch, deploys to production regularly, and uses feature flags to disable features that aren't ready. A strong automated testing culture with good coverage is critical.
+Everyone works on the main branch, deploys to production regularly, and uses feature flags to disable features before they're ready. A strong automated testing culture with good coverage is critical.
 
-Google uses the Beyonce rule:
+[Google uses the Beyonce rule](https://www.oreilly.com/library/view/software-engineering-at/9781492082781/ch01.html):
 
 > If you liked it, you shoulda put a test on it
 
-Anyone can change any code at any time. Tests help prevent accidents.
+Anyone can change any code at any time. Tests help you prevent accidents.
 
-Feature flags let you disable new features until they're ready. Your code hits production quickly thus ensuring it doesn't break anything. If you refactored something, others can use it. If you created new background functionality, it's available.
+Feature flags let you disable new features before they're ready. Your code hits production quickly which ensures it doesn't break. If you refactored something, others can use it. If you created new functionality, it's available.
 
 But you disable user-facing parts to avoid a broken user experience.
 
@@ -157,14 +159,14 @@ Implementing feature flags can be as easy as an environment variable with a bunc
 
 ## Which approach should you pick?
 
-Depends on team size, established norms, correctness requirements, and your deployment environment.
+The best approach depends on team size, established norms, correctness requirements, and your deployment environment.
 
-If you have a clean infrastructure-as-code approach, creating new stages at will is great. If you need manual setup, the 3 stage approach is best.
+If you have a clean infrastructure-as-code approach, creating new stages is great. If you need manual setup, the 3 stage approach is best.
 
-You can even split your project into sub-projects. Isolated areas of concern that can move and deploy independently. Microservices.
+You can even split your project into sub-projects. Isolated areas of concern that can move and deploy independently. Known as microservices.
 
-And remember, the easier your code is to fix and deploy, the less you have to worry about any of this.
+And remember, the easier your code is to fix and deploy, the less you have to worry about any of this. Optimize for fast iteration over avoiding mistakes.
 
 For side projects I like to test in production. Live wild 🤘
 
-Next chapter, let's look at running Serverless Chrome Puppeteer.
+Next chapter, we look at running Serverless Chrome Puppeteer.
