@@ -1,10 +1,10 @@
 import React from "react"
-import { Box, Flex, Heading, Text } from "rebass"
+import { Box, Flex, Heading, Text } from "theme-ui"
 import { GumroadButton } from "@swizec/gatsby-theme-course-platform"
 import * as coverImg from "../images/cover.svg"
 
 const HomeTitle = () => (
-  <Flex flexWrap="wrap">
+  <Flex sx={{ flexWrap: "wrap" }}>
     <Box
       sx={{
         p: 3,
@@ -14,13 +14,16 @@ const HomeTitle = () => (
         margin: "auto auto",
       }}
     >
-      <Heading fontSize={6}>
+      <Heading sx={{ fontSize: 6 }}>
         Serverless Handbook
-        <Text fontSize={4}>for frontend engineers</Text>
+        <Text sx={{ fontSize: 4 }}>for frontend engineers</Text>
       </Heading>
-      <Text>Learn everything you need to dive into the modern backend</Text>
+      <Text>
+        Learn everything you need to dive into the modern backend. And a few
+        tricks that help with <em>any</em> backend
+      </Text>
 
-      <Box mt={10}>
+      <Box sx={{ mt: 10 }}>
         <GumroadButton>
           <a
             className="gumroad-button"

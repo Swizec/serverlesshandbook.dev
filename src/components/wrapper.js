@@ -1,8 +1,7 @@
 import React from "react"
-import { Styled } from "theme-ui"
+import { Styled, Box, Flex } from "theme-ui"
 import { Link } from "gatsby"
-import Head from './head'
-import { Box, Flex } from "rebass"
+import Head from "./head"
 import { globalHistory } from "@reach/router"
 
 const breadcrumbRoutes = ["guides", "recipes"]
@@ -24,14 +23,13 @@ export const Breadcrumbs = ({ title }) => {
       <Styled.a as={Link} to={"/" + base}>
         {base}
       </Styled.a>
-      <Box px={2}>/</Box>
+      <Box sx={{ px: 2 }}>/</Box>
       <Box>{title || path}</Box>
     </Flex>
   )
 }
 
 export const wrapper = ({ title, description, image, ...props }) => {
-
   const children = React.Children.toArray(props.children).reduce(
     (acc, child) => {
       const type = child.props.mdxType
@@ -44,11 +42,11 @@ export const wrapper = ({ title, description, image, ...props }) => {
   return (
     <>
       {title && (
-        <Head 
-          title={title} 
+        <Head
+          title={title}
           description={description}
           image={image}
-          pageName={props['*']}
+          pageName={props["*"]}
         />
       )}
       {children}

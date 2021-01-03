@@ -1,9 +1,8 @@
 import { graphql } from "gatsby"
-import { Box, Flex, Button } from "rebass"
+import { Box, Flex, Button, Container, Heading } from "theme-ui"
 import {
   Avatar,
   Banner,
-  Container,
   Grid,
   GumroadButton,
   GumroadOverlay,
@@ -48,7 +47,9 @@ export const pageQuery = graphql`
 
 <HomeTitle />
 
-<Box my="auto" />
+<Box sx={{ my: "auto" }} />
+
+<Heading sx={{ mb: 1 }}>Chapters</Heading>
 
 <NavGrid>
 
@@ -77,9 +78,9 @@ export const pageQuery = graphql`
 
 </Banner>
 
-<Container py={5}>
+<Container sx={{py: 3, maxWidth: 1280}}>
 
-<Box width={[1, 1, 1 / 2]} sx={{ margin: "0 auto" }}>
+<Box sx={{ width: ["100%", "100%", "50%"], margin: "0 auto" }}>
   <Box
     sx={{
       width: "100%",
@@ -109,7 +110,7 @@ export const pageQuery = graphql`
   </Box>
 </Box>
 
-<Grid gap={2} py={3} sx={{ fontWeight: 'bold' }}>
+<Grid gap={2} sx={{ fontWeight: 'bold', py: 3 }}>
 
 - Get started with Serverless backend technologies
 - Build your first backends, or your 10th in a new way ;)
@@ -132,7 +133,7 @@ export const pageQuery = graphql`
   </GumroadButton>
 </Box>
 
-<Grid width={448} py={5}>
+<Grid sx={{ py: 5}} gap={2}>
 
 - > “I work with React but I want to learn the other technologies and how to use them with react”
 
@@ -164,7 +165,7 @@ export const pageQuery = graphql`
 
 <GumroadButton>
   <Button as="a" variant="big" href="https://gum.co/qdNn?wanted=true">
-    {`Read Serverless Handbook for \$0+`}
+    {`Read Serverless Handbook for $0+`}
   </Button>
 </GumroadButton>
 

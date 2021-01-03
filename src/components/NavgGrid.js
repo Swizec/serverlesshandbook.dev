@@ -1,5 +1,5 @@
 import React from "react"
-import { Box } from "rebass"
+import { Box } from "theme-ui"
 
 export const NavGrid = (props) => (
   <Box
@@ -18,8 +18,7 @@ export const NavGrid = (props) => (
       },
       li: {
         fontWeight: "bold",
-        fontSize: 1,
-        variant: "text.caps",
+        fontSize: [1, 2, 2],
         counterIncrement: "nav-grid",
         mb: 0,
         "::before": {

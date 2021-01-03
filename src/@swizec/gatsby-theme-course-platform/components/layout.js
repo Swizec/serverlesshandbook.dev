@@ -1,14 +1,13 @@
 import React, { useState, useRef, useLayoutEffect } from "react"
 import { Global } from "@emotion/core"
-import { Box, Flex } from "rebass"
+import { Box, Flex } from "theme-ui"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
-import { 
-    EditLink,
-    Footer,
-    Head,
-    Header,
-    Reactions,
-    SkipLink
+import {
+  EditLink,
+  Footer,
+  Head,
+  Header,
+  Reactions,
 } from "@swizec/gatsby-theme-course-platform"
 import Nav from "./nav"
 import { default as PaywallCopy } from "../../../components/paywall"
@@ -85,12 +84,12 @@ const Sidebar = (props) => {
     (!window.localStorage.getItem("unlock_handbook") ||
       !window.localStorage.getItem("sale_id"))
 
-
   return (
     <Flex
       sx={{
-        pt: 64
-      }}>
+        pt: 64,
+      }}
+    >
       <Box
         as={Sidenav}
         ref={props.nav}
@@ -109,19 +108,19 @@ const Sidebar = (props) => {
           flex: "none",
           px: 3,
           mt: [64, 0],
-          "ul": {
+          ul: {
             p: 0,
-            m: 0
+            m: 0,
           },
           "ul > li": {
             mb: 0,
           },
           "ul > li > a": {
-            p: '8px',
+            p: "8px",
           },
-          maxHeight: '100vh !important',
-          overflowY: 'scroll',
-          height: '100%'
+          maxHeight: "100vh !important",
+          overflowY: "scroll",
+          height: "100%",
         }}
       >
         <Nav />
@@ -166,13 +165,20 @@ export default (props) => {
         variant: "styles.root",
       }}
     >
-      <SkipLink />
       <Global
         styles={{
           body: { margin: 0 },
         }}
       />
-      <Header siteTitle="Serverless Handbook" courseFirstLesson={props.courseFirstLesson} showMenu={false} fullwidth={fullwidth} menu={menu} setMenu={setMenu} nav={nav} />
+      <Header
+        siteTitle="Serverless Handbook"
+        courseFirstLesson={props.courseFirstLesson}
+        showMenu={false}
+        fullwidth={fullwidth}
+        menu={menu}
+        setMenu={setMenu}
+        nav={nav}
+      />
       {!fullwidth ? (
         <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
           <main id="content">{props.children}</main>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Flex, Box, Link, Button } from "rebass"
+import { Flex, Box, NavLink, Button } from "theme-ui"
 import { useColorMode } from "theme-ui"
 
 const modes = ["themed", "lite", "dark", "gray", "hack", "pink"]
@@ -8,13 +8,13 @@ const Burger = ({ size = 24 }) => (
   <Box
     as="svg"
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
     fill="currentcolor"
     viewBox="0 0 24 24"
     sx={{
       display: "block",
       margin: 0,
+      width: size,
+      height: size,
     }}
   >
     <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
@@ -68,16 +68,16 @@ export default ({
   return (
     <Flex
       as="header"
-      px={1}
-      py={2}
-      height={64}
-      alignItems="center"
-      bg="background"
       style={style}
-      width="100%"
       sx={{
         position: "fixed",
         zIndex: 1100,
+        px: 1,
+        py: 2,
+        height: 64,
+        alignItems: "center",
+        bg: "background",
+        width: "100%",
       }}
     >
       {showMenu && (
@@ -99,7 +99,7 @@ export default ({
           <Burger />
         </Button>
       )}
-      <Link
+      <NavLink
         variant="nav"
         href="/"
         style={{
@@ -108,7 +108,7 @@ export default ({
         }}
       >
         <p>{siteTitle}</p>
-      </Link>
+      </NavLink>
 
       <Box mx="auto"></Box>
 
