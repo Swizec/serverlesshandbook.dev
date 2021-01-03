@@ -1,7 +1,85 @@
 export const title = "Serverless performance"
 
-export const description = "Lean more about severless performance"
+export const description = "How do you think about performance in a serverless setting"
 
-export const image = "/performance.jpg"
+export const image = "/chapter_headers/serverless-performance.png"
 
 # Serverless performance
+
+![](../images/chapter_headers/serverless-performance.svg)
+
+Performance talks about output per unit of a resource. Time, effort, space, energy, and money.
+
+How much of X does it take to get N results?
+
+We've touched on performance before. Mentioned scaling strategies in [Pros and Cons of Serverless]() and [Databases](), talked about complexity in [Lambda Pipelines](), and mentioned flow in [Architecture Principles]().
+
+But what do you measure? What's achievable? Where do you optimize? How does serverless stack up?
+
+## The performance trifecta
+
+Typical software systems care about time, money, and space. You have to balance all 3.
+
+![Fast, small, cheap](../images/fast-small-cheap.png)
+
+With the metered pricing in serverless, you pay for execution time, memory size, and storage space directly. The more you use, the more you pay.
+
+AWS Lambda charges for execution time with [millisecond precision](https://aws.amazon.com/blogs/aws/new-for-aws-lambda-1ms-billing-granularity-adds-cost-savings/).
+
+To make your code faster, you write algorithms that trade memory for speed. Or you beef up the CPU. Both increase the per-millisecond cost of execution.
+
+To use less space, you spend more CPU time to compress and clean data. To use less memory, you write algorithms that trade speed for memory.
+
+Both optimizations take more human time.
+
+You can think of this as a 4-dimensional optimization function. Speed vs. space vs. money vs. human time. Great question for a calculus exam.
+
+Optimize for human time, then speed. Storage is cheap, your time is limited, and speed impacts billing.
+
+### Where size matters
+
+Storage is cheap and memory is okay. Where size gets you is data transfer.
+
+Serverless providers like to charge an arm and a leg for bandwidth. Transferring data between services, sending data to users, getting data from users, and transfer between availability zones.
+
+Minimize what you send over the wire.
+
+## Thinking about speed
+
+Speed comes in 2 flavors:
+
+1. Latency
+2. Throughput
+
+Serverless providers charge for both. Users notice latency the most.
+
+### Latency
+
+Latency measures how long it takes to start work. You can write the fastest code in the world, but if it needs 2 seconds to even get started ...
+
+The biggest contributors to latency are:
+
+- network time
+- routing the request
+- lambda wake up time
+
+Network time measures the time it takes for a user's request to get to your server. Depends on distance and end-user connection quality.
+
+Routing is internal to your serverless provider. How long does it take them to accept a request and send it to your code? Certain security rules can make this slower or faster.
+
+Lambda wake up time measures how long it takes to spin up your tiny server. Depends on code size, runtime environment, and how your code warms up.
+
+### Throughput
+
+Throughput is a measure of how fast you work.
+
+
+
+## Achieving speed
+
+- fast code
+- reduce waiting
+- cold boot times
+- I/O is the concern
+
+## Optimizing flow
