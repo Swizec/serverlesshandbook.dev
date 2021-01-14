@@ -8,39 +8,53 @@ export const image = "/chapter_headers/serverless-performance.png"
 
 ![](../images/chapter_headers/serverless-performance.svg)
 
-Performance talks about output per unit of a resource. Time, effort, space, energy, and money.
+Performance talks about results per unit of a resource. Time, effort, space, energy, and money.
 
 How much of X does it take to get N results?
 
-We've touched on performance before. Mentioned scaling strategies in [Pros and Cons of Serverless]() and [Databases](), talked about complexity in [Lambda Pipelines](), and mentioned flow in [Architecture Principles]().
+We've touched on performance before. Mentioned scaling strategies in [Pros and Cons of Serverless](/serverless-pros-cons) and [Databases](/databases), talked about complexity in [Lambda Pipelines](lambda-pipelines), and mentioned flow in [Robust Backend Design](/robust-backend-design).
 
 But what do you measure? What's achievable? Where do you optimize? How does serverless stack up?
 
 ## The performance trifecta
 
-Typical software systems care about time, money, and space. You have to balance all 3.
+Software systems care about time, money, and space. You have to balance all 3.
 
 ![Fast, small, cheap](../images/fast-small-cheap.png)
 
-With the metered pricing in serverless, you pay for execution time, memory size, and storage space directly. The more you use, the more you pay.
+With metered pricing, serverless lets you pay directly for execution time, memory size, and storage space. No overhead. You don't use it, you don't pay it.
 
 AWS Lambda charges for execution time with [millisecond precision](https://aws.amazon.com/blogs/aws/new-for-aws-lambda-1ms-billing-granularity-adds-cost-savings/).
 
-To make your code faster, you write algorithms that trade memory for speed. Or you beef up the CPU. Both increase the per-millisecond cost of execution.
+**Faster code** uses more memory to gain speed. Or you can beef up CPU. Both make your code more expensive to run.
 
-To use less space, you spend more CPU time to compress and clean data. To use less memory, you write algorithms that trade speed for memory.
+**Saving storage space** costs CPU time to compress and clean data. Storage is cheap. Bandwidth to and from storage gets pricey.
 
-Both optimizations take more human time.
+You **optimize memory** with slower code. Memory is plentiful, but not in serverless. You want small functions.
 
-You can think of this as a 4-dimensional optimization function. Speed vs. space vs. money vs. human time. Great question for a calculus exam.
+Every optimization takes **human time and effort**. A metric software *organizations* care about. How hard is this to develop and maintain?
 
-Optimize for human time, then speed. Storage is cheap, your time is limited, and speed impacts billing.
+You can think of this as a 4-dimensional optimization function. **Speed vs. space vs. money vs. human effort**. Great question for a calculus exam.
+
+Avoid doing the calculus with ye olde law of prioritization:
+
+1. Make it work
+2. Make it right
+3. Make it fast
+
+You'll find that computers are fast & cheap and humans are slow & expensive. Stick to 1, add 2 for easier maintenance. 3 when necessary.
 
 ### Where size matters
 
-Storage is cheap and memory is okay. Where size gets you is data transfer.
+Storage is cheap – [$0.023/GB/month on S3](https://aws.amazon.com/s3/pricing/) – and memory is *pretty* cheap at [$0.000016/GB/second](https://aws.amazon.com/lambda/pricing/). Memory cost *increases* when you need extra. Storage cost *decreases* when you use more.
 
-Serverless providers like to charge an arm and a leg for bandwidth. Transferring data between services, sending data to users, getting data from users, and transfer between availability zones.
+![](giphy:shrug)
+
+Bandwidth is where size gets you.
+
+AWS charges for egress. Taking data out of the system. Other providers have similar schemes.
+
+That means you pay to send data to users or between availability zones. Details depend on which services are involved. For example: S3 to CloudFront (the CDN) is free, then CloudFront charges $0.085/GB.
 
 Minimize what you send over the wire.
 
@@ -51,29 +65,55 @@ Speed comes in 2 flavors:
 1. Latency
 2. Throughput
 
-Serverless providers charge for both. Users notice latency the most.
+Best summarized with a metaphor from [Andrew S. Tanenbaum](https://en.wikipedia.org/wiki/Andrew_S._Tanenbaum):
+
+> Never underestimate the bandwidth of a station wagon full of tapes hurtling down the highway
 
 ### Latency
 
-Latency measures how long it takes to start work. You can write the fastest code in the world, but if it needs 2 seconds to even get started ...
+Latency measures delay. How long does it take to start working?
 
-The biggest contributors to latency are:
+You can write the fastest code in the world, but if it needs 2 seconds to get started ... unhappy users, high cost.
+
+Biggest factors are:
 
 - network time
-- routing the request
+- internal routing
 - lambda wake up time
 
-Network time measures the time it takes for a user's request to get to your server. Depends on distance and end-user connection quality.
+**Network time** measures how long it takes for a user's request to reach your server. Depends on distance and end-user connection quality.
 
-Routing is internal to your serverless provider. How long does it take them to accept a request and send it to your code? Certain security rules can make this slower or faster.
+**Routing** is internal to your serverless provider. How long does it take to accept a request and send it to your code? Certain security rules can make this slower or faster.
 
-Lambda wake up time measures how long it takes to spin up your tiny server. Depends on code size, runtime environment, and how your code warms up.
+**Lambda wake up time** measures how long it takes to spin up your tiny server. Depends on bundle size, runtime environment, and how your code warms up.
 
 ### Throughput
 
-Throughput is a measure of how fast you work.
+Throughput measures how fast you work. When you get a request, how long does it take to service?
 
+Biggest factors are:
 
+- code performance
+- input/output
+
+Serverless is perfect for [small distributed operations](/lambda-pipelines). Code performance and algorithm complexity have little impact.
+
+> Fancy algorithms are slow when n is small, and n is usually small. Fancy algorithms have big constants. Until you know that n is frequently going to be big, don't get fancy.
+> ~ [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike)
+
+That leaves **input/output**. 
+
+Waiting for a database, talking to 3rd party APIs, loading a web page, those will *destroy* your performance. Average duration for my screenshot lambda is 10 seconds, for example. Mostly waiting for webpages to load.
+
+And yes, you pay for every millisecond of that wait. 🙃
+
+## Scaling strategies
+
+### What is "scaling"
+
+### Vertical
+
+### Horizontal
 
 ## Achieving speed
 

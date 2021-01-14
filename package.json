@@ -22,6 +22,6 @@
         "typography-theme-stow-lake": "^0.16.19"
     },
     "engines": {
-        "node": "12.x"
+        "node": "12.x || 14.x"
     }
 }
