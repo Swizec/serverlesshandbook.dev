@@ -1,6 +1,6 @@
 export const title = "Serverless performance"
 
-export const description = "How do you think about performance in a serverless setting"
+export const description = "How does performance impact your serverless setup? What's important to think about?"
 
 export const image = "/chapter_headers/serverless-performance.png"
 
@@ -8,11 +8,11 @@ export const image = "/chapter_headers/serverless-performance.png"
 
 ![](../images/chapter_headers/serverless-performance.svg)
 
-Performance talks about results per unit of a resource. Time, effort, space, energy, and money.
+Performance is all about results per unit of a resource. Time, effort, space, energy, and money.
 
 How much of X does it take to get N results?
 
-We've touched on performance before. Mentioned scaling strategies in [Pros and Cons of Serverless](/serverless-pros-cons) and [Databases](/databases), talked about complexity in [Lambda Pipelines](lambda-pipelines), and mentioned flow in [Robust Backend Design](/robust-backend-design).
+We've touched on performance before. Mentioned scaling strategies in [Pros and Cons of Serverless](/serverless-pros-cons) and [Databases](/databases), talked about complexity in [Lambda Pipelines](/lambda-pipelines), and mentioned flow in [Robust Backend Design](/robust-backend-design).
 
 But what do you measure? What's achievable? Where do you optimize? How does serverless stack up?
 
@@ -30,11 +30,11 @@ AWS Lambda charges for execution time with [millisecond precision](https://aws.a
 
 **Saving storage space** costs CPU time to compress and clean data. Storage is cheap. Bandwidth to and from storage gets pricey.
 
-You **optimize memory** with slower code. Memory is plentiful, but not in serverless. You want small functions.
+You **optimize memory** with slower code. Memory is plentiful these days, but not in serverless. You want small functions.
 
-Every optimization takes **human time and effort**. A metric software *organizations* care about. How hard is this to develop and maintain?
+Every optimization takes **human time and effort**. A metric that software *organizations* care about. How hard is the code to develop and maintain?
 
-You can think of this as a 4-dimensional optimization function. **Speed vs. space vs. money vs. human effort**. Great question for a calculus exam.
+You can think of performance as a 4-dimensional optimization function. **Speed vs. space vs. money vs. human effort**. Great question for a calculus exam.
 
 Avoid doing the calculus with ye olde law of prioritization:
 
@@ -50,17 +50,15 @@ Storage is cheap – [$0.023/GB/month on S3](https://aws.amazon.com/s3/pricing/
 
 ![](giphy:shrug)
 
-Bandwidth is where size gets you.
+*Bandwidth* is where size gets you. AWS charges for taking data out of the system. Other providers are similar.
 
-AWS charges for egress. Taking data out of the system. Other providers have similar schemes.
-
-That means you pay to send data to users or between availability zones. Details depend on which services are involved. For example: S3 to CloudFront (the CDN) is free, then CloudFront charges $0.085/GB.
+You pay to send data to users or between availability zones. Details depend on which services are involved. For example: S3 to CloudFront (the CDN) is free, then CloudFront charges $0.085/GB.
 
 Minimize what you send over the wire.
 
 ## Thinking about speed
 
-Speed comes in 2 flavors:
+You measure speed with 2 metrics:
 
 1. Latency
 2. Throughput
@@ -73,7 +71,7 @@ Best summarized with a metaphor from [Andrew S. Tanenbaum](https://en.wikipedia.
 
 Latency measures delay. How long does it take to start working?
 
-You can write the fastest code in the world, but if it needs 2 seconds to get started ... unhappy users, high cost.
+You can write the fastest code in the world, but if it needs 2 seconds to get started ... unhappy users.
 
 Biggest factors are:
 
@@ -81,45 +79,145 @@ Biggest factors are:
 - internal routing
 - lambda wake up time
 
-**Network time** measures how long it takes for a user's request to reach your server. Depends on distance and end-user connection quality.
+**Network time** measures how long it takes for a user's request to reach your server. Depends on distance and connection quality.
 
-**Routing** is internal to your serverless provider. How long does it take to accept a request and send it to your code? Certain security rules can make this slower or faster.
+**Routing** is internal to your serverless provider. How long does it take to accept a request and send it to your code? Security rules can make this slower or faster.
 
 **Lambda wake up time** measures how long it takes to spin up your tiny server. Depends on bundle size, runtime environment, and how your code warms up.
 
 ### Throughput
 
-Throughput measures how fast you work. When you get a request, how long does it take to service?
+Throughput measures how fast you work. When you get a request, how long does it take?
 
 Biggest factors are:
 
 - code performance
 - input/output
 
-Serverless is perfect for [small distributed operations](/lambda-pipelines). Code performance and algorithm complexity have little impact.
+Serverless is for [small distributed operations](/lambda-pipelines). Code performance and algorithm complexity have little impact.
 
 > Fancy algorithms are slow when n is small, and n is usually small. Fancy algorithms have big constants. Until you know that n is frequently going to be big, don't get fancy.
 > ~ [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike)
 
 That leaves **input/output**. 
 
-Waiting for a database, talking to 3rd party APIs, loading a web page, those will *destroy* your performance. Average duration for my screenshot lambda is 10 seconds, for example. Mostly waiting for webpages to load.
+Waiting for a database, talking to 3rd party APIs, loading a web page, those will *destroy* your performance. For example: the average duration for my screenshot lambda is 10 seconds. Mostly waiting for Chrome to start and webpages to load.
 
-And yes, you pay for every millisecond of that wait. 🙃
+You pay for every millisecond of that wait. 🙃
 
-## Scaling strategies
+## Thinking about scalability
 
-### What is "scaling"
+[Scalability](https://en.wikipedia.org/wiki/Scalability) talks about how your system behaves as load grows.
 
-### Vertical
+What happens at 10 requests per day? What about 10,000,000?
 
-### Horizontal
+Your system is considered scalable, if resources grow linearly or less with demand. Using 1 lambda per request may not be cheap, but it does scale.
+
+A system that grows faster than demand blows up eventually.
+
+![](../images/scalability.png)
+
+This applies to teams as much as it does to computers. If you need 3 new developers to do 2x more work, your company will die.
+
+Scaling your software comes in 2 flavors: vertical and horizontal. You'll use a mix of both.
+
+### Vertical scaling
+
+Vertical scaling is the art of getting 1 computational resource to do more. Physical machine, virtual machine, or CPU thread.
+
+This type of scaling is expensive. You need more resources – faster CPU, more memory, better hardware, a GPU – and lots of engineering effort to optimize your code. 
+
+For many workloads, this approach is best. 
+
+It's easier to scale a database by adding CPU and memory than by rebuilding your application to split data. AI researchers prefer a computer with terabytes of memory over tweaking algorithms to use less.
+
+And sometimes it's the only way. Like processing 1 video.
+
+### Horizontal scaling
+
+Horizontal scaling is the art of splitting work between computational resources. Physical machines, virtual machines, or CPU threads.
+
+This type of scaling is cheap. Easier to provision, quicker to get going, less effort to optimize.
+
+But you have to find a balance. 6 cheap computers can cost more than 3 expensive computers.
+
+And that's where serverless shines. 
+
+You let somebody else worry about the balance. Cloud functions are small and AWS can stuff them on a beefy machine.
+
+Horizontal scaling is perfect for isolated operations with little inter-dependency. Like API requests, processing a video library, or serving static files. You can handle each piece on its own.
+
+Use the [map-reduce pattern](/lambda-pipelines) to split larger tasks like we did in the [Lambda Pipelines chapter](/lambda-pipelines). You pay with complexity and communication overhead.
 
 ## Achieving speed
 
-- fast code
-- reduce waiting
-- cold boot times
-- I/O is the concern
+Never optimize your code until it tells you where it hurts. Bottlenecks are surprising and unpredictable. Measure.
+
+But don't kick the table with your pinky toe either. You already know that hurts.
+
+For max speed in serverless environments you focus on:
+
+- cold wake up times
+- reducing input output
+- fast simple code
+
+### Cold wake up times
+
+Traditional servers split performance into warm and cold. The server starts cold and warms up its various caches, algorithm setup, and execution environment with the first few requests.
+
+Most requests reach a warm server. Orders of magnitude faster.
+
+You don't have that luxury with serverless. Every request is cold. Causing latency.
+
+![](giphy:gulp)
+
+There is no solution I can give you. Optimizing cold boot performance takes work and understanding *your* software.
+
+A few areas to look at:
+
+- Use a language with a **fast and nimble runtime** environment. JavaScript is surprisingly effective, Go can work great. JVM-based languages tend to struggle.
+- **Ruthlessly reduce bundle size**. The less code that needs to load, the better. Compile and minimize your source, [remove dev dependencies](https://www.serverless.com/framework/docs/providers/aws/guide/packaging#package-configuration). Use the `exclude` config in `serverless.yml`.
+- **Avoid fancy algorithms** with large constants. Iterating your data 5x to set up a super fast algorithm may not be worth it. The amount of data you're processing should be small.
+
+### Reducing input output
+
+The biggest performance killer is input/output. Your tiny server comes with no batteries included.
+
+Want to read from cache? Network request. Database? Network request. Call an API? Yep, network.
+
+[Networks are slow](https://gist.github.com/hellerbarde/2843375). If reading a variable is like brushing your teeth, a roundtrip with your database is like a 6 day vacation. 🤯 
+
+![Latency numbers every programmer should know](https://camo.githubusercontent.com/76ced2beb27b9053184da0cd7bf2d671f901d1521fcb35cb00d55631d22d5b85/687474703a2f2f692e696d6775722e636f6d2f6b307431652e706e67)
+
+Providers optimize these "external" requests but you have no control and there are hard limits at play.
+
+Best you can do is minimize.
+
+- do more in 1 request (bigger SQL queries, for example)
+- avoid I/O in a loop, try to pre-fetch
+- prefer local [memoization](https://en.wikipedia.org/wiki/Memoization) over cache
+
+#### Memoization vs. cache
+
+Memoization stores results in a local variable. Call your function with the same inputs and you can just return the value.
+
+But you lose memory when your lambda goes to bed. That's where cache helps – it's a service with persistent memory that stores pre-computed values.
+
+Like your database, the caching service is an external request. Much slower than a local variable.
+
+Use memoization when you call the same code multiple times per request. Use cache when you need the same data across many requests.
+
+When you get requests fast enough, serverless providers start reusing your code between executions. Memoizing in "global" memory does wonders.
+
+### Fast simple code
+
+Keep it simple.
+
+Use the fastest check as your first argument in an `&&` or `||` chain. Computers skip arguments when they can't change the result.
+
+Avoid doing work that you'll throw away 10 lines later.
+
+An `O(n)` lookup is faster than a `O(n)` hashmap build followed by 1 read.
 
 ## Optimizing flow
+
