@@ -8,7 +8,7 @@ export const image = "/chapter_headers/serverless-performance.png"
 
 ![](../images/chapter_headers/serverless-performance.svg)
 
-Performance is all about results per unit of a resource. Time, effort, space, energy, and money.
+Performance talks about results per unit of a resource. Time, effort, space, energy, and money.
 
 How much of X does it take to get N results?
 
@@ -147,7 +147,7 @@ You let somebody else worry about the balance. Cloud functions are small and AWS
 
 Horizontal scaling is perfect for isolated operations with little inter-dependency. Like API requests, processing a video library, or serving static files. You can handle each piece on its own.
 
-Use the [map-reduce pattern](/lambda-pipelines) to split larger tasks like we did in the [Lambda Pipelines chapter](/lambda-pipelines). You pay with complexity and communication overhead.
+Use the [map-reduce pattern](/lambda-pipelines) to split larger tasks like we did in the [Lambda Pipelines chapter](/lambda-pipelines). You pay with system complexity.
 
 ## Achieving speed
 
@@ -163,21 +163,21 @@ For max speed in serverless environments you focus on:
 
 ### Cold wake up times
 
-Traditional servers split performance into warm and cold. The server starts cold and warms up its various caches, algorithm setup, and execution environment with the first few requests.
+Traditional servers split performance into warm and cold. The server starts cold and warms up its caches, algorithm setup, and execution environment with the first few requests.
 
 Most requests reach a warm server. Orders of magnitude faster.
 
-You don't have that luxury with serverless. Every request is cold. Causing latency.
+You don't have that luxury with serverless. Every request is cold. 
 
 ![](giphy:gulp)
 
-There is no solution I can give you. Optimizing cold boot performance takes work and understanding *your* software.
+There is no one solution I can give you. Optimizing cold boot performance takes work and understanding *your* software.
 
 A few areas to look at:
 
-- Use a language with a **fast and nimble runtime** environment. JavaScript is surprisingly effective, Go can work great. JVM-based languages tend to struggle.
-- **Ruthlessly reduce bundle size**. The less code that needs to load, the better. Compile and minimize your source, [remove dev dependencies](https://www.serverless.com/framework/docs/providers/aws/guide/packaging#package-configuration). Use the `exclude` config in `serverless.yml`.
-- **Avoid fancy algorithms** with large constants. Iterating your data 5x to set up a super fast algorithm may not be worth it. The amount of data you're processing should be small.
+- Use a language with a **fast and nimble runtime**. JavaScript is surprisingly effective, Go can work great. JVM-based languages tend to struggle.
+- **Ruthlessly reduce bundle size**. The less code that needs to load, the better. Compile and minimize your source, [remove un-needed dependencies](https://www.serverless.com/framework/docs/providers/aws/guide/packaging#package-configuration). Use the `exclude` config in `serverless.yml`.
+- **Avoid fancy algorithms** with large constants. Iterating your data 5x to set up a fast algorithm may not be worth it. You're processing small payloads.
 
 ### Reducing input output
 
@@ -199,15 +199,29 @@ Best you can do is minimize.
 
 #### Memoization vs. cache
 
-Memoization stores results in a local variable. Call your function with the same inputs and you can just return the value.
+Memoization stores results in a local variable. Call your function with the same inputs and return the value without recalculating.
 
-But you lose memory when your lambda goes to bed. That's where cache helps – it's a service with persistent memory that stores pre-computed values.
+But you lose memory when the lambda goes to bed. That's where cache helps. A service with persistent memory that stores pre-computed values.
 
 Like your database, the caching service is an external request. Much slower than a local variable.
 
 Use memoization when you call the same code multiple times per request. Use cache when you need the same data across many requests.
 
-When you get requests fast enough, serverless providers start reusing your code between executions. Memoizing in "global" memory does wonders.
+When you get requests frequently enough, serverless providers start reusing your code between executions. Memoizing in "global" memory does wonders.
+
+In pseudo-javascript:
+
+```javascript
+let memoized = null
+
+exports.handler = function (argument) {
+	if (!memoized) {
+		memoized = expensiveComputation()
+	}
+	
+	return memoized
+}
+```
 
 ### Fast simple code
 
@@ -217,7 +231,10 @@ Use the fastest check as your first argument in an `&&` or `||` chain. Computers
 
 Avoid doing work that you'll throw away 10 lines later.
 
-An `O(n)` lookup is faster than a `O(n)` hashmap build followed by 1 read.
+An `O(n)` lookup is faster than building a hashmap in `O(n)` and reading it once.
 
 ## Optimizing flow
 
+Once you've optimized individual components, you need to look at the performance of your system as a whole.
+
+We look into that in the next chapter.
