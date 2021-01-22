@@ -1,6 +1,7 @@
 export const title = "Serverless performance"
 
-export const description = "How does performance impact your serverless setup? What's important to think about?"
+export const description =
+  "How does performance impact your serverless setup? What's important to think about?"
 
 export const image = "/chapter_headers/serverless-performance.png"
 
@@ -32,7 +33,7 @@ AWS Lambda charges for execution time with [millisecond precision](https://aws.a
 
 You **optimize memory** with slower code. Memory is plentiful these days, but not in serverless. You want small functions.
 
-Every optimization takes **human time and effort**. A metric that software *organizations* care about. How hard is the code to develop and maintain?
+Every optimization takes **human time and effort**. A metric that software _organizations_ care about. How hard is the code to develop and maintain?
 
 You can think of performance as a 4-dimensional optimization function. **Speed vs. space vs. money vs. human effort**. Great question for a calculus exam.
 
@@ -46,11 +47,11 @@ You'll find that computers are fast & cheap and humans are slow & expensive. Sti
 
 ### Where size matters
 
-Storage is cheap – [$0.023/GB/month on S3](https://aws.amazon.com/s3/pricing/) – and memory is *pretty* cheap at [$0.000016/GB/second](https://aws.amazon.com/lambda/pricing/). Memory cost *increases* when you need extra. Storage cost *decreases* when you use more.
+Storage is cheap – [$0.023/GB/month on S3](https://aws.amazon.com/s3/pricing/) – and memory is _pretty_ cheap at [$0.000016/GB/second](https://aws.amazon.com/lambda/pricing/). Memory cost _increases_ when you need extra. Storage cost _decreases_ when you use more.
 
 ![](giphy:shrug)
 
-*Bandwidth* is where size gets you. AWS charges for taking data out of the system. Other providers are similar.
+_Bandwidth_ is where size gets you. AWS charges for taking data out of the system. Other providers are similar.
 
 You pay to send data to users or between availability zones. Details depend on which services are involved. For example: S3 to CloudFront (the CDN) is free, then CloudFront charges $0.085/GB.
 
@@ -66,6 +67,8 @@ You measure speed with 2 metrics:
 Best summarized with a metaphor from [Andrew S. Tanenbaum](https://en.wikipedia.org/wiki/Andrew_S._Tanenbaum):
 
 > Never underestimate the bandwidth of a station wagon full of tapes hurtling down the highway
+
+<div id="lock" />
 
 ### Latency
 
@@ -99,9 +102,9 @@ Serverless is for [small distributed operations](/lambda-pipelines). Code perfor
 > Fancy algorithms are slow when n is small, and n is usually small. Fancy algorithms have big constants. Until you know that n is frequently going to be big, don't get fancy.
 > ~ [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike)
 
-That leaves **input/output**. 
+That leaves **input/output**.
 
-Waiting for a database, talking to 3rd party APIs, loading a web page, those will *destroy* your performance. For example: the average duration for my screenshot lambda is 10 seconds. Mostly waiting for Chrome to start and webpages to load.
+Waiting for a database, talking to 3rd party APIs, loading a web page, those will _destroy_ your performance. For example: the average duration for my screenshot lambda is 10 seconds. Mostly waiting for Chrome to start and webpages to load.
 
 You pay for every millisecond of that wait. 🙃
 
@@ -125,9 +128,9 @@ Scaling your software comes in 2 flavors: vertical and horizontal. You'll use a 
 
 Vertical scaling is the art of getting 1 computational resource to do more. Physical machine, virtual machine, or CPU thread.
 
-This type of scaling is expensive. You need more resources – faster CPU, more memory, better hardware, a GPU – and lots of engineering effort to optimize your code. 
+This type of scaling is expensive. You need more resources – faster CPU, more memory, better hardware, a GPU – and lots of engineering effort to optimize your code.
 
-For many workloads, this approach is best. 
+For many workloads, this approach is best.
 
 It's easier to scale a database by adding CPU and memory than by rebuilding your application to split data. AI researchers prefer a computer with terabytes of memory over tweaking algorithms to use less.
 
@@ -141,7 +144,7 @@ This type of scaling is cheap. Easier to provision, quicker to get going, less e
 
 But you have to find a balance. 6 cheap computers can cost more than 3 expensive computers.
 
-And that's where serverless shines. 
+And that's where serverless shines.
 
 You let somebody else worry about the balance. Cloud functions are small and AWS can stuff them on a beefy machine.
 
@@ -167,11 +170,11 @@ Traditional servers split performance into warm and cold. The server starts cold
 
 Most requests reach a warm server. Orders of magnitude faster.
 
-You don't have that luxury with serverless. Every request is cold. 
+You don't have that luxury with serverless. Every request is cold.
 
 ![](giphy:gulp)
 
-There is no one solution I can give you. Optimizing cold boot performance takes work and understanding *your* software.
+There is no one solution I can give you. Optimizing cold boot performance takes work and understanding _your_ software.
 
 A few areas to look at:
 
@@ -185,7 +188,7 @@ The biggest performance killer is input/output. Your tiny server comes with no b
 
 Want to read from cache? Network request. Database? Network request. Call an API? Yep, network.
 
-[Networks are slow](https://gist.github.com/hellerbarde/2843375). If reading a variable is like brushing your teeth, a roundtrip with your database is like a 6 day vacation. 🤯 
+[Networks are slow](https://gist.github.com/hellerbarde/2843375). If reading a variable is like brushing your teeth, a roundtrip with your database is like a 6 day vacation. 🤯
 
 ![Latency numbers every programmer should know](https://camo.githubusercontent.com/76ced2beb27b9053184da0cd7bf2d671f901d1521fcb35cb00d55631d22d5b85/687474703a2f2f692e696d6775722e636f6d2f6b307431652e706e67)
 
@@ -215,11 +218,11 @@ In pseudo-javascript:
 let memoized = null
 
 exports.handler = function (argument) {
-	if (!memoized) {
-		memoized = expensiveComputation()
-	}
-	
-	return memoized
+  if (!memoized) {
+    memoized = expensiveComputation()
+  }
+
+  return memoized
 }
 ```
 
