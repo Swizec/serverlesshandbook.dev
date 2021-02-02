@@ -19,8 +19,8 @@ const HomeTitle = () => (
         <Text sx={{ fontSize: 4 }}>for frontend engineers</Text>
       </Heading>
       <Text>
-        Learn everything you need to dive into the modern backend. And a few
-        tricks that help with <em>any</em> backend
+        Learn everything you need to dive into the modern backend. Understand{" "}
+        <em>any</em> backend
       </Text>
 
       <Box sx={{ mt: 10 }}>

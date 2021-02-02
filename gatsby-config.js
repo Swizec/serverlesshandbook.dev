@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: `Serverless Handbook for Frontend Engineers`,
-    description: `Learn everything you need to dive into modern backend`,
+    description: `Learn everything you need to dive into modern backend. Understand any backend.`,
     author: `@swizec`,
     siteUrl: `https://serverlesshandbook.dev/`,
     courseFirstLesson: `/getting-started`,
@@ -13,7 +13,8 @@ module.exports = {
       options: {
         name: "Serverless Handbook for Frontend Engineers",
         short_name: "Serverless Handbook for Frontend Engineers",
-        description: "Learn everything you need to dive into modern backend",
+        description:
+          "Learn everything you need to dive into modern backend. Understand any backend.",
         start_url: "/",
         background_color: "#fff",
         theme_color: "#FF002B",
