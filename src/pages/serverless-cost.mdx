@@ -64,6 +64,8 @@ When you think of your system as a whole, **flow is everything**. You don't worr
 
 How long does it take from request to result? How many resources? How high the error rate?
 
+<div id="lock" />
+
 ## Identify the bottleneck
 
 > The fastest algorithm in the world is worthless when throttled by a slow database. In fact, it's making your database slower.
@@ -116,9 +118,9 @@ Luckily serverless makes bored computers cheap. You don't pay for an idle system
 
 ## Resolve the bottleneck
 
-Once you've identified the bottleneck slowing down your system, it's time to fix the issue.
+Once you've identified the bottleneck that's slowing down your system, it's time to fix the issue.
 
-This takes understanding the problem and there is no one solution. Check the [performance chapter](/serverless-performance) for ideas.
+This takes understanding the problem. There is no one solution. Check the [performance chapter](/serverless-performance) for ideas.
 
 A counter-intuitive approach is to *slow down* everything in front of the bottleneck. Less throughput per second, better lead times.
 
@@ -126,39 +128,39 @@ What's better? 100 writes per second and each takes 5 seconds, or 99 writes per 
 
 I know what I'd choose.
 
-A good term to start googling is "back pressure" – a way for components to ask others to slow down. Another one is "exponential backoff" where you make a request and if it fails, retry in 1 second. Then 2 seconds. Then 4, and so on.
+A good term to start googling is "back pressure" – a way for components to ask others to slow down. Another one is "exponential backoff" where you make a request and if it fails, retry in 1 second. Then 2 seconds. Then 4, then 8, all the way up to an absolute limit when you give up.
 
-[SQS from the chapter on queues](/serverless-elements#queue) adds exponential backoff to failing requests.
+[SQS from the chapter on queues](/serverless-elements#queue) adds exponential backoff to failing requests. The limit there is 14 days.
 
 ### Amdahl's law
 
-Another way to think about this is [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law) – a formula describing the maximum speed-up from adding resources to a system.
+A great way to analyze your bottleneck is [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law). A formula that describes the maximum speed-up from adding resources to a system.
 
-A common problem in [map-reduce style algorithms](/lambda-pipelines) is that you can parallelize the mapping step but not the reduce step. Here's how it works:
+Take [map-reduce style algorithms](/lambda-pipelines) for example. You can parallelize the mapping step but not the reduce step.
 
 1. Split data into units
 2. Iterate and modify each unit (map)
 3. Collect into final result (reduce)
 
-Each mapping operation depends on 1 unit of data, which makes it easy to do in parallel. The final result depends on *all* data, however, and you can't parallelize that. Or it's very difficult.
+Mapping operations depend on 1 unit of data, easy to do in parallel. The final result depends on *all* the data and you can't parallelize that. Or it's very difficult.
 
-Amdahl's law states that no matter how much you improve the optimizable portion of your system, you can never go faster than the bottleneck.
+Amdahl's law states that despite improving the optimizable portion of your system, you can never go faster than the bottleneck.
 
-Say it takes 10 seconds to process a dataset. 8 seconds to iterate, 2 seconds to combine. Parallelizing the 80% you can optimize gives you a 3x boost.
+Say it takes 10 seconds to process a dataset. 8 seconds to iterate, 2 seconds to combine. Throw 3x the resources at the 80% you can optimize to get a 3x boost.
 
 ![Amdahl's law formula](../images/amdahls-law.png)
 
-Despite 3x better performance, you get a 2.14x improvement on the whole.
+Despite 3x better performance, you get a 2.14x improvement on the whole. Which is great until you consider that you're spending 3x the money for 2x the speed.
 
 ### Critical path
 
-Yet a third way to think about the bottleneck problem is the [critical path concept](https://en.wikipedia.org/wiki/Critical_path_method) from project management and [parallel algorithms analysis](https://en.wikipedia.org/wiki/Analysis_of_parallel_algorithms). What is the longest series of sequentially dependent steps in your task?
+Another way to analyze bottlenecks is the [critical path concept](https://en.wikipedia.org/wiki/Critical_path_method) from project management and [parallel algorithms analysis](https://en.wikipedia.org/wiki/Analysis_of_parallel_algorithms). What is the longest series of sequentially dependent steps?
 
-That series defines the shortest possible execution time. And is a great target for optimization.
+That series defines the shortest possible execution time. A great target for optimization.
 
 For example: A user signs up. You want to store their data, send a welcome email, charge their credit card, and enable access.
 
-What's the fastest you can process their request?
+What's the fastest you can process the request?
 
 If you do everything, it will be slow. Sending emails and charging cards is a 3rd party service. Takes a few seconds.
 
@@ -168,15 +170,33 @@ Nope. Send emails later, optimistically assume the card works, block access if i
 
 You're down to saving data and granting access. That's a couple database requests. Hella fast 🤘
 
-And you can further optimize by doing it in fewer SQL queries.
+Further optimize by saving with fewer SQL queries. The critical task is getting a user signed up, every delay lowers conversion.
 
 ## Queuing theory
 
+An important measure for your serverless system is work-in-progress. How many requests are live in the system on average?
 
+You pay for storage on queues, you pay for processing, you pay for every delay.
+
+But everything is random. 10 requests one minute, 100 another. Sleeping lambda takes 200ms to process, warm lambda takes 20ms. Random error and you get stuck for 3 retries.
+
+How can you predict what's going on?
+
+The answer is [queuing theory](https://en.wikipedia.org/wiki/Queueing_theory). A field of mathematics and computer science that deals in analyzing how stochastic events are processed.
+
+![A basic queue model](https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Mm1_queue.svg/2880px-Mm1_queue.svg.png)
+
+Queueing theory looks at the arrival rate (λ), service time (μ), and derives formulae to analyze different configurations of queues, servers, and probability distributions. It's a fascinating field worth a deeper look.
+
+[Little's Law](https://en.wikipedia.org/wiki/Little%27s_law) is the important result for us. `L = λW`
+
+The long-term average length of a queue depends on arrival rate and average wait time. Nothing else.
+
+Meaning you can measure the average cycle time, look at the number of requests coming in, and predict how much work-in-progress you'll have on average.
 
 ## Recap
 
-In conclusion, serverless cost optimization is about fine-tuning your system as a whole. Identify the bottlenecks and help them work faster or find ways to avoid them.
+In conclusion, serverless cost optimization is about fine-tuning your system as a whole. Identify the bottlenecks and help them work faster. At least find ways to move them off the critical path.
 
 The most common bottlenecks are databases and 3rd party services.
 
