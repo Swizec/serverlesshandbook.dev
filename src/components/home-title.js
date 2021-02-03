@@ -27,11 +27,11 @@ const HomeTitle = () => (
         <GumroadButton>
           <a
             className="gumroad-button"
-            href="https://gum.co/qdNn?wanted=true"
+            href="https://gum.co/NsUlA"
             data-gumroad-single-product="true"
             target="_blank"
             rel="noopener noreferrer"
-          >{`start learning for $0+`}</a>
+          >{`Get Serverless Handbook`}</a>
         </GumroadButton>
       </Box>
     </Box>
