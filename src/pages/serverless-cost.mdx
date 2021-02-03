@@ -9,14 +9,14 @@ export const image = "/chapter_headers/serverless-cost-optimization.png"
 
 ![](../images/chapter_headers/serverless-cost-optimization.svg)
 
-A core innovation for serverless is metered pricing – the ability to "scale to zero". You pay what you use and no more.
+A core innovation for serverless is metered pricing – the ability to "scale to zero". Pay what you use and no more.
 
-To control cost you use the fewest resources possible. That means:
+That means you control cost by using the fewest resources possible.
 
-1. [Improving performance of individual components](/serverless-performance)
-2. Optimizing flow through the system
+1. [Improve performance of individual components](/serverless-performance)
+2. Optimize flow through the system
 
-A gunked-up system is an expensive system. Queues holding lots of data, retrying after errors, requests that hang, it all costs money. Adds up fast.
+A gunked-up system is an expensive system. Queues holding lots of data, retrying after errors, requests that hang, it all costs money.
 
 ## What is flow
 
@@ -28,15 +28,15 @@ Imagine you're on a hike with friends. Your goal is an old-fashioned lodge that 
 
 The grandma making that perfect stew doesn't rush perfection. Every day it runs out early.
 
-You're with a mixed group of folk. A few are fast, a few are slow, most are average. Nobody eats until everyon'es at the lodge. That would be rude.
+You're with a mixed group of folk. A few are fast, a few are slow, most are average. Nobody eats until everyone's at the lodge. That would be rude.
 
 What happens?
 
 Same thing that always happens on these hikes. 
 
-The fast folk speed ahead, everyone else rushing to catch up. Every few twists and turns the fast folk stop and wait.
+The fast folk speed ahead, the rest rush to catch up. Every few twists and turns the fast folk stop and wait.
 
-The rest catch up, panting and sweating. They now need a break. Grab some water, catch their breath.
+Slowpokes catch up, panting and sweating. They need a break. Grab some water, catch their breath.
 
 Everyone waits. When the slowest are ready to continue, the story repeats.
 
@@ -54,7 +54,7 @@ To go even faster, you make their hike easier. Carry their backpack, give them t
 
 This is the core lesson of Goldratt's [Theory of Constraints](https://en.wikipedia.org/wiki/Theory_of_constraints) – **you cannot move faster than your bottleneck**. But you can speed up and smooth out the bottleneck.
 
-The theory of constraints is a factory management way of thinking about systems that's popular in DevOps. Distributed software systems work a lot like factories.
+The theory of constraints is a factory management way of thinking about systems that's popular in DevOps[^1]. Distributed software systems work a lot like factories.
 
 ![A software system is like a factory](../images/software-factory.png)
 
@@ -86,19 +86,19 @@ At 101 writes, performance falls off a cliff.
 
 Your algorithm is fast, but your database can't keep up. The 101st write fails.
 
-If you're lucky, writes fail fast and your algorithm retries. Hooray for [robust architectures](/robust-backend-design). You'll try 102 writes the next second. 😬
+If you're lucky, writes fail-fast and your algorithm retries. Hooray for [robust architectures](/robust-backend-design). You'll try 102 writes the next second. 😬
 
-If you're unlucky, the database locks up – [deadlock](https://en.wikipedia.org/wiki/Deadlock). 20ms, 30ms, sometimes minutes pass while your database figures out how to deal.
+If you're unlucky, the database locks up – [the dreaded deadlock](https://en.wikipedia.org/wiki/Deadlock). 20ms, 30ms, sometimes minutes pass while your database figures out how to deal.
 
 The whole time, new writes are failing.
 
 A 20ms deadlock leads to 103 requests for the next second. Then 106, 109, and you never catch up unless traffic stops.
 
-You're still writing 100 rows per second, but each new row takes longer and longer to get through the queue. What used to be instant now takes minutes.
+You're writing 100 rows per second, but each new row takes longer and longer to get through the queue. What used to be instant now takes minutes.
 
 ## Measure the bottleneck's impact
 
-Work-in-progress kills system performance. The more requests in progress, the longer each one takes.
+Work-in-progress kills system performance. The more requests are in progress, the longer each one takes.
 
 You can analyze the impact by comparing lead time and cycle time.
 
@@ -110,7 +110,7 @@ That makes writing to the database painfully slow.
 
 ![Slowness cascades through your system](../images/spreading-slowness.png)
 
-Slowness radiates from the bottleneck to the rest of your system. Everything that relies on the bottleneck slows down, retries requests, or worse: Can't accept new requests.
+Slowness radiates from the bottleneck to the rest of your system. Everything that relies on the bottleneck slows down, retries processing, or worse: Refuses new requests.
 
 On the other side of a bottleneck, you'll notice starvation. Processes that want to work and have nothing to do.
 
@@ -128,13 +128,13 @@ What's better? 100 writes per second and each takes 5 seconds, or 99 writes per 
 
 I know what I'd choose.
 
-A good term to start googling is "back pressure" – a way for components to ask others to slow down. Another one is "exponential backoff" where you make a request and if it fails, retry in 1 second. Then 2 seconds. Then 4, then 8, all the way up to an absolute limit when you give up.
+A good term to google is "back pressure" – a way for components to ask others to slow down. Another one is "exponential backoff" – make a request and if it fails, retry in 1 second. Then 2 seconds. Then 4, then 8, all the way up to an absolute limit when you give up.
 
-[SQS from the chapter on queues](/serverless-elements#queue) adds exponential backoff to failing requests. The limit there is 14 days.
+[SQS, from the chapter on queues](/serverless-elements#queue) adds exponential backoff to failing requests. The limit there is 14 days.
 
 ### Amdahl's law
 
-A great way to analyze your bottleneck is [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law). A formula that describes the maximum speed-up from adding resources to a system.
+A great way to analyze the impact of your bottleneck is [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law). A formula that describes the maximum speed-up from adding resources to a system.
 
 Take [map-reduce style algorithms](/lambda-pipelines) for example. You can parallelize the mapping step but not the reduce step.
 
@@ -142,15 +142,15 @@ Take [map-reduce style algorithms](/lambda-pipelines) for example. You can paral
 2. Iterate and modify each unit (map)
 3. Collect into final result (reduce)
 
-Mapping operations depend on 1 unit of data, easy to do in parallel. The final result depends on *all* the data and you can't parallelize that. Or it's very difficult.
+Mapping operations depend on 1 unit of data, which is easy to do in parallel. The final result depends on *all* the data and you can't parallelize that. Well it's difficult.
 
 Amdahl's law states that despite improving the optimizable portion of your system, you can never go faster than the bottleneck.
 
-Say it takes 10 seconds to process a dataset. 8 seconds to iterate, 2 seconds to combine. Throw 3x the resources at the 80% you can optimize to get a 3x boost.
+Say it takes 10 seconds to process a dataset. 8 seconds to iterate, 2 seconds to combine. Throw 3x the resources at the 80% you can optimize for a 3x boost.
 
 ![Amdahl's law formula](../images/amdahls-law.png)
 
-Despite 3x better performance, you get a 2.14x improvement on the whole. Which is great until you consider that you're spending 3x the money for 2x the speed.
+Despite 3x better performance, you get a 2.14x improvement on the whole. Fantastic until you consider that you're spending 3x the money for 2x the speed.
 
 ### Critical path
 
@@ -168,38 +168,36 @@ But are they on the critical path? Do you *have to* send an email and charge the
 
 Nope. Send emails later, optimistically assume the card works, block access if it doesn't.
 
-You're down to saving data and granting access. That's a couple database requests. Hella fast 🤘
+You're down to saving data and granting access. A couple database requests. Hella fast 🤘
 
 Further optimize by saving with fewer SQL queries. The critical task is getting a user signed up, every delay lowers conversion.
 
 ## Queuing theory
 
-An important measure for your serverless system is work-in-progress. How many requests are live in the system on average?
+Since work-in-progress is the performance killer, can you know how many requests live in your system on average?
 
-You pay for storage on queues, you pay for processing, you pay for every delay.
+The behavior is random. 10 requests one minute, 100 another. Sleeping lambda takes 200ms to process, warm lambda takes 20ms. Random error and you're stuck for 3 retries.
 
-But everything is random. 10 requests one minute, 100 another. Sleeping lambda takes 200ms to process, warm lambda takes 20ms. Random error and you get stuck for 3 retries.
-
-How can you predict what's going on?
-
-The answer is [queuing theory](https://en.wikipedia.org/wiki/Queueing_theory). A field of mathematics and computer science that deals in analyzing how stochastic events are processed.
+[Queuing theory](https://en.wikipedia.org/wiki/Queueing_theory) helps you predict what happens. A field of mathematics and computer science that deals in analyzing stochastic systems.
 
 ![A basic queue model](https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Mm1_queue.svg/2880px-Mm1_queue.svg.png)
 
-Queueing theory looks at the arrival rate (λ), service time (μ), and derives formulae to analyze different configurations of queues, servers, and probability distributions. It's a fascinating field worth a deeper look.
+Queueing theory looks at the arrival rate (λ), service time (μ), and derives formulae to analyze different configurations of queues, servers, and probability distributions. A fascinating field worth a deeper look.
 
-[Little's Law](https://en.wikipedia.org/wiki/Little%27s_law) is the important result for us. `L = λW`
+The important result for us is [Little's Law](https://en.wikipedia.org/wiki/Little%27s_law) 👉 `L = λW`
 
-The long-term average length of a queue depends on arrival rate and average wait time. Nothing else.
+> The long-term average length of a queue depends on arrival rate and average wait time. Nothing else.
 
-Meaning you can measure the average cycle time, look at the number of requests coming in, and predict how much work-in-progress you'll have on average.
+You can measure the average cycle time (wait time in queuing theory), look at how often request come in, and predict your work-in-progress. The formula works for your system as a whole and every sub section on its own.
 
 ## Recap
 
-In conclusion, serverless cost optimization is about fine-tuning your system as a whole. Identify the bottlenecks and help them work faster. At least find ways to move them off the critical path.
+Serverless cost optimization is about fine-tuning your system as a whole. Identify the bottlenecks and help them work faster. At least move them off the critical path.
 
 The most common bottlenecks are databases and 3rd party services.
 
 Good luck!
 
 Next chapter we look at using Chrome to build cool features.
+
+[^1] for a purely DevOps take on theory of constraints, check out The Phoenix Project and The Unicorn Project. Great reads.
