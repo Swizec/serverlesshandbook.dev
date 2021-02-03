@@ -1,0 +1,258 @@
+---
+title: "Where to store data"
+description: "Serverless systems don't have a hard drive ... where do you keep your data?"
+image: "./img/databases.png"
+---
+
+# Where and how to store data
+
+![](../../images/chapter_headers/databases.svg)
+
+_**Serverless systems don't have a hard drive, where does your data go?** You need a database._
+
+But how do you choose which database? Where do you put it? It depends.
+
+There are no silver bullets. Every database has advantages and disadvantages. Always fit your tech to your problem, not your problem to your tech.
+
+**First, what is a database?** It's [a system for storing and organizing data](https://en.wikipedia.org/wiki/Database). 
+
+> A database is an organized collection of data, generally stored and accessed electronically from a computer system.
+
+Every database technology gives you these features:
+
+- keeps your data
+- lets you query data
+- lets you update data
+
+*Keeping* data is the difference between a [cache](https://en.wikipedia.org/wiki/Cache_(computing)) and a database. You can have an in-memory database for speed, but that doesn't make it a cache.
+
+## How to choose a database
+
+Databases seek to find a balance between different optimization criteria. Your choice depends on how that balance fits the problem you're solving.
+
+The common criteria are:
+
+1. Speed of reading data
+2. Speed of writing data
+3. Speed of updating data
+4. Speed of changing the shape of data
+5. Correctness of data
+6. Scalability
+
+Notice how the list is about speed? That's because speed of data access is the biggest predictor of app performance.
+
+I've seen API endpoints hit the database 30+ times. Queries that take 10ms instead of 1ms can mean the difference between a great user experience and a broken app.
+
+### ACID – a database correctness model
+
+We'll focus on speed in this chapter. But to gain speed and scalability, databases sacrifice correctness. So it's important you know what correctness means in a database context.
+
+Traditional databases follow the [ACID model](https://en.wikipedia.org/wiki/ACID) of transactional correctness. A transaction being a logical operation on your data.
+
+- **Atomicity** ensures that operations inside a transaction succeed or fail together and aren't visible until they all succeed
+- **Consistency** ensures your data is in a valid state and doesn't become corrupted by a half-failed transaction
+- **Isolation** ensures transactions executed in parallel behave the same as if they happened one after another and don't interfere with each other
+- **Durability** ensures that once a transaction succeeds, it stays succeeded and the data doesn't vanish
+
+Certain databases add additional levels of logical correctness on top of the ACID model. We'll talk about those later.
+
+<div id="lock" />
+
+Goals of the ACID model might remind you of the [Architecture Principles](/serverless-architecture-principles) chapter. That's because it aims to guarantee, at the database level, what your serverless architecture aims to ensure at the ecosystem level.
+
+You're building a glorified database for your web and mobile apps :)
+
+## Types of databases
+
+You can classify databases into 4 categories based on how they prioritize opposing optimization criteria.
+
+1. **Flat file storage** the simplest and fastest solution, great for large data
+2. **Relational databases** the most correct and surprisingly fast solution, great for complex data
+3. **NoSQL** the class of databases breaking ACID for greater speed/scalability, different types exist
+4. **Blockchain** a distributed database without a central authority, industry is figuring out what it's good for
+
+Regardless of what you choose, you will talk to your database through the network. It runs on a different machine.
+
+The network round-trips present a bottomline performance limit. No matter how fast your database, you can't get data faster than it can fly through the network.
+
+Serverless providers optimize by running your code as close to your database as possible. If that's not enough, you'll have to run your own servers.
+
+## Flat file database
+
+![](../../images/flat-file.png)
+
+The simplest way to store data is a [flat file database](https://en.wikipedia.org/wiki/Flat-file_database). You might call it "organized files".
+
+Flat files are commonly used for blobby binary data like images. You'll want to put them on S3 in a serverless environment, which negates some of the advantages.
+
+### Advantages of flat files
+
+Compared to other databases, flat files have zero overhead. Your data goes straight to storage without database logic.
+
+This creates amazing read and write performance. As long as you're adding data to the end of a file, creating a new file, and reading the file start to finish.
+
+A good naming structure gives you fast access to specific files.
+
+### Disadvantages of flat files
+
+Flat files struggle with updates. 
+
+To add a line at the beginning of a file, you have to move the whole thing. To change a line in the middle, you have to update everything that comes after.
+
+There's no query interface either. You have to read your files to compare, analyze, and search. And without a database, there's no ACID or data shape guarantees.
+
+### When you should store data in flat files
+
+Flat file storage is great when you're looking for speed and simplicity.
+
+**Use flat files when:**
+
+1. You need fast append-only writes
+2. You have simple querying requirements
+3. You read data more often than you write data
+4. You write data that you rarely read
+
+**Avoid flat files when:**
+
+1. You need to cross-reference data or use complex queries
+2. You need fast access across your entire database
+3. Your data changes a lot
+
+No. 3 is the flat file database killer.
+
+Common use cases for flat files are logs, large datasets, and binary files (image, video, etc).
+
+*Read about how to use flat files [in the appendix](/appendix-more-databases#flat-file-database)*
+
+## Relational databases – RDBMS
+
+![](../../images/relational_generic.png)
+
+[Relational databases](https://en.wikipedia.org/wiki/Relational_database) are the most common type of database. Data lives in a structured data model and many features exist to optimize performance.
+
+Choosing a relational database for your business data is almost always the right decision. 
+
+### Advantages of relational databases
+
+Relational databases have been around since the 1970's. They're battle tested, reliable, and can adapt to almost any workload.
+
+Modern systems incorporate popular features like unstructured JSON data from the NoSQL. [Postgres](https://en.wikipedia.org/wiki/PostgreSQL) even outperforms NoSQL solutions on certain performance benchmarks.
+
+The defining feature of relational databases is the relational data model which lets you model complex data using small isolated concepts. You almost always end up reimplementing this idea with other databases.
+
+And after decades of research, relational databases are *fast*.
+
+### Disadvantages of relational databases
+
+Relational databases are harder to use, require more expertise to tune performance, and you lose flexibility. This can be a good thing.
+
+You can create a database that's fast as lightning, reach a magic number of entries, and performance falls off a cliff. You can't horizontally scale a relational database.
+
+But you *can* make it more flexible with a blobby JSON field on every model. Perfect for metadata.
+
+### When to store data in a relational DB
+
+Choosing a relational database is almost always the correct choice.
+
+**Use relational DBs when:**
+
+1. You don't know how you're using your data
+2. You benefit from data integrity
+3. You need good performance up to hundreds of million entries
+4. Your app fits in a single data center (availability zone)
+5. You often use different objects together
+
+**Avoid relational DBs when:**
+
+1. You're storing binary data (images, video)
+2. You don't care about data integrity
+3. You don't want to invest in initial setup
+4. You just need a quick way to save something
+5. You have more data than fits on 1 server
+
+This makes relational databases the perfect choice for typical applications. You wouldn't use a RDBMS for files, but should consider it for metadata about those files.
+
+*Read about how to use relational databases [in the appendix](/appendix-more-databases#relational-databases--rdbms)*
+
+## The NoSQL approach
+
+![](../../images/nosql.png)
+
+"NoSQL" represents a broad range of technologies built for different reasons. A catch-all for any database that isn't relational.
+
+You can think of flat files as a NoSQL database.
+
+Wikipedia offers [a great description](https://en.wikipedia.org/wiki/NoSQL):
+
+> The data structures used by NoSQL databases are different from those used by default in relational databases, making some operations faster in NoSQL. The particular suitability of a given NoSQL database depends on the problem it must solve.
+
+This variety is where NoSQL shines. Where relational databases aim to fit many use cases, NoSQL solutions aim to solve a specific problem.
+
+### Flavors of NoSQL
+
+You can classify NoSQL databases in 4 categories:
+
+1. **key:value store** that works like a dictionary. A unique key points to a stored value. Fast read/write performance makes this an ideal caching layer in front of a relational database.
+2. **document store** that maps unique keys to documents. Like key:value stores with complex values. Many come with a great query engine.
+3. **graph database** that store graph data structures efficiently. Useful for domains with many circular references like social connections and road maps.
+4. **wide column database** that acts as a mix between a document store and a relational database. Keys map to objects that fit a schema, but the schema isn't prescriptive.
+
+Typical modern databases support multiple models.
+
+### Which NoSQL flavor should you pick?
+
+It depends. What are you trying to do?
+
+I would prioritize a managed database solution from my serverless providers. Cuts down on networking overhead and makes your life easier because there's one less thing to manage.
+
+Then I would pick what fits my use case.
+
+**Use key:value stores** when you need blazing fast data with low overhead. 
+
+**Use a document DB or wide column store** when you want a generic database that isn't relational.
+
+**Use a graph DB** when you're storing graph data.
+
+**My favorite advantage of NoSQL databases** is the wonderful integration with the JavaScript/TypeScript ecosystem. Store JSON blobs, read JavaScript objects.
+
+### Disadvantages of NoSQL databases
+
+Disadvantages of NoSQL stem from its advantages. Funny how that works.
+
+The simplicity of key:value stores gives you speed at the cost of not being able to store complex data.
+
+The write speed of document databases comes at the cost of ACID compliance. Often using the [eventual consistency](https://en.wikipedia.org/wiki/Eventual_consistency) model to write fast and distribute later.
+
+The ease of schema-less development comes at the cost of inconsistent data. And NoSQL databases tend to struggle with relations between objects. You can do it, but feels clunky.
+
+*Read more about choosing a NoSQL database and how to use it [in the appendix](/appendix-more-databases#the-nosql-approach-to-data)*
+
+## Blockchain
+
+![](../../images/blockchain.png)
+
+Blockchain is the new kid on the block. Mixed up with cryptocurrencies and financial speculation, it's a solid way to share and store data.
+
+You've probably used one before 👉 git.
+
+That's right, [git](https://en.wikipedia.org/wiki/Git) and [The Blockchain](https://en.wikipedia.org/wiki/Blockchain) share the same underlying data structure: a merkle tree.
+
+A [merkle tree](https://en.wikipedia.org/wiki/Merkle_tree) stores data in a cryptographically verified sequence of blocks. Each block contains a cryptographic hash of the previous block, which means you can verify the whole chain.
+
+As a result you don't need a central authority to tell you the current state of your data. Each client can decide, if their data is valid. 
+
+Adding a consensus algorithm makes the process even more robust. When you add new data, how many servers have to agree that the data is valid? 
+
+The result is a slow, but robustly decentralized database. 
+
+I wouldn't use the blockchain in production just yet, but it's an exciting space to watch. [Blockstack](https://blockstack.org/) is a great way to start.
+
+## What should you choose?
+
+Projects tend to use a combination of database technologies.
+
+Files for large binary blobs, relational database for business data, key:value store for persistent caching, document store for complex data that lives together.
+
+Adding JSON blobs to relational data is a common compromise.
+
+Next chapter, we look at building a RESTful API for your data.

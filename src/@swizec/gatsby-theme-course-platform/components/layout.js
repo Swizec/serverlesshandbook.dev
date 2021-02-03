@@ -159,6 +159,13 @@ export default (props) => {
   const [menu, setMenu] = useState(false)
   const nav = useRef(null)
 
+  if (props.pageContext.frontmatter) {
+    props = {
+      ...props,
+      ...props.pageContext.frontmatter
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -181,6 +188,7 @@ export default (props) => {
       />
       {!fullwidth ? (
         <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
+          <Head {...props} />
           <main id="content">{props.children}</main>
         </Sidebar>
       ) : (
