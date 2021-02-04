@@ -1,0 +1,174 @@
+---
+title: "Dev, QA, and prod"
+description: "How do you test and share code without breaking user experience?"
+image: "./img/dev-qa-prod.png"
+---
+
+# Dev, QA, and prod
+
+![Dev, QA, and prod](../../images/chapter_headers/dev-qa-prod.svg)
+
+You're building an app and want to show off to a friend. Do you ship to production?
+
+You're trying a new feature that doesn't do localhost. Do you publish?
+
+You've built a pipeline that edits user data and want to make sure it works. Test in production?
+
+If you're brave enough ... 
+
+## Before there's users
+
+None of this matters until you have users. Build on the main branch, ship to production, test in real life. Enjoy yourself!
+
+Coding at this stage is *fun*. 
+
+You don't have to worry about corrupting user data. No concerns about disrupting a user's workflow. You don't even need to worry about shipping bugs!
+
+If nobody noticed the bug, was the bug even there?
+
+A word of caution: It's easy to fill your database with crappy data. Try to start production clean. 
+
+Thank me later when counting users isn't a 5 step process. You'd be surprised how hard it can get to answer *"How many users do we have?"*.
+
+## Localhost vs. Production
+
+Once you have users, you need a way to distinguish production from development. That's easy on a solo project.
+
+Localhost is for development, production is for production. Run a copy of production on your machine and test.
+
+The bigger your system, the trickier this gets. You need to host a database, run queues, caching layers, etc.
+
+<div id="lock" />
+
+You can get close with the [LocalStack plugin for the Serverless Framework](https://www.serverless.com/plugins/serverless-localstack). But only production is like production. ✌️
+
+Plus you can't show off localhost to a friend or coworker.
+
+## The 3 stage split
+
+A common solution to the production vs. development problem is the 3 stage split:
+
+0. localhost
+1. development
+2. staging / QA
+3. production
+
+You build and test on localhost. Get fast iteration and reasonable certainty that your code works.
+
+You then push to development. A deployed environment that's like production, but frothy. Changes frequently, data is irrelevant, used by everyone on the team.
+
+The development environment helps you test your code with others' work. You can show off to a friend, coworker, or product manager for early feedback.
+
+When that works, you push to staging. A more stable environment used to test code right before it ships. Features are production ready, early feedback incorporated.
+
+Staging is the playground for QA and final sign-off from product managers.
+
+Then you push to production. 🚀
+
+### How to use the 3 stage split
+
+Infrastructure-as-code makes the 3 stage split easy to set up. Have 3 branches of your codebase, deploy each to its own stage.
+
+With the serverless framework, you configure the deploy stage in `serverless.yml`:
+
+```yaml
+# serverless.yml
+service: my-service
+
+provider:
+	name: aws
+	stage: dev
+```
+
+Deploy with `sls deploy` and that creates or updates the `dev` stage. 
+
+Stages work via name-spacing. Every resource embeds the stage as part of its name and URL. Keep that in mind when naming resources manually.
+
+Like when naming a queue:
+
+```yaml
+# serverless.yml
+resources:
+  Resources:
+    TimesTwoQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        # include the stage variable in your name
+        QueueName: "TimesTwoQueue-${self:provider.stage}"
+```
+
+Current stage is embedded in the string through the `${self:provider.stage}` variable.
+
+### Dynamic stages
+
+Editing the stage in `serverless.yml` on every deploy is annoying. Pass it in the command line instead.
+
+```yaml
+# serverless.yml
+
+provider:
+	name: aws
+	# use stage option, dev by default
+	stage: ${opt:stage, "dev"}
+```
+
+Deploy with `sls deploy --stage prod` to deploy to production. Defaults to `dev`.
+
+Use a new stage to set up a new environment, existing stage to update. The framework figures it out for you.
+
+Make sure stage names match any [`.env.X` configuration files](/handling-secrets).
+
+## Deploy previews
+
+The 3 stage split starts breaking down around the 6 to 7 engineers mark. More if your projects are small, less if they're big.
+
+You start stepping on each other's toes.
+
+Alice is working on a big feature, she'll need 3 months. During that time none of her work can go to production. She'd like to test on development.
+
+Bob meanwhile is fixing bugs and keeping the lights on. He needs to merge his work into development, staging, and production daily.
+
+How can Bob and Alice both work together?
+
+There's 2 solutions:
+
+1. Deploy previews
+2. Feature flags
+
+With infrastructure-as-code, deploy previews are the simple solution. Create a new stage for every large feature, deploy, show off, and test.
+
+You get an isolated environment with all the working bits and pieces. Automate it with GitHub Actions to create a new stage for every pull request.
+
+That's the model Netlify and Vercel champion. Every pull request is automatically deployed on a new copy of production with every update. 👌
+
+## Trunk-based development
+
+A popular approach in large teams is trunk-based development.
+
+Everyone works on the main branch, deploys to production regularly, and uses feature flags to disable features before they're ready. A strong automated testing culture with good coverage is critical.
+
+[Google uses the Beyonce rule](https://www.oreilly.com/library/view/software-engineering-at/9781492082781/ch01.html):
+
+> If you liked it, you shoulda put a test on it
+
+Anyone can change any code at any time. Tests help you prevent accidents.
+
+Feature flags let you disable new features before they're ready. Your code hits production quickly which ensures it doesn't break. If you refactored something, others can use it. If you created new functionality, it's available.
+
+But you disable user-facing parts to avoid a broken user experience.
+
+Implementing feature flags can be as easy as an environment variable with a bunch of IF statements, or as complex as progressive canary deploys. Those let you reveal a feature to 1% of users, then 5%, then 10, etc.
+
+## Which approach should you pick?
+
+The best approach depends on team size, established norms, correctness requirements, and your deployment environment.
+
+If you have a clean infrastructure-as-code approach, creating new stages is great. If you need manual setup, the 3 stage approach is best.
+
+You can even split your project into sub-projects. Isolated areas of concern that can move and deploy independently. Known as microservices.
+
+And remember, the easier your code is to fix and deploy, the less you have to worry about any of this. Optimize for fast iteration over avoiding mistakes.
+
+For side projects I like to test in production. Live wild 🤘
+
+Next chapter, we look at how to think about serverless performance.
