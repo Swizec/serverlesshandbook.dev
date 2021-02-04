@@ -21,9 +21,9 @@ A gunked-up system is an expensive system. Queues holding lots of data, retrying
 
 > Flow is the performance of your system as a whole.
 
-Imagine you're on a hike with friends. Your goal is an old-fashioned lodge that serves a stew you've been craving for days. Nothing like a hearty stew after a nice hike. 
+Imagine you're on a hike with friends. Your goal is an old-fashioned lodge that serves a stew you've been craving for days. Nothing like a hearty stew after a nice hike.
 
-![Villa Cassel under The Matterhorn by Patrick Robert Doyle](../images/lodge.jpeg)
+![Villa Cassel under The Matterhorn by Patrick Robert Doyle](../../images/lodge.jpeg)
 
 The grandma making that perfect stew doesn't rush perfection. Every day it runs out early.
 
@@ -31,7 +31,7 @@ You're with a mixed group of folk. A few are fast, a few are slow, most are aver
 
 What happens?
 
-Same thing that always happens on these hikes. 
+Same thing that always happens on these hikes.
 
 The fast folk speed ahead, the rest rush to catch up. Every few twists and turns the fast folk stop and wait.
 
@@ -55,11 +55,11 @@ This is the core lesson of Goldratt's [Theory of Constraints](https://en.wikiped
 
 The theory of constraints is a factory management way of thinking about systems that's popular in DevOps[^1]. Distributed software systems work a lot like factories.
 
-![A software system is like a factory](../images/software-factory.png)
+![A software system is like a factory](../../images/software-factory.png)
 
 Requests come in, magic happens, results go out. The magic is made of inter-dependent and parallel steps.
 
-When you think of your system as a whole, **flow is everything**. You don't worry about individual requests, you care about *typical* requests.
+When you think of your system as a whole, **flow is everything**. You don't worry about individual requests, you care about _typical_ requests.
 
 How long does it take from request to result? How many resources? How high the error rate?
 
@@ -107,7 +107,7 @@ In our database example, the cycle time is 10ms. With 500 waiting requests, lead
 
 That makes writing to the database painfully slow.
 
-![Slowness cascades through your system](../images/spreading-slowness.png)
+![Slowness cascades through your system](../../images/spreading-slowness.png)
 
 Slowness radiates from the bottleneck to the rest of your system. Everything that relies on the bottleneck slows down, retries processing, or worse: Refuses new requests.
 
@@ -121,7 +121,7 @@ Once you've identified the bottleneck that's slowing down your system, it's time
 
 This takes understanding the problem. There is no one solution. Check the [performance chapter](/serverless-performance) for ideas.
 
-A counter-intuitive approach is to *slow down* everything in front of the bottleneck. Less throughput per second, better lead times.
+A counter-intuitive approach is to _slow down_ everything in front of the bottleneck. Less throughput per second, better lead times.
 
 What's better? 100 writes per second and each takes 5 seconds, or 99 writes per second and each takes 10ms?
 
@@ -141,13 +141,13 @@ Take [map-reduce style algorithms](/lambda-pipelines) for example. You can paral
 2. Iterate and modify each unit (map)
 3. Collect into final result (reduce)
 
-Mapping operations depend on 1 unit of data, which is easy to do in parallel. The final result depends on *all* the data and you can't parallelize that. Well it's difficult.
+Mapping operations depend on 1 unit of data, which is easy to do in parallel. The final result depends on _all_ the data and you can't parallelize that. Well it's difficult.
 
 Amdahl's law states that despite improving the optimizable portion of your system, you can never go faster than the bottleneck.
 
 Say it takes 10 seconds to process a dataset. 8 seconds to iterate, 2 seconds to combine. Throw 3x the resources at the 80% you can optimize for a 3x boost.
 
-![Amdahl's law formula](../images/amdahls-law.png)
+![Amdahl's law formula](../../images/amdahls-law.png)
 
 Despite 3x better performance, you get a 2.14x improvement on the whole. Fantastic until you consider that you're spending 3x the money for 2x the speed.
 
@@ -163,7 +163,7 @@ What's the fastest you can process the request?
 
 If you do everything, it will be slow. Sending emails and charging cards is a 3rd party service. Takes a few seconds.
 
-But are they on the critical path? Do you *have to* send an email and charge the card before you can respond with *"You are signed up"*?
+But are they on the critical path? Do you _have to_ send an email and charge the card before you can respond with _"You are signed up"_?
 
 Nope. Send emails later, optimistically assume the card works, block access if it doesn't.
 

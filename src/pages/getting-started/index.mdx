@@ -14,7 +14,7 @@ Hello friend ❤️
 
 Creating your first serverless application can be intimidating. Type "serverless" into Google and you're hit with millions of results all assuming you know what you're doing.
 
-There's Serverless, the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, your friends mention lambda functions, then there's cloud functions from Netlify and Vercel, and aren't Heroku, Microsoft Azure, and DigitalOcean droplets a type of serverless too? *"CloudFlare edge workers!"* someone shouts in the background.
+There's Serverless, the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, your friends mention lambda functions, then there's cloud functions from Netlify and Vercel, and aren't Heroku, Microsoft Azure, and DigitalOcean droplets a type of serverless too? _"CloudFlare edge workers!"_ someone shouts in the background.
 
 It's all one big mess.
 
@@ -36,9 +36,9 @@ The logical next step to platform as a service, which came from The Cloud, which
 
 ![The world's first web server, a NeXT Computer](../../images/First_Web_Server.jpg)
 
-You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run 24/7. Mine lived in the bedroom and I'll never forget that IP. Good ol' 193.77.212.100. 
+You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run 24/7. Mine lived in the bedroom and I'll never forget that IP. Good ol' 193.77.212.100.
 
-*PS: An [IP address](https://en.wikipedia.org/wiki/IP_address) is how computers find each other on the internet.*
+_PS: An [IP address](https://en.wikipedia.org/wiki/IP_address) is how computers find each other on the internet._
 
 With a static IP address, you can tell [DNS](https://en.wikipedia.org/wiki/Domain_Name_System) servers how to find your server with a domain. People can type that domain into a URL and find your server.
 
@@ -48,7 +48,7 @@ For that, you need to configure Apache or Nginx, set up a reverse proxy to talk 
 
 ### Then came colocation
 
-![A colocation server rack](../images/Rack001.png)
+![A colocation server rack](../../images/Rack001.png)
 
 Colocation was a solution for the bedroom problem. What happens if your house catches fire? What if power goes out? Or Mom trips on the power cable and unplugs your computer?
 
@@ -58,11 +58,11 @@ Your internet is lower tier than a business would get – less reliable, more vo
 
 When you go on vacation, nobody's there to care for your server. Site might go down for a week before you notice. 😱
 
-Colocation lets you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and physical security. 
+Colocation lets you take that same server and put it in a data center. They supply the rack space, stable power, good internet, and physical security.
 
-You're left to deal with configuration, maintenance, and replacing hard drives when they fail. 
+You're left to deal with configuration, maintenance, and replacing hard drives when they fail.
 
-*PS: Computers break all the time. A large data center replaces a hard drive every few minutes just because a typical drive lasts 4 years and when you have thousands, the stats are not in your favor.*
+_PS: Computers break all the time. A large data center replaces a hard drive every few minutes just because a typical drive lasts 4 years and when you have thousands, the stats are not in your favor._
 
 It's on you to keep everything running.
 
@@ -72,9 +72,9 @@ It's on you to keep everything running.
 
 Colocation solved physical problems, but not the fact that your servers are bored.
 
-A typical server runs at about 30% utilization. You are wasting  money.
+A typical server runs at about 30% utilization. You are wasting money.
 
-Reasons for low utilization vary. 
+Reasons for low utilization vary.
 
 You have to keep the hardware happy and thermally content, you have to over-provision in case of traffic spikes or developer mistakes. Sometimes your site just isn't as popular as you'd like.
 
@@ -84,11 +84,11 @@ What if we could run multiple servers on the same machine?
 
 The first type of virtualization were basic [virtual hosts](https://en.wikipedia.org/wiki/Virtual_hosting) that let you host multiple websites on the same machine. A domain maps to an application on your computer, web server knows the mapping, and voila: sites can share resources.
 
-Worked great but caused problems. 
+Worked great but caused problems.
 
-Websites on the same computer are *very* close together. You could hack one site and gain access to another. You could starve every website for resources by attacking 1 site with a lot of traffic. You could config yourself into a corner with overlapping configuration.
+Websites on the same computer are _very_ close together. You could hack one site and gain access to another. You could starve every website for resources by attacking 1 site with a lot of traffic. You could config yourself into a corner with overlapping configuration.
 
-[Virtual private servers](https://en.wikipedia.org/wiki/Virtual_private_server) and later [containerization](https://en.wikipedia.org/wiki/OS-level_virtualisation) were the solution to that problem. Rather than multiple websites on the same machine, you can host *multiple whole computers* on the same machine. Like a computer with many brains. 🤯
+[Virtual private servers](https://en.wikipedia.org/wiki/Virtual_private_server) and later [containerization](https://en.wikipedia.org/wiki/OS-level_virtualisation) were the solution to that problem. Rather than multiple websites on the same machine, you can host _multiple whole computers_ on the same machine. Like a computer with many brains. 🤯
 
 The VPS – virtual private server – was born. Providers of "ssh access" became popular in the 2000's. Pay a few bucks a month and you get a real live server on the internet. No hardware required.
 
@@ -98,13 +98,13 @@ What if your site gets popular?
 
 ### The cloud is born
 
-![A data center](../images/photo-1558494949-ef010cbdcc31.jpeg)
+![A data center](../../images/photo-1558494949-ef010cbdcc31.jpeg)
 
 Early VPS was a lot like The Cloud. Computers running on the internet without touching hardware.
 
 Where VPS struggled was scale.
 
-Once your traffic started to grow, you'd need more servers to handle the load. There's only so much a single server can do per second. 
+Once your traffic started to grow, you'd need more servers to handle the load. There's only so much a single server can do per second.
 
 And while computers are getting stronger and stronger (known as [vertical scaling](https://en.wikipedia.org/wiki/Scalability#VERTICAL-SCALING)), it's cheaper to share the load between a lot of small computers ([horizontal scaling](https://en.wikipedia.org/wiki/Scalability#VERTICAL-SCALING)).
 
@@ -132,19 +132,19 @@ With PaaS you pay somebody else to deal with the cloud while you focus on code. 
 
 `git push` to deploy and voila. 👌
 
-Many PaaS providers let you drop down a few levels and break everything. You get to mess with low level configs, operating system libraries, web servers, databases, etc. Empowering *and* dangerous. I tend to get it wrong.
+Many PaaS providers let you drop down a few levels and break everything. You get to mess with low level configs, operating system libraries, web servers, databases, etc. Empowering _and_ dangerous. I tend to get it wrong.
 
-While PaaS takes care of your servers, *you* to take care of the "frontend". Set up domains and DNS, make your application run right for the platform, configure your own [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), deal with static files, etc.
+While PaaS takes care of your servers, _you_ to take care of the "frontend". Set up domains and DNS, make your application run right for the platform, configure your own [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), deal with static files, etc.
 
 The platform does servers.
 
 ### Serverless is born
 
-[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) is the logical step after PaaS. 
+[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) is the logical step after PaaS.
 
 Once you have a system that uses containers to automatically scale and descale based on demand, use idiomatic configuration for replicability, and painless deploys ... that's serverless right there.
 
-Serverless's main innovation are ***tiny*** containers and the ecosystem of services and tools around that.
+Serverless's main innovation are **_tiny_** containers and the ecosystem of services and tools around that.
 
 Server containers so tiny you can spin them up and down in milliseconds. They achieve this because the code they run is:
 
@@ -186,7 +186,7 @@ Install it globally:
 npm install -g serverless
 ```
 
-You'll need AWS credentials as well. 
+You'll need AWS credentials as well.
 
 I recommend following [Serverless's guide on AWS setup](https://serverless.com/framework/docs/providers/aws/guide/credentials/). It walks you through the necessary steps on your Amazon account and a couple terminal commands to run.
 
@@ -194,7 +194,7 @@ I recommend following [Serverless's guide on AWS setup](https://serverless.com/f
 
 There are no special initializers for serverless projects. To start a serverless project, you create a directory and add a configuration file.
 
-![](../images/start-serverless.gif)
+![](../../images/start-serverless.gif)
 
 ```sh
 mkdir hello-world
@@ -222,9 +222,9 @@ Then we'll tell it where to find the code.
 service: hello-world
 
 provider:
-    name: aws
-    runtime: nodejs10.x
-    stage: dev
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
 ```
 
 Our service is called `hello-world` and there's a couple details about our provider. The `stage` helps us tell the difference between development, QA, and production deployments. More on that in the [Dev, QA, and prod](/dev-qa-prod) chapter.
@@ -251,7 +251,7 @@ functions:
 	              cors: true
 ```
 
-We started a `functions` section. 
+We started a `functions` section.
 
 Each entry becomes its own tiny server – a serverless lambda. Together, they're the `hello-world` service.
 
@@ -259,7 +259,7 @@ The `hello` lambda calls an exported `hello` function inside our `handler.js` fi
 
 All that from these few lines of code 👌
 
-*PS: enabling [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) lets you call this function from other websites. Like your frontend app.*
+_PS: enabling [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) lets you call this function from other websites. Like your frontend app._
 
 ### Write your first backend function
 
@@ -271,10 +271,10 @@ Add a hello function to `handler.js`
 // handler.js
 
 exports.hello = async (event) => {
-    return {
-        statusCode: 200,
-        body: "Hello 👋"
-    }
+  return {
+    statusCode: 200,
+    body: "Hello 👋",
+  }
 }
 ```
 
@@ -286,7 +286,7 @@ That's it. You wrote backend code. 🤘
 
 To deploy, we run `serverless deploy`.
 
-![](../images/deploy-serverless.gif)
+![](../../images/deploy-serverless.gif)
 
 And your server is up.
 
@@ -298,7 +298,7 @@ I'll keep it up because it's free unless somebody clicks. And when they do, curr
 
 The Serverless framework talked to AWS and configured many things.
 
-![](../images/hello-world-lambda.png)
+![](../../images/hello-world-lambda.png)
 
 - **API Gateway** to proxy requests from the internet to your function
 - **Lambda** to run your code. This is a tiny container that wakes up when called.
@@ -306,7 +306,7 @@ The Serverless framework talked to AWS and configured many things.
 
 All those are configured for you. No UI to click through, no config to forget about next time, nothing your friends have to set up to deploy the same code.
 
-![](../images/hello-world.png)
+![](../../images/hello-world.png)
 
 Exciting!
 
