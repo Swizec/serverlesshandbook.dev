@@ -19,19 +19,19 @@ const HomeTitle = () => (
         <Text sx={{ fontSize: 4 }}>for frontend engineers</Text>
       </Heading>
       <Text>
-        Learn everything you need to dive into the modern backend. And a few
-        tricks that help with <em>any</em> backend
+        Learn everything you need to dive into modern backend. Understand{" "}
+        <em>any</em> backend
       </Text>
 
       <Box sx={{ mt: 10 }}>
         <GumroadButton>
           <a
             className="gumroad-button"
-            href="https://gum.co/qdNn?wanted=true"
+            href="https://gum.co/NsUlA"
             data-gumroad-single-product="true"
             target="_blank"
             rel="noopener noreferrer"
-          >{`start learning for $0+`}</a>
+          >{`Get Serverless Handbook`}</a>
         </GumroadButton>
       </Box>
     </Box>
