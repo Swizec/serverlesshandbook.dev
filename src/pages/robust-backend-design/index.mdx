@@ -4,101 +4,101 @@ description: "A fundamental paradox means your backend can't be perfect. How do 
 image: "./img/robust-backend-design.png"
 ---
 
-# Robust backend design
+# *Robust backend design*
 
-![](../../images/chapter_headers/robust-backend-design.svg)
+*![](../../images/chapter_headers/robust-backend-design.svg)*
 
-Imagine you're a Roman general leading a vast and powerful army. You're about to attack a city 😱
+*Imagine you're a Roman general leading a vast and powerful army. You're about to attack a city 😱*
 
-But you can't do it alone. 
+*But you can't do it alone.* 
 
-Your buddy with another vast and powerful army hides behind a hill on the other side of the city. You need their help to win.
+*Your buddy with another vast and powerful army hides behind a hill on the other side of the city. You need their help to win.*
 
-Attack together and win. Attack alone and die.
+*Attack together and win. Attack alone and die.*
 
-How do you ensure a joint attack?
+*How do you ensure a joint attack?*
 
-![Two generals problem](../../images/two-generals.png)
+*![Two generals problem](../../images/two-generals.png)*
 
-Smoke signals would reveal your plan to the city. It's too far to shout and phones are 2000 years in the future.
+*Smoke signals would reveal your plan to the city. It's too far to shout and phones are 2000 years in the future.*
 
-A messenger is your best bet. Run to the other army, deliver the message, come back with confirmation.
+*A messenger is your best bet. Run to the other army, deliver the message, come back with confirmation.*
 
-Unless they're caught. 🤔
+*Unless they're caught. 🤔*
 
-Messenger could fail to deliver your message. Or get caught on their way back. You'll never know.
+*Messenger could fail to deliver your message. Or get caught on their way back. You'll never know.*
 
-Send more messengers until one makes it back? How does your friend know that any messenger made it back? Nobody wants to attack alone either.
+*Send more messengers until one makes it back? How does your friend know that any messenger made it back? Nobody wants to attack alone either.*
 
-This puzzle is known as the [Two Generals' Problem](https://en.wikipedia.org/wiki/Two_Generals%27_Problem). **There is no solution**.
+*This puzzle is known as the [Two Generals' Problem](https://en.wikipedia.org/wiki/Two_Generals%27_Problem). **There is no solution**.*
 
-No algorithm guarantees 100% certainty over a lossy medium. Best you can do is *"Pretty sure."*
+*No algorithm guarantees 100% certainty over a lossy medium. Best you can do is "Pretty sure."*
 
-And that's why distributed systems are hard.
+*And that's why distributed systems are hard.*
 
-You *cannot* have 100% reliability. As soon as servers talk to each other, you're doomed to probabilities.
+*You cannot have 100% reliability. As soon as servers talk to each other, you're doomed to probabilities.*
 
-Serverless systems are always distributed. 😅
+*Serverless systems are always distributed. 😅*
 
-## Build a robust backend
+## *Build a robust backend*
 
-> A robust backend chugs along in the face of failure.
+> *A robust backend chugs along in the face of failure.*
 
-As we mentioned in the [Architecture Principles chapter](https://serverlesshandbook.dev/serverless-architecture-principles), your backend follows 3 principles:
+*As we mentioned in the [Architecture Principles chapter](https://serverlesshandbook.dev/serverless-architecture-principles), your backend follows 3 principles:*
 
-1. Everything can and will fail
-2. Your system should keep working
-3. Failures should be easy to fix
+1. *Everything can and will fail*
+2. *Your system should keep working*
+3. *Failures should be easy to fix*
 
-You get there with a combination of error recovery, error isolation, and knowing when your system needs help.
+*You get there with a combination of error recovery, error isolation, and knowing when your system needs help.*
 
-The strategies mentioned in [Architecture Principles](https://serverlesshandbook.dev/serverless-architecture-principles) were:
+*The strategies mentioned in [Architecture Principles](https://serverlesshandbook.dev/serverless-architecture-principles) were:*
 
-- isolate errors 
-- retry until success
-- make operations replayable
-- be debuggable
-- remove bad requests
-- alert the engineer when something's wrong
-- control your flow
+- *isolate errors* 
+- *retry until success*
+- *make operations replayable*
+- *be debuggable*
+- *remove bad requests*
+- *alert the engineer when something's wrong*
+- *control your flow*
 
-This chapter talks about how.
+*This chapter talks about how.*
 
-## Isolate errors
+## *Isolate errors*
 
-[In March 2017, Amazon S3 went down](https://www.theverge.com/2017/3/2/14792442/amazon-s3-outage-cause-typo-internet-server) and took with it half the internet. Root cause was a typo.
+*[In March 2017, Amazon S3 went down](https://www.theverge.com/2017/3/2/14792442/amazon-s3-outage-cause-typo-internet-server) and took with it half the internet. Root cause was a typo.*
 
-AWS Engineers were testing what happens when a few servers go offline. A typo took out too many and the rest got overwhelmed. They started failing one by one.
+*AWS Engineers were testing what happens when a few servers go offline. A typo took out too many and the rest got overwhelmed. They started failing one by one.*
 
-Soon the whole system was down.
+*Soon the whole system was down.*
 
-And because AWS relies on S3 to store files ... much of AWS went down. And because half the internet runs on AWS ... it went down.
+*And because AWS relies on S3 to store files ... much of AWS went down. And because half the internet runs on AWS ... it went down.*
 
-AWS couldn't even update their status dashboard because error icons live on S3.
+*AWS couldn't even update their status dashboard because error icons live on S3.*
 
-![](giphy:eesh)
+*![](giphy:eesh)*
 
-To isolate errors you have to reduce inter-dependency. Always think: *"What can I do to make moving pieces less dependent on each other?"*
+*To isolate errors you have to reduce inter-dependency. Always think: "What can I do to make moving pieces less dependent on each other?"*
 
-In your car, the brakes keep working even if your brake lights go out. The systems work together, but independently.
+*In your car, the brakes keep working even if your brake lights go out. The systems work together, but independently.*
 
-Inter-dependency can be subtle and hard to spot. The specifics are different each time.
+*Inter-dependency can be subtle and hard to spot. The specifics are different each time.*
 
-Here are 3 rules:
+*Here are 3 rules:*
 
-1. Give each operation a single responsibility
-2. Do the whole operation in one atomic go
-3. Avoid coupling
+1. *Give each operation a single responsibility*
+2. *Do the whole operation in one atomic go*
+3. *Avoid coupling*
 
-Serverless functions are optimized for this approach by default. They encourage you to keep code light and isolated 🤘
+*Serverless functions are optimized for this approach by default. They encourage you to keep code light and isolated 🤘*
 
-<div id="lock" />
+*<div id="lock" />*
 
-### Give each operation a single responsibility
+### *Give each operation a single responsibility*
 
-Think of serverless code like a function. How big are your functions? How much do they do?
+*Think of serverless code like a function. How big are your functions? How much do they do?*
 
-Say you were building a basic math module. Would you write a function that performs plus *and* minus?
+*Say you were building a basic math module. Would you write a function that performs plus and minus?*
 
 ```typescript
 function doMath(a: number, b: number, op: 'plus' | 'minus') {
@@ -110,9 +110,9 @@ function doMath(a: number, b: number, op: 'plus' | 'minus') {
 }
 ```
 
-That looks odd to me. Plus and minus are distinct operations. 
+*That looks odd to me. Plus and minus are distinct operations.* 
 
-You'd write 2 functions instead:
+*You'd write 2 functions instead:*
 
 ```typescript
 function plus(a: number, b: number) {
@@ -124,35 +124,35 @@ function minus(a: number, b: number) {
 }
 ```
 
-That's easier to work with.
+*That's easier to work with.*
 
-Splitting your code into small operations is an art. Big functions are hard to debug and too many small functions are hard to understand.
+*Splitting your code into small operations is an art. Big functions are hard to debug and too many small functions are hard to understand.*
 
-My rule is that when I use *and* to describe a function, I need a new function.
+*My rule is that when I use and to describe a function, I need a new function.*
 
-### Do the whole operation in one atomic go
+### *Do the whole operation in one atomic go*
 
-Atomic operations guarantee correctness. Perform an action start to finish without distraction.
+*Atomic operations guarantee correctness. Perform an action start to finish without distraction.*
 
-Say you're taking an important memory medicine.
+*Say you're taking an important memory medicine.*
 
-You grab the pill bottle, take out a pill, put it on your desk, get an email and start reading. You elbow the pill off your desk.
+*You grab the pill bottle, take out a pill, put it on your desk, get an email and start reading. You elbow the pill off your desk.*
 
-10 minutes later you look down and there's no pill. Did you take it?
+*10 minutes later you look down and there's no pill. Did you take it?*
 
-![](giphy:hmmm)
+*![](giphy:hmmm)*
 
-Same thing happens when your lambdas do too much. Your code can get distracted, halfway failures happen, and you're left with a corrupt state.
+*Same thing happens when your lambdas do too much. Your code can get distracted, halfway failures happen, and you're left with a corrupt state.*
 
-Recovering from corrupt state is hard.
+*Recovering from corrupt state is hard.*
 
-Instead, try to avoid distractions. Keep operations small, go start to finish, delegate. Let another process read email. And [clean up in case of error](https://en.wikipedia.org/wiki/Atomicity_(database_systems)).
+*Instead, try to avoid distractions. Keep operations small, go start to finish, delegate. Let another process read email. And [clean up in case of error](https://en.wikipedia.org/wiki/Atomicity_(database_systems)).*
 
-### Avoid coupling
+### *Avoid coupling*
 
-With atomic operations and delegating heavy work to other functions, you're primed for another mistake: Direct dependency.
+*With atomic operations and delegating heavy work to other functions, you're primed for another mistake: Direct dependency.*
 
-Like this:
+*Like this:*
 
 ```javascript
 function myLambda() {
@@ -165,62 +165,62 @@ function myLambda() {
 }
 ```
 
-You're coupling your `myLambda` function to your `anotherLambda` function. If `anotherLambda` fails, the whole process fails.
+*You're coupling your `myLambda` function to your `anotherLambda` function. If `anotherLambda` fails, the whole process fails.*
 
-Try decoupling these with a queue. Turn it into a process. `myLambda` does a little, pushes to the queue, `anotherLambda` does the rest.
+*Try decoupling these with a queue. Turn it into a process. `myLambda` does a little, pushes to the queue, `anotherLambda` does the rest.*
 
-![Decoupled operations through a queue](../../images/coupled_decoupled.png)
+*![Decoupled operations through a queue](../../images/coupled_decoupled.png)*
 
-You can see this principle in action in the [Lambda Pipelines for distributed data processing](http://serverlesshandbook.dev/lambda-pipelines) chapter.
+*You can see this principle in action in the [Lambda Pipelines for distributed data processing](http://serverlesshandbook.dev/lambda-pipelines) chapter.*
 
-## Retry until success
+## *Retry until success*
 
-Retrying requests is built into the serverless model. 
+*Retrying requests is built into the serverless model.* 
 
-AWS [retries every lambda invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html), if the call fails. The number of retries depends on who's calling.
+*AWS [retries every lambda invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html), if the call fails. The number of retries depends on who's calling.*
 
-API Gateway proxies requests from users which makes retrying harder than an SQS queue with all the time in the world.
+*API Gateway proxies requests from users which makes retrying harder than an SQS queue with all the time in the world.*
 
-Retries happen for two reasons:
+*Retries happen for two reasons:*
 
-1. Lambda never got the message
-2. Lambda failed to process the message
+1. *Lambda never got the message*
+2. *Lambda failed to process the message*
 
-#1 is out of your control. Two generals problem struck between request and your code. 💩
+*#1 is out of your control. Two generals problem struck between request and your code. 💩*
 
-#2 means you should *always* throw an error when something goes wrong. Do not pretend. 
+*#2 means you should always throw an error when something goes wrong. Do not pretend.* 
 
-Both SQS – Simple Queue Service – and SNS – Simple Notification Service – support retries out of the box. They're the most common ways AWS services communicate.
+*Both SQS – Simple Queue Service – and SNS – Simple Notification Service – support retries out of the box. They're the most common ways AWS services communicate.*
 
-Details of how they implement retries differ. You can read more about [How SNS works](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) and [How SQS works](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html) in AWS docs.
+*Details of how they implement retries differ. You can read more about [How SNS works](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) and [How SQS works](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html) in AWS docs.*
 
-Both follow this pattern:
+*Both follow this pattern:*
 
-1. Message accepted into SQS / SNS
-2. Message stored in multiple locations
-3. Message sent to your lambda
-4. Wait for lambda to process or fail
-5. If processed, remove message
-6. If failed, retry ... sometimes thousands of times
+1. *Message accepted into SQS / SNS*
+2. *Message stored in multiple locations*
+3. *Message sent to your lambda*
+4. *Wait for lambda to process or fail*
+5. *If processed, remove message*
+6. *If failed, retry ... sometimes thousands of times*
 
-Waiting to delete the message until after confirmation is crucial. You might lose data otherwise.
+*Waiting to delete the message until after confirmation is crucial. You might lose data otherwise.*
 
-Keep this in mind: never mark something as processed until you know for sure ✌️
+*Keep this in mind: never mark something as processed until you know for sure ✌️*
 
-### Build replayable operations
+### *Build replayable operations*
 
-Your code can retry for any reason. Make sure that's not a problem.
+*Your code can retry for any reason. Make sure that's not a problem.*
 
-Follow this 4 step algorithm:
+*Follow this 4 step algorithm:*
 
-1. Verify work needs doing
-2. Do the work
-3. Mark work as done
-4. Verify marking it done worked
+1. *Verify work needs doing*
+2. *Do the work*
+3. *Mark work as done*
+4. *Verify marking it done worked*
 
-Two Generals Problem may strike between you and your database 😉
+*Two Generals Problem may strike between you and your database 😉*
 
-In pseudocode, functions follow this pattern:
+*In pseudocode, functions follow this pattern:*
 
 ```javascript
 function processMessage(messageId) {
@@ -247,62 +247,62 @@ function processMessage(messageId) {
 }
 ```
 
-This guards against all failure modes:
+*This guards against all failure modes:*
 
-1. Processing retried, but wasn't needed
-2. Work failed
-3. Saving work failed
+1. *Processing retried, but wasn't needed*
+2. *Work failed*
+3. *Saving work failed*
 
-Make sure `doTheWork` throws an error, if it fails to save. Common cause of spooky dataloss. ✌️
+*Make sure `doTheWork` throws an error, if it fails to save. Common cause of spooky dataloss. ✌️*
 
-## Be debuggable
+## *Be debuggable*
 
-![](giphy:sherlock_holmes)
+*![](giphy:sherlock_holmes)*
 
-Debugging distributed systems is hard. More art than science.
+*Debugging distributed systems is hard. More art than science.*
 
-You'll need to know or learn your system inside-out. Tease it apart bit by bit.
+*You'll need to know or learn your system inside-out. Tease it apart bit by bit.*
 
-Keeping your code re-runnable helps. Keeping your data stored helps. Having easy access to all this helps.
+*Keeping your code re-runnable helps. Keeping your data stored helps. Having easy access to all this helps.*
 
-When debugging distributed systems I like to follow this approach:
+*When debugging distributed systems I like to follow this approach:*
 
-1. Look at the data
-2. Find which step of the process failed
-3. Get the data that failed
-4. Run the step that failed
-5. Look at logs
+1. *Look at the data*
+2. *Find which step of the process failed*
+3. *Get the data that failed*
+4. *Run the step that failed*
+5. *Look at logs*
 
-You can use a debugger to step through your code locally. With a unit test using production data. But it's not the same as a full production environment.
+*You can use a debugger to step through your code locally. With a unit test using production data. But it's not the same as a full production environment.*
 
-If local debugging fails, add logs. Many logs. Run in production, see what happens.
+*If local debugging fails, add logs. Many logs. Run in production, see what happens.*
 
-Being debuggable therefore means:
+*Being debuggable therefore means:*
 
-1. Safely replayable operations
-2. Keep intermediate data long enough
-3. Manually executable with specific requests
-4. Identifiable and traceable requests (AWS adds requestId to every log)
-5. Locally executable for unit testing
+1. *Safely replayable operations*
+2. *Keep intermediate data long enough*
+3. *Manually executable with specific requests*
+4. *Identifiable and traceable requests (AWS adds requestId to every log)*
+5. *Locally executable for unit testing*
 
-## Remove bad requests
+## *Remove bad requests*
 
-Requests can include a poison pill – a piece of bad data you can never process. They might swamp your system with infinite retries.
+*Requests can include a poison pill – a piece of bad data you can never process. They might swamp your system with infinite retries.*
 
-Say you want to process requests in sequence.
+*Say you want to process requests in sequence.*
 
-9 requests go great, the 10th is a poison pill. Your code gets stuck trying and retrying for days.
+*9 requests go great, the 10th is a poison pill. Your code gets stuck trying and retrying for days.*
 
-Meanwhile users 11 to 11,000 storm your email crying the service is down. But it's not down, it's stuck.
+*Meanwhile users 11 to 11,000 storm your email crying the service is down. But it's not down, it's stuck.*
 
-[Dead letter queues](https://en.wikipedia.org/wiki/Dead_letter_queue) can help. They hold bad messages you couldn't process until you have time to debug.
+*[Dead letter queues](https://en.wikipedia.org/wiki/Dead_letter_queue) can help. They hold bad messages you couldn't process until you have time to debug.*
 
-Each queue-facing Lambda gets *two* queues:
+*Each queue-facing Lambda gets two queues:*
 
-1. The trigger queue
-2. A dead letter queue for bad requests
+1. *The trigger queue*
+2. *A dead letter queue for bad requests*
 
-Like this in `serverless.yml`:
+*Like this in `serverless.yml`:*
 
 ```yaml
 # serverless.yml
@@ -340,38 +340,38 @@ resources:
                 MessageRetentionPeriod: 1209600 # 14 days
 ```
 
-A worker lambda runs from an SQS queue. When it fails, messages are retried.
+*A worker lambda runs from an SQS queue. When it fails, messages are retried.*
 
-Now all you need is an alarm on dead letter queue size to remind you *"Hey something's wrong, you should check"*. 
+*Now all you need is an alarm on dead letter queue size to remind you "Hey something's wrong, you should check".* 
 
-Bug in your code? Fix the bug, re-run worker from dead letter queue. No messages are lost.
+*Bug in your code? Fix the bug, re-run worker from dead letter queue. No messages are lost.*
 
-Bad messages? Drop 'em like it's hot.
+*Bad messages? Drop 'em like it's hot.*
 
-## Alert an engineer
+## *Alert an engineer*
 
-The challenge with serverless systems is that you can't see what's going on. And you're not sitting there staring at logs.
+*The challenge with serverless systems is that you can't see what's going on. And you're not sitting there staring at logs.*
 
-![](giphy:the_matrix_looking_at_logs)
+*![](giphy:the_matrix_looking_at_logs)*
 
-You need a monitoring system. A way to keep tabs on your services and send alerts. Email for small problems, slack for big problems, text message for critical issues.
+*You need a monitoring system. A way to keep tabs on your services and send alerts. Email for small problems, slack for big problems, text message for critical issues.*
 
-That's what works for me.
+*That's what works for me.*
 
-AWS has basic monitoring built-in, Datadog is great for more control. More on monitoring in the [Monitoring serverless apps chapter](https://serverlesshandbook.dev/serverless-monitoring)
+*AWS has basic monitoring built-in, Datadog is great for more control. More on monitoring in the [Monitoring serverless apps chapter](https://serverlesshandbook.dev/serverless-monitoring)*
 
-## Control your flow
+## *Control your flow*
 
-Control your flow means looking at the performance of your system as a whole.
+*Control your flow means looking at the performance of your system as a whole.*
 
-Writing fast code is great, but if your speedy lambda feeds into a slow lambda, you're gonna have a bad day. Work piles up, systems stop, customers complain.
+*Writing fast code is great, but if your speedy lambda feeds into a slow lambda, you're gonna have a bad day. Work piles up, systems stop, customers complain.*
 
-You want to ensure a smooth flow through the whole system.
+*You want to ensure a smooth flow through the whole system.*
 
-Computer science talks about this through [Queuing theory](https://en.wikipedia.org/wiki/Queueing_theory) and [stochastic modeling](https://en.wikipedia.org/wiki/Stochastic_process). Business folk talk about [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints).
+*Computer science talks about this through [Queuing theory](https://en.wikipedia.org/wiki/Queueing_theory) and [stochastic modeling](https://en.wikipedia.org/wiki/Stochastic_process). Business folk talk about [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints).*
 
-It's a huge field :)
+*It's a huge field :)*
 
-We talk more about flow in the [Serverless performance](https://serverlesshandbook.dev/serverless-performance) and [Cost optimization](https://serverlesshandbook.dev/serverless-cost-optimization) chapters.
+*We talk more about flow in the [Serverless performance](https://serverlesshandbook.dev/serverless-performance) and [Cost optimization](https://serverlesshandbook.dev/serverless-cost-optimization) chapters.*
 
-Next chapter we look at where to store data.
+*Next chapter we look at where to store data.*
