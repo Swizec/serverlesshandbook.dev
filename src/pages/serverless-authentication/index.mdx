@@ -8,53 +8,57 @@ image: "./img/dealing-with-authentication.png"
 
 ![](../../images/chapter_headers/dealing-with-authentication.svg)
 
-You've built a feature that only a few people should use. How do you keep it safe?
+You've got a feature that only a few people should use. How do you keep it safe?
 
-The answer is authentication. 
+Authentication. 
 
-Easy in theory: Save an identifier on the client, send with every request, check against a stored value on the server.
+It's easy in theory: Save an identifier on the client, send with every request, check against a stored value on the server.
 
 In practice, authentication is hard.
 
-Where do you save the identifier? How does the client get it? What authentication scheme do you use? What do you save on the server? How do you keep it secure? What do you send with each request? How do you run authenticated code without the client?
+Where do you save the identifier? How does the client get it? What authentication scheme do you use? What goes on the server? How do you keep it secure? What if you need to run authenticated code without the user?
 
-Authentication is a deep rabbit hole. In this chapter, we look at the basics and build 2 examples.
+Authentication is a rabbit hole. In this chapter, we look at the basics and build 2 examples.
 
 ## What is authentication
 
-A typical authentication system on the web deals with everything from user identity, to access control, authorization, and keeping the system secure.
+A typical authentication system deals with everything from user identity, to access control, authorization, and keeping the system secure.
 
 It's a big job :)
 
-**Identity** answers the "Who are you?" question. This is the most important aspect of authentication systems. Can be as simple as an input field.
+**Identity** answers the "Who are you?" question. The most important aspect of authentication systems. Can be as simple as an honor-based input field.
 
-**Access control** answers the "Can you access this system?" question. You typically require proof of identity (like a password) and unlock restricted parts of your app.
+**Access control** answers the "Can you access this system?" question. You ask for proof of identity (like a password) and unlock restricted parts of your app.
 
-**Authorization** answers the "Which parts of the system can you use?" question. Two schemes are common: role-based and scope-based authorization. They tell you which users can do what.
+**Authorization** answers the "Which parts of the system can you use?" question. Two schemes are common: role-based and scope-based authorization. They specify which users can do what.
 
-**Security** underlies your authentication system. Without security, you've got nothing. Typical concerns include leaking authentication tokens, interception attacks, impersonating users, revoking access, how your data behaves, and whether you can identify a breach.
+**Security** underlies your authentication system. Without security, you've got nothing. 
+
+Typical concerns include leaking authentication tokens, interception attacks, impersonating users, revoking access, how your data behaves, and whether you can identify a breach.
 
 ### Factors of authentication
 
+Secure proof of identity is key to good authentication.
+
 > something the user *knows*, something the user *has*, something the user *is*
 
-Each [authentication factor](https://en.wikipedia.org/wiki/Authentication#Authentication_factors) covers a different overlapping factor of their identity. You need at least 2 factors to verify the user is who they say they are. 3 is best.
+Each [authentication factor](https://en.wikipedia.org/wiki/Authentication#Authentication_factors) covers a different overlapping proof of identity. 2 factors is considered safe, 3 is best. Typical is 1 🙈
 
-**Knowledge factors** include hidden pass phrases like passwords, PINs, and security questions. You know the answer and are verifying the user also knows.
+**Knowledge factors** include hidden pass phrases like passwords, PINs, and security questions. You know the answer and verify the user also knows.
 
-**Ownership factors** include ID cards, token apps on your phone, email inboxes, etc. You expect the user can prove they have something only they should have.
+**Ownership factors** include ID cards, token apps on your phone, physical tokens, and email inboxes. You ask the user to prove they have something only they should have.
 
-**Inference factors** include biometric identifiers like fingerprints, DNA, hand-written signatures, and other behaviors or markers that uniquely identify a person.
+**Inference factors** include biometric identifiers like fingerprints, DNA, hand-written signatures, and other markers that uniquely identify a person.
 
 Credit card + PIN is 2-factor authentication. You own the card and know the PIN.
 
 Username + password is 1-factor. You know the username and know the password.
 
-But passwordless email login is 2-factor. You know the username and own the email inbox. Proof by unique link.
+Passwordless email/sms login is 2-factor. You know the username and own the email inbox. Proof by unique link or pin.
 
-### Role-based vs. scope-based authorization
+### Role-based and scope-based authorization
 
-## OAuth
+
 
 ## Build your own auth
 
