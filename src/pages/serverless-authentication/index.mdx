@@ -18,11 +18,11 @@ In practice, authentication is hard.
 
 Where do you save the identifier? How does the client get it? What authentication scheme do you use? What goes on the server? How do you keep it secure? What if you need to run authenticated code without the user?
 
-Authentication is a rabbit hole. In this chapter, we look at the basics and build 2 examples.
+Authentication is a deep rabbit hole. In this chapter, we look at the basics and build 2 examples.
 
 ## What is authentication
 
-A typical authentication system deals with everything from user identity, to access control, authorization, and keeping the system secure.
+A typical authentication system deals with everything from user identity, to access control, authorization, and keeping your system secure.
 
 It's a big job :)
 
@@ -38,7 +38,7 @@ Typical concerns include leaking authentication tokens, interception attacks, im
 
 ### Factors of authentication
 
-Secure proof of identity is key to good authentication.
+Proof of identity is key to good authentication.
 
 > something the user *knows*, something the user *has*, something the user *is*
 
@@ -58,8 +58,25 @@ Passwordless email/sms login is 2-factor. You know the username and own the emai
 
 ### Role-based and scope-based authorization
 
+The 2nd biggest job after access control is authorization. What can *this* user do?
 
+Two flavors of authorization are common:
+
+- **role-based** authorization depends on user types. Admins vs. paid users vs. freeloaders.
+- **scope-based** authorization depends on fine-grained user properties. Enable subscriber dashboard or don't.
+
+Technically they're the same – a user property. It's like utility vs. semantic classes in CSS. Debate until you're blue in the face then pick what feels right :)
+
+Role-based authorization is perfect for small projects. You need admins and everyone else. Being an admin comes with inherent rights.
+
+Scope-based authorization is perfect for large projects with granular needs. Yes you're an admin, but what kind of admin?
+
+In practice you'll see that roles get clunky as your needs grow and scopes are tedious to use. Like when I had permission to configure CloudFront, but not to see what I'm doing. 🙃
+
+At an organizational level you end up with roles that act as bags of scopes. Engineers get scopes x, y, z, admins can do so and so, and users get user things.
 
 ## Build your own auth
+
+blah blah blah
 
 ## Use an auth provider
