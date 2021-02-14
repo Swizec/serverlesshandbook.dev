@@ -1,0 +1,19 @@
+service: serverless-auth-example
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+
+functions:
+  login:
+    handler: dist/auth.login
+    events:
+      - http:
+          path: login
+          method: POST
+          cors: true
+
+package:
+  exclude:
+    - node_modules/typescript/**
