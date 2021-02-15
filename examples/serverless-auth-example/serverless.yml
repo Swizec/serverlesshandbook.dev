@@ -7,6 +7,7 @@ provider:
   environment:
     USER_TABLE: ${self:service}-users-${self:provider.stage}
     SALT: someRandomSecretString_pleaseUseProperSecrets:)
+    SUPER_SECRET: useRealSecretsManagementPlease
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -24,6 +25,13 @@ functions:
     events:
       - http:
           path: login
+          method: POST
+          cors: true
+  verify:
+    handler: dist/auth.verify
+    events:
+      - http:
+          path: verify
           method: POST
           cors: true
 
