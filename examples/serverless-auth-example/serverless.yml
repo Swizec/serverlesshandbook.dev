@@ -40,9 +40,10 @@ resources:
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
-          WriteCapacityUntis: 1
+          WriteCapacityUnits: 1
         TableName: ${self:provider.environment.USER_TABLE}
 
 package:
   exclude:
     - node_modules/typescript/**
+    - node_modules/@types/**
