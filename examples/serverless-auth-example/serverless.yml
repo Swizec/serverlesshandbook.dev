@@ -4,6 +4,19 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
+  environment:
+    USER_TABLE: ${self:service}-users-${self:provider.stage}
+    SALT: someRandomSecretString_pleaseUseProperSecrets:)
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.USER_TABLE}"
 
 functions:
   login:
@@ -13,6 +26,22 @@ functions:
           path: login
           method: POST
           cors: true
+
+resources:
+  Resources:
+    UsersTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUntis: 1
+        TableName: ${self:provider.environment.USER_TABLE}
 
 package:
   exclude:
