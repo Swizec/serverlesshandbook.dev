@@ -7,7 +7,7 @@ provider:
   environment:
     USER_TABLE: ${self:service}-users-${self:provider.stage}
     SALT: someRandomSecretString_pleaseUseProperSecrets:)
-    SUPER_SECRET: useRealSecretsManagementPlease
+    JWT_SECRET: useRealSecretsManagementPlease
   iamRoleStatements:
     - Effect: Allow
       Action:

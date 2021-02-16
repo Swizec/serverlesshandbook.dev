@@ -79,15 +79,15 @@ At an organizational level you end up with roles that act as bags of scopes. Eng
 
 Let's build a basic serverless auth meant to be used as an API. Best way to get a feel for what it takes.
 
-In this section I'll share and explain the important code, you can [see the full example on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-auth-example). Use [this CodeSandbox app](https://codesandbox.io/s/serverless-auth-example-9ipfb) to try it out.
+I'll share and explain the important code, you can [see the full example on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-auth-example). Use [this CodeSandbox app](https://codesandbox.io/s/serverless-auth-example-9ipfb) to try it out.
 
 https://codesandbox.io/s/serverless-auth-example-9ipfb
 
-You can use it to test your implementation. Just replace the Lambda base URL with yours 😊
+You can use the sandbox to test your implementation. Just replace the Lambda base URL 😊
 
 ### The auth flow
 
-The difference between auth for an API and traditional auth comes down to how the client and server talk to each other. Traditional auth uses cookies, API auth relies on JSON Web Tokens (JWT).
+The difference between auth for an API and traditional auth comes down to how the client and server talk to each other. Traditional auth uses cookies, API auth relies on [JSON Web Tokens (JWT)](https://jwt.io/).
 
 ![Authentication flow](../../images/authentication_flow.png)
 
@@ -101,16 +101,267 @@ We're going to use JWT tokens. It's useful in more situations.
 
 What makes this flow secure is the HTTPS encryption used at the protocol level. Otherwise attackers could sniff user passwords during the first request and steal JWT tokens from subsequent requests.
 
-Always use HTTPS.
+Always use HTTPS and remember: A JWT token on its own lets you impersonate a user.
+
+### A note on password safety
+
+Part of authentication is storing passwords. You need to know the right password to verify the user got it right.
+
+Passwords are secrets and you should treat them with respect. Don't be the app that leaks a user's common password.
+
+A typical approach is to store passwords using a [one-way hash](https://en.wikipedia.org/wiki/Cryptographic_hash_function). Feed password into a cryptographic function and get a unique value that's impossible to reverse.
+
+Since the invention of [rainbow tables](https://en.wikipedia.org/wiki/Rainbow_table) even one-way hashing is no longer secure. We can fight that with a salt.
+
+```typescript
+// src/util.ts
+
+// Hashing your password before saving is critical
+// Hashing is one-way meaning you can never guess the password
+// Adding a salt and the username guards against common passwords
+export function hashPassword(username: string, password: string) {
+  return sha256(
+    `${password}${process.env.SALT}${username}${password}`
+  ).toString()
+}
+```
+
+Without a salt, the string `password` turns into the same hash for every app. Precomputed rainbow tables work like magic.
+
+With a salt, the string `password` hashes uniquely to *your* app. Attackers need to build new rainbow tables just for you. *If they can find the salt.*
+
+Add the username and each hash is unique to your app *and* the user. Attackers need new rainbow tables for every user. Not worth it.
+
+That's when guessing the user's password becomes easier. You can fight that with limits and timeouts on your login API.
 
 ### Environment variables
 
+We need 2 variables to build an auth system:
 
+- a unique SALT for password hashing
+- a unique JWT_SECRET for creating JWT tokens
+
+Define them in `serverless.yml` to keep things simple. Use [proper secrets handling](/handling-secrets) for production.
+
+```yaml
+# serverless.yml
+service: serverless-auth-example
+
+provider:
+  # ...
+  environment:
+    SALT: someRandomSecretString_pleaseUseProperSecrets:)
+    JWT_SECRET: useRealSecretsManagementPlease
+```
+
+Never share these with anyone. `JWT_SECRET` in particular is all an attacker needs to impersonate a user.
 
 ### `auth.login` function
 
+Users need to be able to login – send an API request with their username and password to get a JWT token. We'll keep it similar to the [REST API chapter](/serverless-rest-api).
+
+```yaml
+# serverless.yml
+
+functions:
+  login:
+    handler: dist/auth.login
+    events:
+      - http:
+          path: login
+          method: POST
+          cors: true
+```
+
+We've got a Lambda function called `login` that accepts POST requests and lives in the `auth` file.
+
+```typescript
+// dist/auth.ts
+
+// Logs you in based on username/password combo
+// Creates user on first login
+export const login = async (event: APIGatewayEvent) => {
+  const { username, password } = JSON.parse(event.body || "{}")
+
+  // respond with error if username/password undefined
+
+  // find user in database
+  let user = await findUser(username)
+
+  if (!user) {
+    // user was not found, create
+    user = await createUser(username, password)
+  } else {
+    // check credentials
+    if (hashPassword(username, password) !== user.password) {
+      // 🚨
+      return response(401, {
+        status: "error",
+        error: "Bad username/password combination",
+      })
+    }
+  }
+
+  // user was created or has valid credentials
+  const token = jwt.sign(omit(user, "password"), process.env.JWT_SECRET!)
+
+  return response(200, {
+    user: omit(user, "password"),
+    token,
+  })
+}
+```
+
+We grab `username` and `password` from request body and look for the user. `findUser` runs a database query, in our case a DynamoDB `getItem`.
+
+If the user was not found, we create one and make sure we `hashPassword()` before saving.
+
+If the user was found, we verify credentials by hashing the password and comparing with the stored value. We know passwords match when our `hashPassword()` method creates the same hash.
+
+This means you can never change your `hashPassword()` method unless you force users to reset their password.
+
+After all that's done, we sign a JWT token with our secret and send it back. Make sure you don't save sensitive data like passwords in anything that goes to the client.
+
+```typescript
+// user was created or has valid credentials
+  const token = jwt.sign(omit(user, "password"), process.env.JWT_SECRET!)
+
+  return response(200, {
+    user: omit(user, "password"),
+    token,
+  })
+```
+
+You can [try it in the CodeSandbox](https://codesandbox.io/s/serverless-auth-example-9ipfb). Pick a username, add a password, see it work. Then try with a different password.
+
 ### `auth.verify` function
+
+The `verify` API is used to validate a user session.
+
+For authentication to work across page reloads, you have to store the JWT token. These can expire or get revoked by the server.
+
+Clients decide what UI to based on whether the stored token is valid.
+
+The `serverless.yml` definition for this function is almost the same.
+
+```yaml
+# serverless.yml
+
+functions:
+	# ...
+  verify:
+    handler: dist/auth.verify
+    events:
+      - http:
+          path: verify
+          method: POST
+          cors: true
+```
+
+Function called `verify` that accepts POST requests and lives in `auth.ts`.
+
+```typescript
+// src/auth.ts
+
+// Verifies you have a valid JWT token
+export const verify = async (event: APIGatewayEvent) => {
+  const { token } = JSON.parse(event.body || "{}")
+
+  // respond with error if token undefined
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET!)
+    return response(200, { status: "valid" })
+  } catch (err) {
+    return response(401, err)
+  }
+}
+```
+
+Verifying a JWT token with [`jsonwebtoken`](https://github.com/auth0/node-jsonwebtoken) throws an error for bad tokens. Anything from using a different secret, to tampering with the token, and expired tokens.
+
+Clients should make this request any time they initialize and think they know a token.
 
 ### `private.hello` function
 
+This is where it gets fun – verifying authentication for private APIs.
+
+We make an API that says hello to the user.
+
+```yaml
+# serverless.yml
+
+functions:
+  privateHello:
+    handler: dist/private.hello
+    events:
+      - http:
+          path: private
+          method: GET
+          cors: true
+```
+
+Function accepts GET requests and lives in the `private.ts` file. It looks like this:
+
+```typescript
+// src/private.ts
+
+export async function hello(event: APIGatewayEvent) {
+  // returns JWT token payload
+  const authorized = checkAuth(event)
+
+  if (authorized) {
+    const user = authorized as User
+
+    return response(200, {
+      message: `Hello ${user.username}`,
+    })
+  } else {
+    return response(401, {
+      status: "error",
+      error: "This is a private resource",
+    })
+  }
+}
+```
+
+The `checkAuth` method takes our request, verifies its JWT token, and returns the payload. A user in our case.
+
+If user is authorized, we say hello, otherwise return an error.
+
+`checkAuth` is where we read a token from the `Authorization` header and verify everything looks good.
+
+```typescript
+// src/util.ts
+
+// Used to verify a request is authenticated
+export function checkAuth(event: APIGatewayEvent): boolean | User {
+  const bearer = event.headers["Authorization"]
+
+  if (bearer) {
+    try {
+      const decoded = jwt.verify(
+        // Bearer prefix from Authorization header
+        bearer.replace(/^Bearer /, ""),
+        process.env.JWT_SECRET!
+      )
+
+      // We saved user info in the token
+      return decoded as User
+    } catch (err) {
+      return false
+    }
+  } else {
+    return false
+  }
+}
+```
+
+The `Authorization` header holds our token – `Authorization: Bearer <token>`. If the header is empty, we return `false`.
+
+We use the `jwt.verify()` call to verify the provided token was valid. This validates that it was created with our secret, wasn't tampered with, and hasn't expired.
+
+`verify` decodes the token for us, which means we can see the user's username without a database query. 🤘
+
 ## Use an auth provider
+
