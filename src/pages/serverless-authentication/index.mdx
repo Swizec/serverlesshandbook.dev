@@ -77,6 +77,40 @@ At an organizational level you end up with roles that act as bags of scopes. Eng
 
 ## Build your own auth
 
-In this section, you're going to build an auth system meant for API use. API auth is different from 
+Let's build a basic serverless auth meant to be used as an API. Best way to get a feel for what it takes.
+
+In this section I'll share and explain the important code, you can [see the full example on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-auth-example). Use [this CodeSandbox app](https://codesandbox.io/s/serverless-auth-example-9ipfb) to try it out.
+
+https://codesandbox.io/s/serverless-auth-example-9ipfb
+
+You can use it to test your implementation. Just replace the Lambda base URL with yours 😊
+
+### The auth flow
+
+The difference between auth for an API and traditional auth comes down to how the client and server talk to each other. Traditional auth uses cookies, API auth relies on JSON Web Tokens (JWT).
+
+![Authentication flow](../../images/authentication_flow.png)
+
+We're going to use JWT tokens. It's useful in more situations.
+
+1. User sends username and password
+2. Server checks against database
+3. Returns fresh JWT token
+4. Client adds token to every future request
+5. Server checks token is valid before responding
+
+What makes this flow secure is the HTTPS encryption used at the protocol level. Otherwise attackers could sniff user passwords during the first request and steal JWT tokens from subsequent requests.
+
+Always use HTTPS.
+
+### Environment variables
+
+
+
+### `auth.login` function
+
+### `auth.verify` function
+
+### `private.hello` function
 
 ## Use an auth provider

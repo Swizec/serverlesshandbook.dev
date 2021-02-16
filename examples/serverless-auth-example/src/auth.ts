@@ -81,7 +81,7 @@ export const verify = async (event: APIGatewayEvent) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.SUPER_SECRET!)
+    jwt.verify(token, process.env.SUPER_SECRET!)
     return response(200, { status: "valid" })
   } catch (err) {
     return response(401, err)
