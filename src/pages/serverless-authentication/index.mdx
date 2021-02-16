@@ -18,7 +18,7 @@ In practice, authentication is hard.
 
 Where do you save the identifier? How does the client get it? What authentication scheme do you use? What goes on the server? How do you keep it secure? What if you need to run authenticated code without the user?
 
-Authentication is a deep rabbit hole. In this chapter, we look at the basics and build 2 examples.
+Authentication is a deep rabbit hole. In this chapter, we look at the core ideas and build 2 examples.
 
 ## What is authentication
 
@@ -44,7 +44,7 @@ Proof of identity is key to good authentication.
 
 Each [authentication factor](https://en.wikipedia.org/wiki/Authentication#Authentication_factors) covers a different overlapping proof of identity. 2 factors is considered safe, 3 is best. Typical is 1 🙈
 
-**Knowledge factors** include hidden pass phrases like passwords, PINs, and security questions. You know the answer and verify the user also knows.
+**Knowledge factors** include hidden pass phrases like passwords, PINs, and security questions. You know the answer and verify the user knows too.
 
 **Ownership factors** include ID cards, token apps on your phone, physical tokens, and email inboxes. You ask the user to prove they have something only they should have.
 
@@ -58,7 +58,7 @@ Passwordless email/sms login is 2-factor. You know the username and own the emai
 
 ### Role-based and scope-based authorization
 
-The 2nd biggest job after access control is authorization. What can *this* user do?
+The 2nd job after access control is authorization. What can *this* user do?
 
 Two flavors of authorization are common:
 
@@ -69,29 +69,29 @@ Technically they're the same – a user property. It's like utility vs. semanti
 
 Role-based authorization is perfect for small projects. You need admins and everyone else. Being an admin comes with inherent rights.
 
-Scope-based authorization is perfect for large projects with granular needs. Yes you're an admin, but what kind of admin?
+Scope-based authorization is perfect for large projects with granular needs. Yes you're an admin, but admin of what?
 
-In practice you'll see that roles get clunky as your needs grow and scopes are tedious to use. Like when I had permission to configure CloudFront, but not to see what I'm doing. 🙃
+In practice you'll see that roles get clunky and scopes are tedious. Like when I had permission to configure CloudFront, but not to see what I'm doing. 🙃
 
 At an organizational level you end up with roles that act as bags of scopes. Engineers get scopes x, y, z, admins can do so and so, and users get user things.
 
 ## Build your own auth
 
-Let's build a basic serverless auth meant to be used as an API. Best way to get a feel for what it takes.
+Let's build a basic serverless auth meant to be used as an API. It's the best way to get a feel for what it takes.
 
 I'll share and explain the important code, you can [see the full example on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-auth-example). Use [this CodeSandbox app](https://codesandbox.io/s/serverless-auth-example-9ipfb) to try it out.
 
 https://codesandbox.io/s/serverless-auth-example-9ipfb
 
-You can use the sandbox to test your implementation. Just replace the Lambda base URL 😊
+You can test your implementation too. Change the Lambda base URL 😊
 
 ### The auth flow
 
-The difference between auth for an API and traditional auth comes down to how the client and server talk to each other. Traditional auth uses cookies, API auth relies on [JSON Web Tokens (JWT)](https://jwt.io/).
+Traditional auth and API auth use a different medium to exchange tokens. Traditional auth uses cookies, API auth relies on [JSON Web Tokens (JWT)](https://jwt.io/) and `Authorization` headers.
 
 ![Authentication flow](../../images/authentication_flow.png)
 
-We're going to use JWT tokens. It's useful in more situations.
+The API approach is useful in more situations. Works great with modern JavaScript apps, mobile clients, and other servers.
 
 1. User sends username and password
 2. Server checks against database
@@ -99,19 +99,17 @@ We're going to use JWT tokens. It's useful in more situations.
 4. Client adds token to every future request
 5. Server checks token is valid before responding
 
-What makes this flow secure is the HTTPS encryption used at the protocol level. Otherwise attackers could sniff user passwords during the first request and steal JWT tokens from subsequent requests.
+This flow is secure because of the HTTPS encryption used at the protocol level. Without it, attackers could steal passwords and tokens by sniffing API requests.
 
-Always use HTTPS and remember: A JWT token on its own lets you impersonate a user.
+Always use HTTPS and remember: *A JWT token on its own lets you impersonate a user*.
 
 ### A note on password safety
 
-Part of authentication is storing passwords. You need to know the right password to verify the user got it right.
+You need to know the user's password to verify the user got it right. But you should never store a plain password.
 
-Passwords are secrets and you should treat them with respect. Don't be the app that leaks a user's common password.
+A typical approach is to store passwords as a [one-way hash](https://en.wikipedia.org/wiki/Cryptographic_hash_function). Feed password into a cryptographic function, get a unique value that's impossible to reverse.
 
-A typical approach is to store passwords using a [one-way hash](https://en.wikipedia.org/wiki/Cryptographic_hash_function). Feed password into a cryptographic function and get a unique value that's impossible to reverse.
-
-Since the invention of [rainbow tables](https://en.wikipedia.org/wiki/Rainbow_table) even one-way hashing is no longer secure. We can fight that with a salt.
+Since the invention of [rainbow tables](https://en.wikipedia.org/wiki/Rainbow_table) even one-way hashing is no longer secure. You can fight that with a salt.
 
 ```typescript
 // src/util.ts
@@ -128,18 +126,18 @@ export function hashPassword(username: string, password: string) {
 
 Without a salt, the string `password` turns into the same hash for every app. Precomputed rainbow tables work like magic.
 
-With a salt, the string `password` hashes uniquely to *your* app. Attackers need to build new rainbow tables just for you. *If they can find the salt.*
+With a salt, the string `password` hashes uniquely to *your* app. Attackers need to build new rainbow tables. *If they can find the salt.*
 
-Add the username and each hash is unique to your app *and* the user. Attackers need new rainbow tables for every user. Not worth it.
+Add the username and each hash is unique to your app *and* the user. Attackers need new rainbow tables for every user and that's not worth it.
 
-That's when guessing the user's password becomes easier. You can fight that with limits and timeouts on your login API.
+That's when guessing becomes the easier approach. You can fight that with limits and timeouts on your login API.
 
 ### Environment variables
 
 We need 2 variables to build an auth system:
 
 - a unique SALT for password hashing
-- a unique JWT_SECRET for creating JWT tokens
+- a unique JWT_SECRET for signing JWT tokens
 
 Define them in `serverless.yml` to keep things simple. Use [proper secrets handling](/handling-secrets) for production.
 
@@ -154,7 +152,7 @@ provider:
     JWT_SECRET: useRealSecretsManagementPlease
 ```
 
-Never share these with anyone. `JWT_SECRET` in particular is all an attacker needs to impersonate a user.
+Never share these with anyone. `JWT_SECRET` is all an attacker needs to impersonate a user.
 
 ### `auth.login` function
 
@@ -214,16 +212,16 @@ export const login = async (event: APIGatewayEvent) => {
 
 We grab `username` and `password` from request body and look for the user. `findUser` runs a database query, in our case a DynamoDB `getItem`.
 
-If the user was not found, we create one and make sure we `hashPassword()` before saving.
+If the user wasn't found, we create one and make sure we `hashPassword()` before saving.
 
 If the user was found, we verify credentials by hashing the password and comparing with the stored value. We know passwords match when our `hashPassword()` method creates the same hash.
 
 This means you can never change your `hashPassword()` method unless you force users to reset their password.
 
-After all that's done, we sign a JWT token with our secret and send it back. Make sure you don't save sensitive data like passwords in anything that goes to the client.
+Then we sign a JWT token with our secret and send it back. Make sure you don't save sensitive data like passwords in anything that goes to the client.
 
 ```typescript
-// user was created or has valid credentials
+	// user was created or has valid credentials
   const token = jwt.sign(omit(user, "password"), process.env.JWT_SECRET!)
 
   return response(200, {
@@ -232,17 +230,19 @@ After all that's done, we sign a JWT token with our secret and send it back. Mak
   })
 ```
 
+We're using the [`jsonwebtoken`](https://github.com/auth0/node-jsonwebtoken) library to create the token.
+
 You can [try it in the CodeSandbox](https://codesandbox.io/s/serverless-auth-example-9ipfb). Pick a username, add a password, see it work. Then try with a different password.
 
 ### `auth.verify` function
 
-The `verify` API is used to validate a user session.
-
 For authentication to work across page reloads, you have to store the JWT token. These can expire or get revoked by the server.
 
-Clients decide what UI to based on whether the stored token is valid.
+Clients use the `verify` API to validate a session every time they initialize. A page reload on the web.
 
-The `serverless.yml` definition for this function is almost the same.
+When you know the session is valid, you treat the user as logged in. Otherwise ask for a username/password to continue.
+
+The `serverless.yml` definition is almost the same:
 
 ```yaml
 # serverless.yml
@@ -278,9 +278,7 @@ export const verify = async (event: APIGatewayEvent) => {
 }
 ```
 
-Verifying a JWT token with [`jsonwebtoken`](https://github.com/auth0/node-jsonwebtoken) throws an error for bad tokens. Anything from using a different secret, to tampering with the token, and expired tokens.
-
-Clients should make this request any time they initialize and think they know a token.
+Verifying a JWT token with [`jsonwebtoken`](https://github.com/auth0/node-jsonwebtoken) throws an error for bad tokens. Anything from a bad secret, to tampering, and token expiration.
 
 ### `private.hello` function
 
@@ -329,7 +327,7 @@ The `checkAuth` method takes our request, verifies its JWT token, and returns th
 
 If user is authorized, we say hello, otherwise return an error.
 
-`checkAuth` is where we read a token from the `Authorization` header and verify everything looks good.
+`checkAuth` is where we read a token from the `Authorization` header and verify it looks good.
 
 ```typescript
 // src/util.ts
@@ -365,3 +363,109 @@ We use the `jwt.verify()` call to verify the provided token was valid. This vali
 
 ## Use an auth provider
 
+An auth provider like Auth0, Okta, AWS Cognito, Firebase Auth, and others makes your integration more complex. But *you* don't have to worry about password security and user management.
+
+And if a big provider gets hacked, you're one among thousands of hacked apps. Feels less bad eh? 😇
+
+![Auth flow with a 3rd party provider](../../images/auth_provider_flow.png)
+
+The key difference with using a provider is the 3-way trust model. Users authenticate with a provider and send you a JWT token. You ask the provider if it's valid.
+
+Crucially, the auth provider doesn't trust *you* either. you have to validate yourself before you can validate user tokens. A process similar to logging in.
+
+Exact integration depends on your provider of choice. I recommend following their documentation.
+
+If performance is critical, remember that a 3rd party provider adds an API request to every call in your app.
+
+### An example integration
+
+Here's what I do to create users on Auth0 when you purchase a course on Gumroad. It's the `provider <> lambda` part of the flow. 
+
+The course platform runs in the browser, which means the `user <> lambda` connection wasn't necessary. Another benefit of using a provider 😊
+
+Gumroad sends a request to AWS Lambda (as a webhook) on every purchase. It runs this function:
+
+```typescript
+export const pingHandler = async (
+    event: APIGatewayEvent
+): Promise<APIResponse> => {
+    const ping: GumroadPing = qs.parse(event.body!) as any;
+
+    if (ping.product_permalink in PRODUCTS) {
+        // create user from Gumroad data
+        const user = await upsertUser(ping);
+
+        if (user) {
+            // initialize Auth0 server client
+            const auth0 = await getAuth0Client();
+            const roleId = PRODUCTS[ping.product_permalink];
+
+            // give access to the course
+            await auth0.assignRolestoUser(
+                { id: user.user_id! },
+                {
+                    roles: [roleId],
+                }
+            );
+        }
+    }
+
+    return response(200, {});
+};
+```
+
+The function parses data from Gumroad, creates a user on Auth0, and assigns the right role. They're called roles, I treat them as scopes – which courses can this user access?
+
+#### Auth0 Client
+
+Part of getting the Auth0 client is authenticating the server through a shared secret. Like a username and password.
+
+```typescript
+async function getAuth0Client() {
+    const secrets = await auth0Tokens();
+    const auth0 = new ManagementClient({
+        domain: `${secrets.domain}.auth0.com`,
+        clientId: secrets.clientId,
+        clientSecret: secrets.clientSecret,
+        scope: "read:users update:users create:users",
+    });
+
+    return auth0;
+}
+```
+
+`getAuth0Tokens` talks to AWS Secrets Manager to retrieve secrets. We use those to create a new `ManagementClient`, which authenticates itself with Auth0 when initialized.
+
+The code asks for as little permission as possible. If someone steals these secrets, or my code, they can't do much. If an attacker tries to expand permissions, my Auth0 config says *"hey this client can't do that even if it asks"*
+
+We use a `ManagementClient` because the code is managing users. For authentication you'd use the `AuthenticationClient`.
+
+#### Create user
+
+Creating a user is a matter of calling the right methods. Look for user, create if not found.
+
+```typescript
+async function upsertUser(purchaseData: GumroadPing) {
+    const auth0 = await getAuth0Client();
+
+    // find user
+    const users = await auth0.getUsersByEmail(purchaseData.email);
+
+    // create if not found
+    if (users.length > 0) {
+        return users[0];
+    } else {
+        return auth0.createUser({
+            // user data
+        });
+    }
+}
+```
+
+Which methods you call depends on the auth provider.
+
+## Conclusion
+
+Authentication is weird – easy and hard at the same time. User management is where it gets really fun.
+
+Use a library or a 3rd party provider. Building from scratch is fun the first 2 or 3 times.
