@@ -3,11 +3,9 @@ import { response, checkAuth, User } from "./util"
 
 export async function hello(event: APIGatewayEvent) {
   // returns JWT token payload
-  const authorized = checkAuth(event)
+  const user = checkAuth(event) as User
 
-  if (authorized) {
-    const user = authorized as User
-
+  if (user) {
     return response(200, {
       message: `Hello ${user.username}`,
     })
