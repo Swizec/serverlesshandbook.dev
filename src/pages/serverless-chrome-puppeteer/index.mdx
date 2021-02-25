@@ -1,6 +1,6 @@
 ---
 title: "Serverless Chrome puppeteer"
-description: "Build browser automations with Chrome Puppeteer and serverless AWS Lambda. Take screenshots, test websites, scrape content. Anything a browser can do ✌️"
+description: "Build browser automations with Chrome Puppeteer and AWS Lambda. Take screenshots, test websites, scrape content. Anything a browser can do ✌️"
 image: "./img/serverless-chrome-puppeteer.png"
 ---
 
@@ -10,7 +10,7 @@ image: "./img/serverless-chrome-puppeteer.png"
 
 Say you want to build a scraper, automate manual testing, or generate custom social cards for your website. What do you do?
 
-You could spin up a docker container, set up headless Chrome, add Puppeteer, write a script to run it all, add a server to create an API, and host it all.
+You could spin up a docker container, set up headless Chrome, add Puppeteer, write a script to run it all, add a server to create an API, and ...
 
 Or you can set up Serverless Chrome with AWS Lambda. Write a bit of code, hit deploy, and get a Chrome browser running on demand.
 
@@ -21,7 +21,7 @@ You'll learn how to:
 - configure Chrome Puppeteer on AWS
 - build a basic scraper
 - take website screenshots
-- run it on-demand, for free (as per AWS pricing)
+- run it on-demand
 
 We build a scraper that goes to [google.com](https://google.com), types in a phrase, and returns the first page of results. Then reuse the same code to return a screenshot.
 
@@ -29,24 +29,22 @@ You can see [full code on GitHub](https://github.com/Swizec/serverlesshandbook.d
 
 ## Serverless Chrome
 
-Chrome's engine ships as the open source Chromium browser. Other browsers like Brave and Microsoft Edge use it and add their own UI and custom features.
+Chrome's engine ships as the open source Chromium browser. Other browsers use it and add their own UI and custom features.
 
-You can use it for browser automation – scraping, testing, screenshots, etc. When you need to render a website, Chromium is your friend.
+You can use the engine for browser automation – scraping, testing, screenshots, etc. When you need to render a website, Chromium is your friend.
 
 This means:
 
-- download a chrome binary,
-- set up an environment that makes it happy,
-- run in headless mode,
+- download a chrome binary
+- set up an environment that makes it happy
+- run in headless mode
 - configure processes that talk to each other via complex sockets
 
 ![](giphy:ugh)
 
-Luckily others have solved this problem for you.
+Others have solved this problem for you.
 
 Rather than figure it out yourself, I recommend using [chrome-aws-lambda](https://github.com/alixaxel/chrome-aws-lambda). It's the most up-to-date package for running Serverless Chrome.
-
-The older [serverless-chrome](https://github.com/adieuadieu/serverless-chrome) package is outdated and no longer runs. It wasn't as stable either.
 
 Here's what you need for a Serverless Chrome setup:
 
@@ -79,7 +77,7 @@ package:
 
 Configure a new service, make it run on AWS, use latest node.
 
-The `package` part is important. It tells Serverless _not_ to package the chromium binary with your code. AWS rejects builds that big.
+The `package` part is important. It tells Serverless _not_ to package the chromium binary with your code. AWS rejects builds of that size.
 
 You are now ready to start running Chrome ✌️
 
@@ -93,7 +91,7 @@ You are now ready to start running Chrome ✌️
 
 Write code that interacts with a website like a person would. Anything a person can do on the web, you can do with Puppeteer.
 
-Core syntax feels like jQuery, but return objects are different than what you're used to. I've found it's best not to worry about the details.
+Core syntax feels like jQuery, but the objects are different than what you're used to. I've found it's best not to worry about the details.
 
 Here's how you click on a link:
 
@@ -107,13 +105,11 @@ await div.click("a.target_link") // clicks link
 
 Always open a new page for every new browser context.
 
-Navigate to your URL, use jQuery-like selectors to interact with the page. You can feed selectors into `click()` and other methods, or use the `page.$` syntax to search around.
+Navigate to your URL then use jQuery-like selectors to interact with the page. You can feed selectors into `click()` and other methods, or use the `page.$` syntax to search around.
 
 ## Build a scraper
 
-Web scraping is fiddly.
-
-Sounds simple in theory:
+Web scraping is fiddly but sounds simple in theory:
 
 - load website
 - find content
@@ -124,7 +120,7 @@ But that doesn't generalize. Each website is different.
 
 You adapt the core technique to each website you scrape and there's no telling when the HTML might change.
 
-You might even find websites that actively fight against scraping. Block bots, limit access speed, etc.
+You might even find websites that actively fight against scraping. Block bots, limit access speed, obfuscate HTML, ...
 
 _Please play nice and don't unleash thousands of parallel requests onto unsuspecting websites._
 
@@ -144,7 +140,7 @@ Add `aws-lambda`:
 $ yarn add aws-lambda @types/aws-lambda
 ```
 
-Installs code you need to interact with the AWS Lambda environment.
+Installs the code you need to interact with the AWS Lambda environment.
 
 ### 2. add a scraper function
 
@@ -213,7 +209,7 @@ If the browser fails to launch, we log debugging info.
 
 ### 4. a shared createHandler()
 
-We're building 2 pieces of code that share a lot of logic – scraping and screenshots. Both need a browser, deal with errors, parse URL queries, etc.
+We're building 2 pieces of code that share a lot of logic – scraping and screenshots. Both need a browser, deal with errors, and parse URL queries.
 
 We build a common `createHandler()` method that deals with boilerplate and calls the important function when ready.
 
@@ -262,7 +258,7 @@ export const createHandler = (
 }
 ```
 
-We read the `?search=` param, open a browser, and verify everything's ready.
+We read the `?search=` param, open a browser, and verify everything's set up.
 
 Then we call the passed-in `workFunction`, which returns a response. If that fails, we throw a 500 error.
 
@@ -372,7 +368,7 @@ When the results page loads, we:
 - iterate through results
 - get the info we want from each
 
-You can use the `page.$eval` trick to parse DOM nodes with the same API you'd use in a browser. Executes your method on the nodes it finds, returns result.
+You can use the `page.$eval` trick to parse DOM nodes with the same API you'd use in a browser. Executes your method on the nodes it finds and returns the result.
 
 ### 6. hit deploy and try it out
 
@@ -510,9 +506,7 @@ if (!boundingBox) {
 }
 ```
 
-We look for results and grab their `boundingBox()`. Tells us the `x, y` coordinates and `width, height` size.
-
-That lets us take a more focused screenshot and save on file size.
+We look for results and grab their `boundingBox()`. That tells us the `x, y` coordinates and the `width, height` size for a more focused screenshot.
 
 We set up an `imagePath` in `/tmp`. We can write to a file on Lambda's hard drive, _but it will not stay there._ When our lambda turns off, the file is gone.
 
@@ -540,7 +534,7 @@ return {
 
 Read the file into a Base64-encoded string and return a response. It must contain a content type – `image/png` in our case – and tell API Gateway that it's Base64-encoded.
 
-This where you'd upload to S3 in production.
+This is where you'd upload to S3 in production.
 
 You can try mine here: [https://4tydwq78d9.execute-api.us-east-1.amazonaws.com/dev/screenshot](https://4tydwq78d9.execute-api.us-east-1.amazonaws.com/dev/screenshot)
 
@@ -555,7 +549,8 @@ The most common use cases for Chrome Puppeteer are:
 
 3 and 4 are great because you can build a small website that renders a social card for your content and use this machinery to turn it into an image.
 
-Same for PDFs – build dynamic website, print-to-PDF with Chrome. Easier than generating PDFs by hand :)
+Same for PDFs – build dynamic website, print-to-PDF with Chrome. Easier than generating PDFs by hand.
 
-Have fun
+Have fun 😊
 
+Next chapter we look at handling secrets.

@@ -26,9 +26,9 @@ Isolated code that does *one* thing with no cruft. Runs on-demand, consumes no r
 
 ## What is a secret
 
-A secret is any piece of information you can't share. Passwords and secret API tokens. Keys with access to a special resource.
+A secret is any piece of information you can't share. Any key with access to a special resource. Passwords and API tokens, for example. 
 
-You can include semi secret configuration variables. URLs for parts of your system, ports of a database server, semi-hardcoded data, etc.
+You can add semi-secret configuration variables. URLs for parts of your system, ports of a database server, kinda-hardcoded data, etc.
 
 How secretive you have to be depends on context.
 
@@ -40,7 +40,7 @@ Production passwords for sensitive health information ... you don't even want yo
 
 There are 3 ways to handle secrets. From least to most secure.
 
-1. Hardcode values
+1. Hardcoded values
 2. Dotenv files
 3. Secrets manager
 
@@ -106,7 +106,7 @@ Install the plugin:
 yarn add serverless-dotenv-plugin
 ```
 
-Enable in your serverless.yml config:
+Enable it in your serverless.yml config:
 
 ```yaml
 # serverless.yml
@@ -140,7 +140,7 @@ On AWS, you'll have to partially build your own.
 
 ![AWS Secrets Manager configuration](../../images/secrets-manager.png)
 
-You can store many secret values in 1 configuration. I recommend grouping by environment – dev, staging, production, etc – or using a logical grouping based on use. One secret per API you're accessing.
+You can store many secret values in 1 configuration. I recommend grouping by environment – dev, staging, production – or use a logical grouping based on what you're doing. One secret per API.
 
 **Second**, give your code permission to access secrets.
 
@@ -155,7 +155,7 @@ provider:
       Resource: "arn:aws:secretsmanager:${self:provider.region}:*"
 ```
 
-You're giving permission to `GetSecretValue`, not to make changes. This is important. You do not want someone hacking into your system and locking you out.
+You're giving permission to `GetSecretValue`, *not* to make changes. This is important. You do not want somebody hacking into your system and locking you out.
 
 Using an asterisk – `*` – for secret name is convenient. For more security, limit access to specific secrets.
 
@@ -175,7 +175,7 @@ const secret = await ssm
 const { MY_SECRET_KEY, MY_API_URL } = JSON.parse(secret?.SecretString)
 ```
 
-Instantiates a new SSM client, gets your secret value, returns a JSON. Parse JSON, get secrets.
+This instantiates a new SSM client, gets your secret value, returns a JSON. Parse JSON, get secrets.
 
 This is [an API call that might fail](https://serverlesshandbook.dev/robust-backend-design). Make sure to handle errors and fail correctly, if you can't get the secret.
 
@@ -186,7 +186,7 @@ Fetching a fresh secret every time ensures that:
 1. you get the latest value
 2. you don't keep decrypted secrets in memory for long
 
-However, this creates latency. You're making an API call that takes time. Not a lot, but not zero. 
+However, this increases latency. You're making an API call. Not a lot, but not zero. 
 
 You can memoize secrets values in Lambda memory. Rely on the ephemeral nature of your environment to forget.
 
@@ -197,3 +197,5 @@ Choose the strategy that fits your use-case and safety needs.
 I like to hardcode development values in the tinkering phase and *change keys afterwards*. You never know what you leaked.
 
 When my code's ready, I put configuration values in `.env` files and secrets in Secrets Manager.
+
+Next chapter we look at authentication.

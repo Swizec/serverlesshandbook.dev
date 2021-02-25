@@ -1,6 +1,6 @@
 ---
 title: "Create a good serverless developer experience"
-description: "How to setup your project for a pleasant serverless developer experience"
+description: "How to setup your project for a pleasant developer experience without servers"
 image: "./img/good-dx.png"
 ---
 
@@ -10,7 +10,7 @@ image: "./img/good-dx.png"
 
 What makes a good developer experience?
 
-Answers on twitter were all over and shared a common theme:
+I asked twitter and it was all over the place. A theme emerged:
 
 > Good developer experience is when tools make your job easier, get out of the way, and let you focus on *your* code
 
@@ -28,15 +28,15 @@ It comes down to 3 features:
 
 https://twitter.com/muditameta/status/1195783892512444417
 
-As I mentioned in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) with AWS. When using Netlify and Vercel you don't need Serverless because config-as-code is baked into their philosophies.
+As mentioned in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) with AWS. When using Netlify and Vercel you don't need Serverless because config-as-code is baked into their philosophies.
 
 You write a configuration file, add it to version control, and that's your infrastructure. *Nothing* happens outside that configuration file.
 
 This means that:
 
-1. **Your deploys are replicable**. Run deploy, get the same result every time. The same functions, the same queues, the same caching servers, everything.
+1. **Your deploys are repeatable**. Run deploy, get the same result every time. The same functions, the same queues, the same caching servers, everything.
 2. **Same infrastructure in test as in prod** Subtle differences between test environments and production are a waste of time. Big part of why Docker got popular.
-3. **Share infrastructure between the team**. Ever had to ask a team member what environment variable they used for a thing? I have. After 2 hours of digging into the problem and realizing it's a configuration issue.
+3. **Share infrastructure between the team**. Ever had to ask a team member what environment variable they used for a thing? I have. After 2 hours of digging into the problem and realizing it's a configuration issue. 🤦‍♂️
 4. **Infrastructure that always fits your feature branch** A common problem are new features with different infrastructure. Like adding a new queue or cloud function. Instead of setting it up every time you test, infra-as-code can do it for you.
 5. **Spend time in the tools you like, not confusing web UI** We're engineers and we like building things. Not clicking around a web UI doing repetitive tasks that take 20 minutes.
 
@@ -56,13 +56,13 @@ All great.
 
 ![](https://media.giphy.com/media/WO74HAtUC9I40/giphy.gif)
 
-But unit tests can't tell you *your system* works. That's where bugs come from – systems complexity.
+But unit tests can't tell you your *system* works. That's where bugs come from – systems complexity.
 
 You can simulate the environment and run your tests. That works to an extent, but it's never perfect.
 
-Your best bet is to make deploying to a staging, QA, or prod environment fast enough to use for development. With serverless, that becomes possible.
+Your best bet is to make deploying to a staging, QA, or production environment fast enough to use for development. With serverless, that becomes possible.
 
-You could even set it up so that a push to GitHub deploys every branch. Netlify and Vercel call it pull request previews.
+You could even set it up so that pushing to GitHub deploys every branch. Netlify and Vercel call it pull request previews.
 
 ### How fast deploys work
 
@@ -77,11 +77,11 @@ Here's how the flow works:
 
 <div id="lock" />
 
-Slowest deploys I've seen on production-sized backends are in the 2 minute range. For a system with hundreds of lines of configuration.
+Slowest deploys I've seen on production-sized backends are in the 2 minute range. That's for a system with hundreds of lines of configuration.
 
-On my side projects it's under a minute.
+On my side projects it's 30 seconds.
 
-Compared to a Heroku or Docker deploy that takes 20 minutes that's great.
+That's fantastic compared to a Heroku or Docker deploy that takes 20 minutes.
 
 ## Tooling for common tasks
 
@@ -98,7 +98,7 @@ The most common is `yarn deploy`
 }
 ```
 
-With those 2 lines you can deploy from any branch without worry that you'll forget to build your project first. The `build` script runs a typescript build and `sls deploy` runs a serverless deploy process.
+With those 2 lines you can deploy from any branch without worry that you'll forget to build your project first. The `build` script runs a typescript build and `sls deploy` runs a serverless deploy.
 
 This part gets trickier when you use multiple environments. We'll talk about that in [the chapter on prod, QA, and staging environments](/dev-qa-prod).
 
@@ -109,23 +109,23 @@ Other helpful tools I've set up for bigger projects include:
 - `test-X` to run different tests against the server environment
 - `add-engineer` to add a new engineer-specific environment so everyone can test on their own
 
-Any time you find yourself running the same sequence of commands for a task, you should consider adding them as a script to `package.json`. Give others that same super power :)
+Any time you find yourself running the same sequence of commands, you should consider adding them as a script to `package.json`. Give others that same super power :)
 
 # How this works in practice
 
 ![](giphy:hello_world)
 
-In the next few minutes you're going to build your first serverless backend. A small service that says Hello 👋
+In the next few minutes you're going to build your first serverless backend. A service that says Hello 👋
 
 We're using open source technologies and deploying on AWS Lambda. You can learn about other providers in the [Serverless Flavors](/serverless-flavors) chapter.
 
-You'll need a computer set up for JavaScript development: Have nodejs installed, a code editor, and a terminal.
+You'll need a computer configured for JavaScript development: Have nodejs installed, a code editor, and a terminal.
 
-## Setup for serverless work
+### Setup for serverless work
 
 When working with serverless I like to use the open source [Serverless](https://github.com/serverless/serverless) framework. We'll talk more about why in the [Good serverless dev experience](/serverless-dx) chapter.
 
-With the serverless framework we're going to configure servers using YAML files. Write config and the framework figures out the rest.
+With the serverless framework we're going to configure servers using YAML files. You write config, framework figures out the rest.
 
 Install it globally:
 
@@ -133,13 +133,13 @@ Install it globally:
 npm install -g serverless
 ```
 
-You'll need AWS credentials as well. 
+You'll need AWS credentials too.
 
 I recommend following [Serverless's guide on AWS setup](https://serverless.com/framework/docs/providers/aws/guide/credentials/). It walks you through the necessary steps on your Amazon account and a couple terminal commands to run.
 
-## Create a tiny project
+### Create a tiny project
 
-There are no special initializers for serverless projects. To start a serverless project, you create a directory and add a configuration file.
+There are no special initializers for serverless projects. You start with a directory and add a configuration file.
 
 ![](../../images/start-serverless.gif)
 
@@ -155,9 +155,9 @@ You now have a project with 2 files:
 - `serverless.yml` for configuration
 - `handler.js` for server code
 
-In future chapters you'll write backends using TypeScript, but one thing at a time :)
+In future chapters you'll write backends using TypeScript. But one thing at a time :)
 
-## Configure your first server
+### Configure your first server
 
 Configuration for your server goes in `serverless.yml`. We're telling the Serverless framework that we want to use AWS, run nodejs, and that this is a dev project.
 
@@ -169,14 +169,14 @@ Then we'll tell it where to find the code.
 service: hello-world
 
 provider:
-    name: aws
-    runtime: nodejs10.x
-    stage: dev
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
 ```
 
-Our service is called `hello-world` and there's a couple details about our provider. The `stage` helps us tell the difference between development, QA, and production deployments. More on that in the [Dev, QA, and prod](/dev-qa-prod) chapter.
+Our service is called `hello-world` and there's a couple details about our provider. The `stage` tells the difference between development, QA, and production deployments. More on that in the [Dev, QA, and prod](/dev-qa-prod) chapter.
 
-### Let's tell our server how to run code.
+#### Let's tell our server how to run code.
 
 ```yaml
 # serverless.yml
@@ -185,7 +185,7 @@ service: hello-world
 
 provider:
     name: aws
-    runtime: nodejs10.x
+    runtime: nodejs12.x
     stage: dev
 
 functions:
@@ -198,7 +198,7 @@ functions:
 	              cors: true
 ```
 
-We started a `functions` section. 
+We started a `functions` section.
 
 Each entry becomes its own tiny server – a serverless lambda. Together, they're the `hello-world` service.
 
@@ -206,9 +206,9 @@ The `hello` lambda calls an exported `hello` function inside our `handler.js` fi
 
 All that from these few lines of code 👌
 
-*PS: enabling [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) lets you call this function from other websites. Like your frontend app.*
+_PS: enabling [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) lets you call this function from other websites. Like your frontend app._
 
-## Write your first backend function
+### Write your first backend function
 
 Backend functions in a serverless environment look like the JavaScript functions you're used to. Grab arguments, return a response.
 
@@ -218,10 +218,10 @@ Add a hello function to `handler.js`
 // handler.js
 
 exports.hello = async (event) => {
-    return {
-        statusCode: 200,
-        body: "Hello 👋"
-    }
+  return {
+    statusCode: 200,
+    body: "Hello 👋",
+  }
 }
 ```
 
@@ -229,7 +229,7 @@ It's an async function that accepts a trigger event and returns a response. A su
 
 That's it. You wrote backend code. 🤘
 
-## Deploy your first serverless backend
+### Deploy your first serverless backend
 
 To deploy, we run `serverless deploy`.
 
@@ -237,11 +237,11 @@ To deploy, we run `serverless deploy`.
 
 And your server is up.
 
-You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it's gonna say `Hello 👋`
+You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it's going to say `Hello 👋`
 
 I'll keep it up because it's free unless somebody clicks. And when they do, current AWS pricing gives me 1,000,000 clicks per month for free 😛
 
-## What you got
+### What you got
 
 The Serverless framework talked to AWS and configured many things.
 

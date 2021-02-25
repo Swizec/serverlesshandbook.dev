@@ -14,11 +14,11 @@ You've got a ton of data. What do you do?
 
 Users send hundreds of messages per minute. Now what?
 
-You could learn Elixir and Erlang – purpose built languages for message processing used in 4G routers and packet switching networks. But is that where you want your career to go?
+You could learn Elixir and Erlang – purpose built languages for message processing used in networking. But is that where you want your career to go?
 
 You could try [Kafka](https://kafka.apache.org/) or [Hadoop](https://hadoop.apache.org/). Tools designed for big data, used by large organizations for mind-boggling amounts of data. Are you ready for that?
 
-Elixir, Erlang, Kafka, Hadoop etc are wonderful tools, if you know how to use them. But there's a significant learning curve and devops work to keep them running.
+Elixir, Erlang, Kafka, Hadoop are wonderful tools, if you know how to use them. But there's a significant learning curve and devops work to keep them running.
 
 You have to maintain servers, write code in obscure languages, and deal with problems we're trying to avoid.
 
@@ -26,13 +26,13 @@ You have to maintain servers, write code in obscure languages, and deal with pro
 
 Instead, you can leverage existing skills to build a data processing pipeline.
 
-I've used this approach to process millions of daily events in production with barely a 0.0007% loss of data. A rate of 7 events lost per 1,000,000.[^1]
+I've used this approach to process millions of daily events with barely a 0.0007% loss of data. A rate of 7 events lost per 1,000,000.[^1]
 
 We used it to gather business and engineering analytics. A distributed `console.log` that writes to a central database. That's how I know you should never build a distributed logging system unless it's your core business 😉
 
 ![High level architecture for distributed logging and tracing](../../images/distributed-logging.png)
 
-The system accepts batches of events, adds additional info about user and server state, then saves each event for easy retrieval.
+The system accepts batches of events, adds info about user and server state, then saves each event for easy retrieval.
 
 It was so convenient, we even used it for tracing and debugging in production. Pepper your code with `console.log`, wait for an error, see what happened.
 
@@ -40,11 +40,11 @@ It was so convenient, we even used it for tracing and debugging in production. P
 
 A similar system can process almost anything.
 
-Great for problems you can split into independent tasks like prepping data. Avoid for large inter-dependent operations like machine learning.
+Great for problems you can split into independent tasks like prepping data. Less great for large inter-dependent operations like machine learning.
 
 ## Architectures for serverless data processing
 
-Serverless data processing works like `.map` and `.reduce` at scale. Inspired by Google's infamous [MapReduce programming model](https://en.wikipedia.org/wiki/MapReduce). Big data processing frameworks use this.
+Serverless data processing works like `.map` and `.reduce` at scale. Inspired by Google's infamous [MapReduce programming model](https://en.wikipedia.org/wiki/MapReduce) and used by big data processing frameworks.
 
 Work happens in 3 steps:
 
@@ -70,11 +70,11 @@ The `n => n*2` function only needs `n`. The `(sum, n) => sum+n` function needs t
 
 That means you can distribute the work. Run each on a separate Lambda in parallel. Thousands at a time.
 
-You go from a slow algorithm to as fast as a single operation, known as [Amdahl's Law](https://en.wikipedia.org/wiki/Amdahl%27s_law). With infinite scale, you could process an array of 10,000,000 as fast as an array of 10.
+You go from a slow algorithm to as fast as a single operation, known as [Amdahl's Law](https://en.wikipedia.org/wiki/Amdahl%27s_law). With infinite scale, you could process an array of 10,000,000 elements almost as fast as an array of 10.
 
 ![](giphy:mind_blown)
 
-Lambda limits you to 1000 parallel invocations. Individual steps can be slow (like when transcoding video). And you're limited by the `reduce` step.
+Lambda limits you to 1000 parallel invocations. Individual steps can be slow (like when transcoding video) and you're limited by the `reduce` step.
 
 Performance is best when reduce is un-necessary. Performance is worst when reduce needs to iterate over every element in 1 call and can't be distributed.
 
@@ -82,7 +82,7 @@ Our adder is [commutative](https://en.wikipedia.org/wiki/Commutative_property) a
 
 ![Distributed adder architecture](../../images/processing-architecture.png)
 
-In practice you'll find transformations that don't need a reduce step or require many maps. All follow this basic architecture. :)
+In practice you'll find transformations that don't need a reduce step or require many maps. All follow this basic approach. :)
 
 For the comp sci nerds 👉 this has no impact on [big-O complexity](https://en.wikipedia.org/wiki/Big_O_notation). You're changing real-world performance, not the algorithm.
 
@@ -90,7 +90,7 @@ For the comp sci nerds 👉 this has no impact on [big-O complexity](https://en.
 
 Let's build that adder and learn how to construct a robust massively distributed data processing pipeline. We're keeping the operation simple so we can focus on the architecture.
 
-Here's the JavaScript code we're distributing.
+Here's the JavaScript code we're distributing:
 
 ```javascript
 const result = [1, 2, 3, 4, 5] // input array
@@ -141,12 +141,12 @@ DLQ's are useful for processing bad messages. Send an alert to yourself, store i
 
 **2 tables**
 
-1. `scratchpad table` for intermediary results from `timesTwo`. A table made `reduce` easier to implement and debug.
+1. `scratchpad table` for intermediary results from `timesTwo`. This table makes `reduce` easier to implement and debug.
 2. `sums table` for final results
 
 ### Step 1 – the API
 
-You first need to get data into the system. We use a [Serverless REST API](/serverless-rest-api) for this.
+You first need to get data into the system. We use a [Serverless REST API](/serverless-rest-api).
 
 ```yaml
 # serverless.yml
@@ -180,14 +180,14 @@ resources:
 
 It's an SQS queue postfixed with the current stage, which helps us split between production and development.
 
-The [`VisibilityTimeout`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html) says that when your Lambda accepts a message, it has 60 seconds to process. After that SQS assumes you never received the message and tries again.
+The [`VisibilityTimeout`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html) says that when your Lambda accepts a message, it has 60 seconds to process. After that, SQS assumes you never received the message and tries again.
 
 Distributed systems are fun like that.
 
 The `sumArray.ts` Lambda that accepts requests looks like this:
 
 ```typescript
-// src/timesTwo.ts
+// src/sumArray.ts
 
 export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
   const arrayId = uuidv4()
@@ -221,14 +221,14 @@ export const handler = async (event: APIGatewayEvent): Promise<APIResponse> => {
 }
 ```
 
-Get API request, create an `arrayId`, parse JSON body, iterate over the input, return success and the new `arrayId`. Consumers can late use this ID identify their result.
+Get API request, create an `arrayId`, parse JSON body, iterate over the input, return success and the new `arrayId`. Consumers can later use this ID identify their result.
 
 ### Triggering the next step
 
 We turn each element of the input array into a processing packet and send it to our SQS queue as a message.
 
 ```typescript
-// src/timesTwo.ts
+// src/sumArray.ts
 
 for (let packetValue of array) {
   await sendSQSMessage(process.env.timesTwoQueueURL!, {
@@ -249,13 +249,13 @@ Each packet contains:
 - `arrayLength` to help `reduce` know how many packets to expect
 - `packetContains` to help `reduce` know when it's done
 
-Most properties are metadata to help our processing pipeline. `packetValue` is the data.
+Most properties are metadata to help our pipeline. `packetValue` is the data we're processing.
 
 [`sendSQSMessage`](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-data-pipeline-example/src/utils.ts#L11) is a helper method that sends an SQS message using the AWS SDK.
 
 ### Step 2 – the map
 
-Our map step uses the `timesTwo` lambda and handles each packet in isolation.
+Our map uses the `timesTwo` lambda and handles each packet in isolation.
 
 ```yaml
 # serverless.yml
@@ -394,7 +394,7 @@ We use an ES6 Set to get a list of unique array ids from our input message. You 
 
 Distributed systems are fun :)
 
-For each unique input, we trigger a reduce lambda via `ReduceQueue`. A single `reduce` stream makes this example easier. You should try for parallelism in production.
+For each unique input, we trigger a reduce lambda via `ReduceQueue`. A single `reduce` stream makes this example easier. You should aim for parallelism in production.
 
 ### Step 3 – reduce
 
@@ -404,7 +404,7 @@ The simplest approach is to take the entire input and combine in 1 step. With la
 
 You could combine 2 elements at a time and run the reduce step in parallel.
 
-Fine-tuning for number of invocations and speed of execution will result in an N somewhere between 2 and All. Optimal numbers depend on what you're doing.
+Fine-tuning for number of invocations and speed of execution will result in an `N` somewhere between `2` and `All`. Optimal numbers depend on what you're doing.
 
 Our reduce function uses the `scratchpad table` as a queue:
 
@@ -472,7 +472,7 @@ export const handler = async (event: SQSEvent) => {
 }
 ```
 
-Grab `arrayId`s from the SQS event and wait until `reduceArray` calls are done.
+Grab `arrayId`s from the SQS event and wait until every `reduceArray` call is done.
 
 Then the `reduceArray` function does its job:
 
@@ -547,7 +547,7 @@ Gets 2 entries from the DynamoDB table[^2] and combines them into a new packet.
 
 This packet _must_ have a new `packetId`. It's a new entry for the faux processing queue on DynamoDB.
 
-Insert that back and if it succeeds, remove the previous 2 elements using their `arrayId/packetId` combination.
+Insert that back. If it succeeds, remove the previous 2 elements using their `arrayId/packetId` combination.
 
 If our new `packetContains` is greater than or equal to the total `arrayLength`, we know the computation is complete. Write results to the final table.
 
@@ -558,6 +558,8 @@ Lambda processing pipelines are a powerful tool that can process large amounts o
 Slow downs happen where you have to introduce throttling to limit processing because a downstream system can't take the load.
 
 ✌️
+
+Next chapter, we talk about monitoring serverless apps.
 
 [^1]: Our dataloss happened because of Postgres. Sometimes it would fail to insert a row, but wouldn't throw an error. We mitigated with various workarounds but a small loss remained. At that point we decided it was good enough.
 [^2]: We use a `Limit: 2` argument to limit how much of the table we scan through. Don't need more than 2, don't read more than 2. Keeps everything snappy

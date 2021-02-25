@@ -1,6 +1,6 @@
 ---
 title: "Serverless authentication"
-description: ""
+description: "Learn about user authentication and how it works"
 image: "./img/dealing-with-authentication.png"
 ---
 
@@ -26,11 +26,11 @@ A typical authentication system deals with everything from user identity, to acc
 
 It's a big job :)
 
-**Identity** answers the "Who are you?" question. The most important aspect of authentication systems. Can be as simple as an honor-based input field.
+**Identity** answers the *"Who are you?"* question. The most important aspect of authentication systems. Can be as simple as an honor-based input field.
 
-**Access control** answers the "Can you access this system?" question. You ask for proof of identity (like a password) and unlock restricted parts of your app.
+**Access control** answers the *"Can you access this system?"* question. You ask for proof of identity (like a password) and unlock restricted parts of your app.
 
-**Authorization** answers the "Which parts of the system can you use?" question. Two schemes are common: role-based and scope-based authorization. They specify which users can do what.
+**Authorization** answers the *"Which parts of the system can you use?"* question. Two schemes are common: role-based and scope-based authorization. They specify which users can do what.
 
 **Security** underlies your authentication system. Without security, you've got nothing. 
 
@@ -65,21 +65,21 @@ Two flavors of authorization are common:
 - **role-based** authorization depends on user types. Admins vs. paid users vs. freeloaders.
 - **scope-based** authorization depends on fine-grained user properties. Enable subscriber dashboard or don't.
 
-Technically they're the same – a user property. It's like utility vs. semantic classes in CSS. Debate until you're blue in the face then pick what feels right :)
+Technically they're the same – a user property. It's like utility vs. semantic classes in CSS. Debate until you're blue in the face, then pick what feels right :)
 
 Role-based authorization is perfect for small projects. You need admins and everyone else. Being an admin comes with inherent rights.
 
 Scope-based authorization is perfect for large projects with granular needs. Yes you're an admin, but admin of what?
 
-In practice you'll see that roles get clunky and scopes are tedious. Like when I had permission to configure CloudFront, but not to see what I'm doing. 🙃
+In practice you'll see that roles get clunky and scopes are tedious. Like my dayjob gave me permission to configure CloudFront, but not to see what I'm doing. 🙃
 
 At an organizational level you end up with roles that act as bags of scopes. Engineers get scopes x, y, z, admins can do so and so, and users get user things.
 
 ## Build your own auth
 
-Let's build a basic serverless auth meant to be used as an API. It's the best way to get a feel for what it takes.
+Let's build a basic serverless auth designed to be used as an API. It's the best way to get a feel for what it takes.
 
-I'll share and explain the important code, you can [see the full example on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-auth-example). Use [this CodeSandbox app](https://codesandbox.io/s/serverless-auth-example-9ipfb) to try it out.
+I'll share and explain the important code. You can [see the full example on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-auth-example). Use [this CodeSandbox app](https://codesandbox.io/s/serverless-auth-example-9ipfb) to try it out.
 
 https://codesandbox.io/s/serverless-auth-example-9ipfb
 
@@ -136,8 +136,8 @@ That's when guessing becomes the easier approach. You can fight guessing with li
 
 We need 2 variables to build an auth system:
 
-- a unique SALT for password hashing
-- a unique JWT_SECRET for signing JWT tokens
+- a unique `SALT` for password hashing
+- a unique `JWT_SECRET` for signing JWT tokens
 
 We define them in `serverless.yml` to keep things simple. Use [proper secrets handling](/handling-secrets) for production.
 
@@ -214,7 +214,7 @@ We grab `username` and `password` from request body and look for the user. `find
 
 If the user wasn't found, we create one and make sure to `hashPassword()` before saving.
 
-If the user was found, we verify credentials by hashing the password and comparing with the stored value. We know passwords match when `hashPassword()` method creates the same hash.
+If the user was found, we verify credentials by hashing the password and comparing with the stored value. We know passwords match when the `hashPassword()` method creates the same hash.
 
 > This means you can never change your `hashPassword()` method unless you force users to reset their password.
 
@@ -355,7 +355,7 @@ export function checkAuth(event: APIGatewayEvent): boolean | User {
 
 The `Authorization` header holds our token – `Authorization: Bearer <token>`. If the header is empty, return `false`.
 
-The `jwt.verify()` call verifies the token was valid. Checks that it was created with our secret, wasn't tampered with, and hasn't expired.
+The `jwt.verify()` method verifies the token was valid. Checks that it was created with our secret, wasn't tampered with, and hasn't expired.
 
 `verify` decodes the token for us, which means we can see the user's username without a database query. 🤘
 
@@ -367,9 +367,9 @@ And if a big provider gets hacked, your app is one among thousands. Feels less b
 
 ![Auth flow with a 3rd party provider](../../images/auth_provider_flow.png)
 
-The key difference with a provider is the 3-way trust model. Users authenticate with a provider and send you a JWT token. 
+The key difference with a provider is the 3-way trust model. Users authenticate with a provider and send you a JWT token.
 
-But you're not the authority. 
+But you're not the authority.
 
 That means a login dance between your server and the auth provider. You'll need to send your own JWT token to ask if the user's token is valid.
 
@@ -414,7 +414,7 @@ export const pingHandler = async (
 };
 ```
 
-The function parses data from Gumroad, creates a user on Auth0, and assigns the right role. I treat roles as scopes – which courses can this user access?
+The function parses data from Gumroad, creates a user on Auth0, and assigns the right role. I treat roles as scopes 👉 which courses can this user access?
 
 #### Auth0 Client
 
@@ -440,7 +440,9 @@ Auth0 will be able to `jwt.verify()` to see that we know the right secrets.
 
 A `ManagementClient` can manages users. For authentication you'd use the `AuthenticationClient`.
 
-We ask for as little permission as possible. If someone steals these secrets, or the code, they can't do much. If an attacker tries to expand permissions, Auth0 config says *"hey this client can't do that even if it asks"*
+We ask for as little permission as possible. If someone steals these secrets, or the code, they can't do much. 
+
+If an attacker tries to expand permissions, Auth0 config says *"hey this client can't do that even if it asks"*
 
 #### Create user
 

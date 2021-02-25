@@ -1,6 +1,6 @@
 ---
 title: "Robust backend design"
-description: "A fundamental paradox means your backend can't be perfect. How do you build code that works?"
+description: "A fundamental paradox means your backend can never be perfect. How do you build code that works?"
 image: "./img/robust-backend-design.png"
 ---
 
@@ -8,11 +8,11 @@ image: "./img/robust-backend-design.png"
 
 ![](../../images/chapter_headers/robust-backend-design.svg)
 
-Imagine you're a Roman general leading a vast and powerful army. You're about to attack a city 😱
+Imagine you're a Roman general leading a vast and powerful army. You're about to attack a city.
 
 But you can't do it alone.
 
-Your buddy with another vast and powerful army hides behind a hill on the other side of the city. You need their help to win.
+Your buddy with another vast and powerful army hides behind a hill on the other side. You need their help to win.
 
 Attack together and win. Attack alone and die.
 
@@ -26,13 +26,13 @@ A messenger is your best bet. Run to the other army, deliver the message, come b
 
 Unless they're caught. 🤔
 
-Messenger could fail to deliver your message. Or get caught on their way back. You'll never know.
+The messenger could fail to deliver your message. Or get caught on their way back. You'll never know.
 
-Send more messengers until one makes it back? How does your friend know that any messenger made it back? Nobody wants to attack alone either.
+Send more messengers until one makes it back? How does your friend know that any messenger made it back? Nobody wants to attack alone.
 
 This puzzle is known as the [Two Generals' Problem](https://en.wikipedia.org/wiki/Two_Generals%27_Problem). **There is no solution**.
 
-No algorithm guarantees 100% certainty over a lossy medium. Best you can do is "Pretty sure."
+No algorithm guarantees 100% certainty over a lossy medium. Best you can do is *"Pretty sure."*
 
 And that's why distributed systems are hard.
 
@@ -42,7 +42,7 @@ Serverless systems are always distributed. 😅
 
 ## Build a robust backend
 
-> A robust backend chugs along in the face of failure.
+> A robust backend keeps working in the face of failure.
 
 As we mentioned in the [Architecture Principles chapter](https://serverlesshandbook.dev/serverless-architecture-principles), your backend follows 3 principles:
 
@@ -78,7 +78,7 @@ AWS couldn't even update their status dashboard because error icons live on S3.
 
 ![](giphy:eesh)
 
-To isolate errors you have to reduce inter-dependency. Always think: "What can I do to make moving pieces less dependent on each other?"
+To isolate errors you have to reduce inter-dependency. Always think: *"What can I do to make moving pieces less dependent on each other?"*
 
 In your car, the brakes keep working even if your brake lights go out. The systems work together, but independently.
 
@@ -98,7 +98,7 @@ Serverless functions are optimized for this approach by default. They encourage 
 
 Think of serverless code like a function. How big are your functions? How much do they do?
 
-Say you were building a basic math module. Would you write a function that performs plus and minus?
+Say you were building a basic math module. Would you write a function that performs plus *and* minus?
 
 ```typescript
 function doMath(a: number, b: number, op: "plus" | "minus") {
@@ -128,7 +128,7 @@ That's easier to work with.
 
 Splitting your code into small operations is an art. Big functions are hard to debug and too many small functions are hard to understand.
 
-My rule is that when I use and to describe a function, I need a new function.
+My rule is that when I use "and" to describe a function, I need a new function.
 
 ### Do the whole operation in one atomic go
 
@@ -146,7 +146,7 @@ Same thing happens when your lambdas do too much. Your code can get distracted, 
 
 Recovering from corrupt state is hard.
 
-Instead, try to avoid distractions. Keep operations small, go start to finish, delegate. Let another process read email. And [clean up in case of error](<https://en.wikipedia.org/wiki/Atomicity_(database_systems)>).
+Instead, try to avoid distractions. Keep operations small, go start to finish, delegate. Let another process read email. And [clean up when there's an error](<https://en.wikipedia.org/wiki/Atomicity_(database_systems)>).
 
 ### Avoid coupling
 
@@ -179,7 +179,7 @@ Retrying requests is built into the serverless model.
 
 AWS [retries every lambda invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-retries.html), if the call fails. The number of retries depends on who's calling.
 
-API Gateway proxies requests from users which makes retrying harder than an SQS queue with all the time in the world.
+API Gateway is proxying requests from users and that makes retries harder than an SQS queue which has all the time in the world.
 
 Retries happen for two reasons:
 
@@ -192,7 +192,7 @@ Retries happen for two reasons:
 
 Both SQS – Simple Queue Service – and SNS – Simple Notification Service – support retries out of the box. They're the most common ways AWS services communicate.
 
-Details of how they implement retries differ. You can read more about [How SNS works](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) and [How SQS works](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html) in AWS docs.
+Details on how each implements retries differ. You can read more about [How SNS works](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) and [How SQS works](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-architecture.html) in AWS docs.
 
 Both follow this pattern:
 
@@ -203,7 +203,7 @@ Both follow this pattern:
 5. If processed, remove message
 6. If failed, retry ... sometimes thousands of times
 
-Waiting to delete the message until after confirmation is crucial. You might lose data otherwise.
+Wait to delete the message until after confirmation. You might lose data otherwise.
 
 Keep this in mind: never mark something as processed until you know for sure ✌️
 
@@ -293,9 +293,9 @@ Say you want to process requests in sequence.
 
 9 requests go great, the 10th is a poison pill. Your code gets stuck trying and retrying for days.
 
-Meanwhile users 11 to 11,000 storm your email crying the service is down. But it's not down, it's stuck.
+Meanwhile users 11 to 11,000 storm your email crying that the service is down. But it's not down, it's stuck.
 
-[Dead letter queues](https://en.wikipedia.org/wiki/Dead_letter_queue) can help. They hold bad messages you couldn't process until you have time to debug.
+[Dead letter queues](https://en.wikipedia.org/wiki/Dead_letter_queue) can help. They hold bad messages until you have time to debug.
 
 Each queue-facing Lambda gets two queues:
 
@@ -342,7 +342,7 @@ resources:
 
 A worker lambda runs from an SQS queue. When it fails, messages are retried.
 
-Now all you need is an alarm on dead letter queue size to remind you "Hey something's wrong, you should check".
+Now all you need is an alarm on dead letter queue size to say *"Hey something's wrong, you should check"*.
 
 Bug in your code? Fix the bug, re-run worker from dead letter queue. No messages are lost.
 
@@ -354,7 +354,7 @@ The challenge with serverless systems is that you can't see what's going on. And
 
 ![](giphy:the_matrix_looking_at_logs)
 
-You need a monitoring system. A way to keep tabs on your services and send alerts. Email for small problems, slack for big problems, text message for critical issues.
+You need a monitoring system. A way to keep tabs on your services and send alerts. Email for small problems, slack for big problems, text message for critical problems.
 
 That's what works for me.
 
@@ -372,6 +372,10 @@ Computer science talks about this through [Queuing theory](https://en.wikipedia.
 
 It's a huge field :)
 
-We talk more about flow in the [Serverless performance](https://serverlesshandbook.dev/serverless-performance) and [Cost optimization](https://serverlesshandbook.dev/serverless-cost-optimization) chapters.
+We talk more about flow in the [Serverless performance](https://serverlesshandbook.dev/serverless-performance) chapter.
 
-Next chapter we look at where to store data.
+## Conclusion
+
+In conclusion, a distributed system is never 100% reliable. You can make it better with small replayable operations, keeping code debuggable, and removing bad requests.
+
+Next chapter we look at where to store your data.

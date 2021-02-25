@@ -1,6 +1,6 @@
 ---
 title: "Serverless performance"
-description: "How does performance impact your serverless setup? What's important to think about?"
+description: "How does performance impact your serverless setup? What should you think about?"
 image: "./img/serverless-performance.png"
 ---
 
@@ -8,7 +8,7 @@ image: "./img/serverless-performance.png"
 
 ![](../../images/chapter_headers/serverless-performance.svg)
 
-Performance talks about results per unit of a resource. Time, effort, space, energy, and money.
+Performance talks about what you get per unit of a resource. Time, effort, space, energy, and money.
 
 How much of X does it take to get N results?
 
@@ -34,7 +34,7 @@ You **optimize memory** with slower code. Memory is plentiful these days, but no
 
 Every optimization takes **human time and effort**. A metric that software _organizations_ care about. How hard is the code to develop and maintain?
 
-You can think of performance as a 4-dimensional optimization function. **Speed vs. space vs. money vs. human effort**. Great question for a calculus exam.
+You can think of performance as a 4-dimensional optimization function. **Speed vs. space vs. money vs. effort**. Great question for a calculus exam.
 
 Avoid doing the calculus with ye olde law of prioritization:
 
@@ -46,7 +46,7 @@ You'll find that computers are fast & cheap and humans are slow & expensive. Sti
 
 ### Where size matters
 
-Storage is cheap – [$0.023/GB/month on S3](https://aws.amazon.com/s3/pricing/) – and memory is _pretty_ cheap at [$0.000016/GB/second](https://aws.amazon.com/lambda/pricing/). Memory cost _increases_ when you need extra. Storage cost _decreases_ when you use more.
+Storage is cheap – [$0.023/GB/month on S3](https://aws.amazon.com/s3/pricing/) – and memory is _pretty_ cheap at [$0.000016/GB/second](https://aws.amazon.com/lambda/pricing/). Memory cost per unit _increases_ when you need extra. Storage cost per unit _decreases_ when you use more.
 
 ![](giphy:shrug)
 
@@ -73,7 +73,7 @@ Best summarized with a metaphor from [Andrew S. Tanenbaum](https://en.wikipedia.
 
 Latency measures delay. How long does it take to start working?
 
-You can write the fastest code in the world, but if it needs 2 seconds to get started ... unhappy users.
+You can write the fastest code in the world, but if it takes 2 seconds to get started you'll have unhappy users.
 
 The biggest factors are:
 
@@ -98,12 +98,14 @@ The biggest factors are:
 
 Serverless is for [small distributed operations](/lambda-pipelines). Code performance and algorithm complexity have little impact.
 
-> Fancy algorithms are slow when n is small, and n is usually small. Fancy algorithms have big constants. Until you know that n is frequently going to be big, don't get fancy.
+> Fancy algorithms are slow when N is small, and N is usually small. Fancy algorithms have big constants. Until you know that N is frequently going to be big, don't get fancy.
 > ~ [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike)
 
 That leaves **input/output**.
 
-Waiting for a database, talking to 3rd party APIs, loading a web page, those will _destroy_ your performance. For example: the average duration for my screenshot lambda is 10 seconds. Mostly waiting for Chrome to start and webpages to load.
+Waiting for a database, talking to 3rd party APIs, loading a web page, those will _destroy_ your performance. 
+
+The average duration for my screenshot lambda is 10 seconds. Mostly waiting for Chrome to start and webpages to load.
 
 You pay for every millisecond of that wait. 🙃
 
@@ -121,23 +123,23 @@ A system that grows faster than demand blows up eventually.
 
 This applies to teams as much as it does to computers. If you need 3 new developers to do 2x more work, your company will die.
 
-Scaling your software comes in 2 flavors: vertical and horizontal. Best use a mix of both.
+Scaling your software comes in 2 flavors: vertical and horizontal. Use a mix of both.
 
 ### Vertical scaling
 
-Vertical scaling is the art of getting 1 computational resource to do more. Physical machine, virtual machine, or CPU thread.
+Vertical scaling is the art of getting 1 computational resource to do more. 
 
 This type of scaling can get expensive. You need more resources – faster CPU, more memory, better hardware, a GPU – and lots of engineering effort to optimize your code.
 
 For many workloads, this approach is best.
 
-It's easier to scale a database by adding CPU and memory than by rebuilding your application to use more databases. AI researchers prefer a computer with terabytes of memory over tweaking algorithms to use less.
+It's easier to scale a database by adding CPU and memory than by rebuilding your application to use more databases. AI researchers prefer a computer with terabytes of memory over tweaking algorithms to need less.
 
 And sometimes it's the only way. Like processing a video.
 
 ### Horizontal scaling
 
-Horizontal scaling is the art of splitting work between computational resources. Physical machines, virtual machines, or CPU threads.
+Horizontal scaling is the art of splitting work between computational resources.
 
 This type of scaling can be cheap. Easier to provision, quicker to get going, less effort to optimize.
 
@@ -145,11 +147,9 @@ But you have to find a balance. 6 cheap computers can cost more than 3 expensive
 
 That's where serverless shines.
 
-You let somebody else worry about the balance. Cloud functions are small and AWS can stuff them on a beefy machine.
-
 Horizontal scaling is perfect for isolated operations with little inter-dependency. Like API requests, processing a video library, or serving static files. 
 
-Use the [map-reduce pattern](/lambda-pipelines) to split larger tasks like we did in the [Lambda Pipelines chapter](/lambda-pipelines). You pay with system complexity.
+Use the [map-reduce pattern](/lambda-pipelines) to split larger tasks like we did in the Lambda Pipelines chapter. You pay with system complexity.
 
 ## Achieving speed
 
@@ -157,7 +157,7 @@ Never optimize your code until it tells you where it hurts. Bottlenecks are surp
 
 But don't kick the table with your pinky toe either. You already know that hurts.
 
-For max speed in serverless environments focus on:
+For maximum speed in serverless environments focus on:
 
 - cold wake up times
 - reducing input output
@@ -167,9 +167,9 @@ For max speed in serverless environments focus on:
 
 Traditional servers split performance into warm and cold. The server starts cold and warms up its caches, algorithm setup, and execution environment with the first few requests.
 
-Most requests reach a warm server. Orders of magnitude faster.
+Most requests reach a warm server which is orders of magnitude faster.
 
-With serverless every request might be cold.
+With serverless, every request could be cold.
 
 ![](giphy:gulp)
 
@@ -195,7 +195,7 @@ Providers optimize these "external" requests but you have no control and there a
 
 Best you can do is minimize.
 
-- do more in 1 request (bigger SQL queries, for example)
+- do more in 1 request (like bigger SQL queries)
 - avoid I/O in a loop, try to pre-fetch
 - prefer local [memoization](https://en.wikipedia.org/wiki/Memoization) over cache
 
@@ -203,7 +203,7 @@ Best you can do is minimize.
 
 Memoization stores results in a local variable. Call your function with the same inputs and return the value without recalculating.
 
-But you lose memory when your lambda goes to bed. That's where cache helps. A service with persistent memory that stores pre-computed values.
+But you lose memory when your lambda goes to bed. That's where a cache can help. A service with persistent memory that stores pre-computed values.
 
 Like your database, the caching service is an external request. Much slower than a local variable.
 
@@ -229,7 +229,7 @@ exports.handler = function (argument) {
 
 Keep it simple.
 
-Use the fastest check as your first argument in an `&&` or `||` chain. Computers skip arguments when they can't change the result.
+Use the fastest check as your first argument in an `&&` or `||` chain. Computers skip arguments that can't change the result.
 
 Avoid doing work that you'll throw away 10 lines later.
 
@@ -255,7 +255,7 @@ You can find the bottleneck by looking at your queues. Is one of them filling up
 
 You can look at Lambda execution times. A slow Lambda could be full of bad code, more likely it's talking to a bottleneck. 
 
-Can you move it off the [critical path](https://en.wikipedia.org/wiki/Critical_path_method)? Maybe cache or memoize API and database responses?
+Can you move it off the [critical path](https://en.wikipedia.org/wiki/Critical_path_method)? Cache or memoize any API and database responses?
 
 The exact answer depends on *your* code and *your* system.
 
@@ -273,6 +273,6 @@ However, he suggested you try [AWS Lambda Power Tuning](https://github.com/alexc
 
 Execution time goes from 35s with 128MB to less than 3s with 1.5GB, while being 14% cheaper to run.
 
-A great example of how vertical scaling beats horizontal. But you get every benefit of horizontal, because serverless. 🚀
+A great example of how vertical scaling beats horizontal. But you keep every benefit of horizontal, because serverless. 🚀
 
 Next chapter we look at running Serverless Chrome, a typical case where beefy lambdas help lots.

@@ -1,5 +1,5 @@
 ---
-title: "Creating a REST API"
+title: "Creating a serverless REST API"
 description: "What is REST and how does it work? How do you build a serverless API?"
 image: "./img/serverless-rest-api.png"
 ---
@@ -8,15 +8,15 @@ image: "./img/serverless-rest-api.png"
 
 ![](../../images/chapter_headers/serverless-rest-api.svg)
 
-> You've heard of REST before, but what **_is_** REST? How does it work? Can you build one from scratch? Does serverless make your REST life easier?
+You've heard of REST before, but what **_is_** REST? How does it work? Can you build one from scratch? Does serverless make your REST life easier?
 
-Learn about REST best practices and finish with a small implementation you can try right now. I left mine running ✌️
+In this chapter, learn about REST best practices and finish with a small implementation you can try right now. I left mine running ✌️
 
 ## What is REST
 
-[REST](https://en.wikipedia.org/wiki/Representational_state_transfer) stands for REpresentational State Transfer. Coined in [Roy Fielding's 2000 doctoral thesis](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm), it now represents what many consider the standard approach to web APIs.
+[REST](https://en.wikipedia.org/wiki/Representational_state_transfer) stands for REpresentational State Transfer. Coined in [Roy Fielding's 2000 doctoral thesis](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm), it now represents the standard approach to web APIs.
 
-Fielding says REST is an architectural principle. It _recommends_ how to build scalable web systems, but there's no official standard.
+Fielding says REST is an architectural principle. It _recommends_ how to build a scalable web system, but there's no official standard.
 
 You may have noticed this in the wild. RESTful APIs follow similar guidelines and no two are alike.
 
@@ -26,7 +26,7 @@ Here are the 6 architectural constraints that define a RESTful system 👇
 
 - **client-server architecture** specifies a separation of concerns between the user interface and the storage of data. This simplifies both sides and lets them evolve independently.
 - **statelessness** specifies that _the protocol_ is stateless. Each request to the server contains all information necessary to process that request. Servers do not maintain client context.
-- **cacheability** specifies that clients can cache any server response to improve performance on subsequent requests. Servers have to annotate responses with appropriate caching policies (via http headers)
+- **cacheability** specifies that clients can cache any server response to improve performance on future requests. Servers have to annotate responses with appropriate caching policies via http headers
 - **layered system** means that, like regular HTTP, a RESTful client shouldn't need to know whether it's talking to a server, a proxy, or load balancer. This improves scalability.
 - **code on demand (optional)** says that servers can send executable code as part of their responses. You see this with web servers sending JavaScript.
 - **uniform interface** is the most fundamental and means that clients can interact with a server purely from responses, without outside knowledge.
@@ -41,7 +41,7 @@ Each **request identifies the resource** it is requesting. Using the URL itself.
 
 All **messages are self-descriptive** meaning both client and server can understand a message without external information. Send everything you need.
 
-A resource's **representation includes everything needed to modify** said resource. When clients get a response, it should contain everything necessary to modify or delete the underlying resources.
+A resource's **representation includes everything needed to modify** that resource. When clients get a response, it should contain everything necessary to modify or delete the underlying resources.
 
 Academics say **responses should list possible actions** so clients can navigate a system without intimate knowledge of its API. You rarely see this in the wild.
 
@@ -49,15 +49,15 @@ Academics say **responses should list possible actions** so clients can navigate
 
 The trickiest part of building a RESTful API is how it evolves over time. The second trickiest is keeping it consistent across your app.
 
-As your system grows you're tempted to tack onto existing APIs and break resource constraints. You're likely to forget the exact wording and phrasing of different parts.
+As your system grows you're tempted to piggy-back on existing APIs and break resource constraints. You're likely to forget the exact wording and phrasing of different parts.
 
-All of that is natural. **The important part is to start on the right foot and clean up when you can.**
+All that is natural. **The important part is to start on the right foot and clean up when you can.**
 
 ### Engineers are human
 
 When engineers _can_ do something with your API, they will.
 
-They're going to find every undocumented feature, discover every "alternative" way to get data, uncover any easter egg you didn't mean to include. They're good at their job.
+They're going to find every undocumented feature, discover every "alternative" way to get data and uncover any easter egg you didn't mean to include. They're good at their job.
 
 Do yourself a favor and aim to **keep everything consistent**. The more consistent you are, the easier it will be to clean up.
 
@@ -77,9 +77,9 @@ Your URL schema exists to solve *one* problem: Create a uniform way to identify 
 
 Keep it consistent, otherwise don't sweat it.
 
-Engineers like to get stuck on pointless details here, but it's okay. Make sure your team agrees on what makes sense.
+Engineers like to get stuck on pointless details, but it's okay. Make sure your team agrees on what makes sense.
 
-When designing an URL schema I aim to:
+When designing a URL schema I aim to:
 
 - **make it guessable**, which stems from consistency and predictability
 - **make it human readable**, which makes it easier to use, debug, and memorize
@@ -87,7 +87,7 @@ When designing an URL schema I aim to:
 - **avoid strange characters** like spaces and emojis. It looks cute, but it's cumbersome to work with
 - **include IDs in URLs** because it makes debugging and logging easier
 
-The two schemas I like go like this:
+The two schemas I like, go like this:
 
 ```
 https://api.wonderfulservice.com/<namespace>/<model>/<id>
@@ -123,7 +123,7 @@ Great support in common programming languages, easy to use with JavaScript, simp
 
 **For timestamps** I recommend the [ISO 8601 standard](https://en.wikipedia.org/wiki/ISO_8601) for the same reason. Great tooling in all languages, readable by humans, writable by hand.
 
-[UNIX timestamps](https://en.wikipedia.org/wiki/Unix_time) used to be popular and are falling out of favor. Hard to read for humans, don't work well with dates beyond 2038, bad at dates before 1970, etc.
+[UNIX timestamps](https://en.wikipedia.org/wiki/Unix_time) used to be popular and are falling out of favor. Hard to read for humans, don't work great with dates beyond 2038, bad at dates before 1970.
 
 Stick to ISO time and JSON data 😊
 
@@ -139,7 +139,7 @@ Opinions on how to pass verbs from client to server vary. There's 3 camps:
 
 Everyone agrees that a `GET` request is for getting data and should have no side-effects.
 
-Other verbs belong to the `POST` request, if you're into URL- or JSON- verbs. Or use other HTTP verbs like `PUT`, `PATCH`, and `DELETE`.
+Other verbs belong to the `POST` request. Or you can use HTTP verbs like `PUT`, `PATCH`, and `DELETE`.
 
 I like to use a combination.
 
@@ -153,7 +153,7 @@ Should you use HTTP error codes to communicate errors?
 
 Opinions vary.
 
-One camp says that HTTP errors are for HTTP-layer problems. Your server being down, a bad URL, invalid payload. When your application processes a request and decides there's an error, it should return 200 with an error object.
+One camp says that HTTP errors are for HTTP-layer problems. Your server being down, a bad URL, invalid payload, etc. When your application processes a request and decides there's an error, it should return 200 with an error object.
 
 The other camp says that's silly and we already have a great system for errors. Your application should use the full gamut of HTTP error codes _and return an error object_.
 
@@ -182,7 +182,7 @@ Your best bet is to maintain eternal backwards compatibility. Make additive chan
 
 It leads to messy APIs, which is a shame, but better than crashing an app the user hasn't updated in 3 years.
 
-When you need a breaking change, it's unlikely the underlying model fits your current URL schema. Don't version, use a new URL.
+When you need a breaking change, it's unlikely the underlying model fits your current URL schema. Use a new URL.
 
 ## Build a simple REST
 
@@ -238,7 +238,7 @@ The `{itemId}` syntax lets APIGateway parse the URL for us and pass identifiers 
 
 Mapping every operation to its own lambda means you don't have to write routing code. When a lambda gets called, it knows what to do.
 
-We define lambdas in a [`manageItems.ts` file](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-rest-example/src/manageItems.ts). Grouping operations on the same model together helps keep your code organized.
+We define lambdas in a [`manageItems.ts` file](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-rest-example/src/manageItems.ts). Grouping operations from the same model helps keep your code organized.
 
 ### getItem
 
@@ -270,7 +270,7 @@ export const getItem = async (event: APIGatewayEvent): Promise<APIResponse> => {
 
 The `getItem` function is triggered from an APIGatewayEvent. It includes a `pathParameters` object that contains an `itemId` parsed from the URL.
 
-We then use a [DynamoDB `getItem` wrapper](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-rest-example/src/dynamodb.ts#L80) method to talk to the database and find the requested item.
+We then use a [DynamoDB `getItem` wrapper](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-rest-example/src/dynamodb.ts#L80) to talk to the database and find the requested item.
 
 If the item is found, we return a success response, otherwise an error. The `response` method is a helper that makes responses easier to write.
 
@@ -297,7 +297,7 @@ Or paste that URL into a browser.
 
 Updating an item is the most complex operation we've got.
 
-It handles both creating and updating items, always assuming that the client knows best. You'll want to verify that assumption in a production system.
+It handles both creating and updating items, always assuming that the client knows best. You'll want to validate that in production.
 
 Here we overwrite server data with the client payload.
 
@@ -368,7 +368,7 @@ The pattern we're following is:
 - if no ID provided, generate one
 - find item in DB
 - update or create a `createdAt` timestamp
-- parse the request JSON body
+- parse the JSON body
 - create an update expression
 - add a `lastUpdatedAt` timestamp
 - return the resulting object
@@ -434,4 +434,4 @@ And that's 14 years of REST API experience condensed into 2000 words. My favorit
 
 I love that you can have different lambda functions (whole servers, really) for individual endpoints.
 
-Next, we look at GraphQL and why it represents an exciting future.
+Next chapter, we look at GraphQL and why it represents an exciting future.

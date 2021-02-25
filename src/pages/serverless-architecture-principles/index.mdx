@@ -39,7 +39,7 @@ Wanna know the best part?
 
 Nobody noticed. ✌️
 
-I knew something was because of that SMS. But the system, the system kept hobbling along. Slower, in pain, getting the job done.
+I knew something was wrong because of that SMS. The system kept hobbling along. Slower, in pain, but getting the job done.
 
 How can a system with 18 failures per minute keep working?
 
@@ -49,13 +49,13 @@ How can a system with 18 failures per minute keep working?
 
 1. Everything can and will fail
 2. Your system should work anyway
-3. Failures should be easy to fix
+3. Make failures easy to fix
 
 <div id="lock" />
 
-Netflix forced engineers to think about this with the [Chaos Monkey](https://en.wikipedia.org/wiki/Chaos_engineering) in 2011. They wanted to *"move from a development model that assumed no breakdowns to a model where breakdowns were considered to be inevitable"*.
+In 2011 Netflix forced engineers to think about this with the [Chaos Monkey](https://en.wikipedia.org/wiki/Chaos_engineering). They wanted to *"move from a development model that assumed no breakdowns to a model where breakdowns were considered to be inevitable"*.
 
-The Chaos Monkey makes that happen by introducing random failures to production environments. Servers down, databases unresponsive, message queues failing, data pipelines gunked up. 
+The Chaos Monkey makes that happen by introducing random failures to production environments. Servers down, databases unresponsive, message queues failing. 
 
 Reality is going to be your chaos monkey. Plan for it. 😉
 
@@ -83,7 +83,7 @@ What does *99.95% monthly uptime percentage* mean in practice?
 
 There are `24*60/5 = 288` 5-minute intervals in a day. An average of 99.95% means that some intervals have lower availability, some higher. None go higher than 100%.
 
-The hidden message is that you're going to see bursts of failures. A bad 5-minute period in a sea of 100% green. Outliers that pull the average down.
+The hidden message is that you're going to see bursts of failures. A bad 5-minute period in a sea of 100% green. Outliers pull the average down.
 
 Let's assume an even error rate to simplify the math.
 
@@ -101,7 +101,7 @@ Pretty good eh?
 
 ![](giphy:oof)
 
-*PS: failure rate means the system never manages to process a request, error rate means individual possibly recoverable errors along the way*
+*PS: failure rate means the system never manages to process a request, error rate means individual, possibly recoverable, errors along the way*
 
 ## How to design a resilient architecture
 
@@ -113,8 +113,8 @@ Your goal is to:
 - **make operations replayable** triggering the same operation multiple times must produce the same result
 - **retry until success** errors are often transient and go away when you try again
 - **make your system debuggable** store enough information about your actions so that you can look back later
-- **remove unprocessable requests** sometimes requests can't be processed, make sure these don't kill your system or get in the way of valid requests
-- **alert the engineer when something is wrong** errors can be part of normal operations, but when there's too many, make your system cry out in pain and tell you where it hurts
+- **remove unprocessable requests** sometimes requests can't be processed. Make sure these don't kill your system or get in the way of valid requests
+- **alert the engineer when something is wrong** errors can be part of normal operations. When there's too many, make your system cry out in pain and tell you where it hurts
 
 You can achieve all that with a few steps.
 
@@ -122,11 +122,9 @@ You can achieve all that with a few steps.
 
 Think of your task as a pipeline. 
 
-A request comes in. You do X, then you do Y, then Z, then the result pops out. The request is your input, the result is your output.
+A request comes in. You do X, then you do Y, then Z, then the result comes out. The request is your input, the result is your output.
 
 Like Henry Ford's famous assembly line 👉 steel comes in the factory on one end, cars leave on the other. 
-
-Your pipeline is the same. Requests come in, results go out.
 
 For max resilience, make each operation follow this algorithm:
 
@@ -141,7 +139,7 @@ For max resilience, make each operation follow this algorithm:
 
 Having a way to answer *"Did I process this yet?"* gives you replayability. Call the same action with the same request twice and nothing happens.
 
-Easiest way to achieve this, is a lookup table. I like to put a `processed` flag in each database row. Lets you pass a reference to the row between actions. Each does its thing and changes its flag.
+Easiest way to achieve this, is a lookup table. I like to put a `processed` flag in each database row. Lets you pass a reference to the row between actions. Each does its thing and changes the flag.
 
 **Each action does one thing and one thing only.**
 
@@ -159,7 +157,9 @@ And because you have replayability, you can retry until your action succeeds. �
 
 Fire an action, get success or fail. If success, remove message from the queue and move on. If it fails, put message back on queue and try again.
 
-Errors are often temporary. Engineers will fix it soon. If it's a hardware problem, you can wait until your function runs on a different physical machine. Yay serverless.
+Errors can be temporary. Engineers will fix the bug. 
+
+If it's a hardware problem, you can wait until your function runs on a different physical machine. Yay serverless.
 
 You can keep retrying until success because actions are safely replayable.
 
@@ -171,16 +171,16 @@ Catches errors in the retry system itself. ✌️
 
 ### A debuggable system is a good system
 
-Small actions that store *"Yes Did It"* state for each piece of data are easier to debug. You can look at your database to see which step failed.
+Small actions that store a *"Yes I Did It"* state for each piece of data are easier to debug. You can look at your database to see which step failed.
 
-Replayability lets you can trigger the failed action for that data and see what happens.
+Replayability lets you trigger the failed action for that data and see what happens.
 
 Since actions are functions and your messages are plain data, you can test locally. Unit tests are great, running production code on production data in your terminal, that's wow.
 
 And if that's not enough, add logging. A well-placed `console.log` can do wonders.
 
-## To recap
+## Conclusion
 
-Build your system out of small isolated pieces that talk to each other via queues.
+> Build your system out of small isolated pieces that talk to each other via queues.
 
 Next chapter we dive into queues and lambdas, and talk about how to tie them together into a system.

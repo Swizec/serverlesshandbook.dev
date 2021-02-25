@@ -1,6 +1,6 @@
 ---
 title: "AWS, Azure, Vercel, Netlify, or Firebase?"
-description: "How do you choose between providers of serverless?"
+description: "How do you choose between serverless providers?"
 image: "./img/serverless-flavors.png"
 ---
 
@@ -8,7 +8,7 @@ image: "./img/serverless-flavors.png"
 
 ![](../../images/chapter_headers/serverless-flavors.svg)
 
-You've read the [getting started](/getting-started) of serverless, you know the [pros and cons](/serverless-pros-cons), and you're using serverless in your next project.
+You've read the [getting started](/getting-started) of serverless, you know the [pros and cons](/serverless-pros-cons), and decided to use serverless in your next project.
 
 Now what?
 
@@ -20,33 +20,33 @@ Having tried many of those providers myself (AWS, Netlify, Vercel, Firebase), he
 
 [![](../../images/aws.png)](https://aws.amazon.com)
 
-AWS is the serverless workhorse. With a near infinite array of services it's been leading the charge with everything from function-as-a-service to hosted blockchain and machine learning products.
+AWS is the serverless workhorse. They offer everything from function-as-a-service to hosted blockchain and machine learning products.
 
-A lot of other hosting providers use AWS. Heroku runs their dynos on EC2 instances, Netlify and Vercel use S3 for static files, Lambda for cloud functions, etc. The exact details are a secret, but we can guess.
+Many other hosting providers use AWS. Heroku runs their dynos on EC2 instances, Netlify and Vercel use S3 for static files, Lambda for cloud functions, etc. The exact details are a secret, but we can guess.
 
-Did you know AWS was [more than half of Amazon's revenue](https://www.itproportal.com/news/aws-now-makes-up-over-half-of-all-amazon-revenue/) 2019? It's a beast.
+Did you know AWS was [more than half of Amazon's revenue](https://www.itproportal.com/news/aws-now-makes-up-over-half-of-all-amazon-revenue/) in 2019? It's a beast.
 
-With over 165 services it's impossible to try or even know all of AWS. A few that I've used include:
+With over 165 services, it's impossible to try or even know all of AWS. A few that I've used are:
 
 - **EC2** – old school cloud. You get a virtual computer, set it up, and you're in control. Runs forever unless you make it stop.
 - **S3** – the standard solution for static files. Upload a file, get a URL, file stays there forever. Used for image and video assets, but can't run server code or host a website.
-- **CloudFront** – a [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) that integrates with S3. Point to static files via CloudFront and they're served from the physically nearest server to your users. Works like a read-through cache, makes your apps faster.
+- **CloudFront** – a [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) that integrates with S3. Point to static files via CloudFront and they go to a server nearest to your users. Works like a read-through cache, makes your apps faster.
 - **IAM** – identity and account management. AWS forces you to use this to manage permissions. It's secure, tedious to set up, and a thorn in your butt. Until it saves your butt.
-- **AWS Secrets Manager** – a secure way to use secrets in your serverless apps. Not in code, not in environment variables, but a secure storage that's encrypted at rest. 
+- **AWS Secrets Manager** – a secure way to use secrets in your serverless apps. Not in code, not in environment variables, but a secure encrypted storage. 
 - **Lambda** – the poster child for serverless. One of the first to popularize function-as-a-service architectures. Write your function, Lambda handles the rest.
-- **SQS** – simple queue service is a simple way to implement queues. Best used for async communication between services. Stores and retries messages if necessary.
+- **SQS** – simple queue service is a simple way to implement queues. It's best used for communication between services. Stores and retries messages if necessary.
 - **SNS** – simple notification service. Similar to SQS but designed for broadcasting. Many listeners can read each message and every message is delivered just once.
-- **DynamoDB** – a hosted JSON document storage. One of the quickest-to-setup ways to persist data in a serverless application. Save a JSON blob, read it later. Not recommended for relational data models.
-- **RDS** – relational database service. Set up a Postgres or MySQL database in the cloud and AWS handles the rest. Better fit for traditional data with lots of relations. 
-- **CloudWatch** – a logging system. Every service in AWS connects to CloudWatch to dump logs and other debugging data. You can use it to trigger lambdas on a schedule.
+- **DynamoDB** – a hosted JSON document storage. One of the quickest-to-setup ways to persist data in a serverless application. Save a JSON blob and read it later. Not recommended for relational data models.
+- **RDS** – relational database service. Set up a Postgres or MySQL database and AWS handles the rest. Better fit for traditional data with lots of relations. 
+- **CloudWatch** – a logging system. Every service in AWS connects to CloudWatch to dump logs and other debug data. You can use it to trigger lambdas on a schedule.
 
 AWS services add up fast. Every tool does *one* job. No tool does *your* job.
 
 ### When to choose AWS
 
-I like to use AWS when I need control over the developer experience and how my system fits together. 
+I use AWS when I want control over the developer experience and how the system fits together. 
 
-For example I'd use AWS when my project involves data pipelines, coordinating between users, and complex backend logic. You know it's backend logic because it impacts multiple users on different devices.
+For example: I'd use AWS when my project involves data pipelines, coordinating between users, and complex backend logic. You know it's backend logic because it impacts multiple users on different devices.
 
 ### When not to choose AWS
 
@@ -58,7 +58,7 @@ Hosting those on AWS is a pain whereas Netlify and Vercel make them a core featu
 
 [![](../../images/azure.png)](https://azure.microsoft.com)
 
-Azure ... exists. Microsoft's answer to AWS, it's hard to find people in the wild who use it. 
+Azure ... exists. Microsoft's answer to AWS and it's hard to find people in the wild who use it. 
 
 Popular in the enterprise world with companies that can't or won't use Amazon services. I would stay away unless there's a good reason.
 
@@ -68,7 +68,7 @@ Popular in the enterprise world with companies that can't or won't use Amazon se
 
 <div id="lock" />
 
-Firebase is Google's answer to AWS. Sort of.
+Firebase is Google's answer to AWS. Kind of.
 
 You can think of Firebase as a done-for-you backend for web and mobile apps. Set up an account, pick your options, and it's ready to go.
 
@@ -106,6 +106,7 @@ Among Netlify's biggest draws are:
 - automatic CDN and SSL setup for your site
 - app builds run on their servers
 - you can run their infrastructure locally
+- PR deploy previews
 - great support for teams
 
 ### When to choose Netlify
@@ -118,9 +119,9 @@ If you like a git- and UI- first mentality, Netlify is great.
 
 ### When not to choose Netlify
 
-Netlify is almost always a great choice for your web app. Their cloud function support is basic and a little cumbersome. It doesn't feel like a focus.
+Netlify is almost always a great choice for your web app. Their cloud function support can be cumbersome and malnourished. It doesn't feel like a focus.
 
-If you like interacting with your sites via the command line, I've found Netlify to be cumbersome. Their configuration files are written in TOML, which is less popular than YAML and takes getting used to.
+If you like interacting with your sites via the command line, I've found Netlify to be less great.
 
 ## Vercel
 
@@ -132,17 +133,16 @@ Vercel's focus, however, is different than Netlify's.
 
 Where Netlify makes static deploys painless to configure and deploy via git and their UI, Vercel tries to make *any* app painless to deploy via their CLI. Command-line first, git and UI second.
 
-My favorite use-case for Vercel is buying domains from the command line and deploying static sites. 
-
 Vercel's cloud function support is similar to Netlify's. Meant for small functionality and help with frontend tasks. 
 
 Among Vercel's biggest draws are:
 
 - superb command line interface
-- configureless deploys
+- configure-less deploys
 - git integration for automated deploys
 - custom URLs for every deploy
 - automatic CDN and SSL setup for your site
+- PR deploy previews
 - app builds run on their servers
 - great support for teams
 
@@ -158,7 +158,7 @@ I like Vercel's command line interface and the fact I can run `vercel` in any pr
 
 Vercel is best for frontend-heavy apps and when you're using their NextJS framework. Like Netlify, it feels unlikely their backend support will reach the full power of AWS.
 
-Any project that fits on Netlify, fits on Vercel. Then it becomes a matter of preference and familiarity. Personally, I like Vercel's esthetic and CLI focus. If you prefer clicking in a UI, go with Netlify.
+Any project that fits on Netlify, fits on Vercel. Then it becomes a matter of preference and familiarity. Personally, I like Vercel's aesthetic and CLI focus. If you prefer clicking in a UI, go with Netlify.
 
 ## So ... what to choose?
 

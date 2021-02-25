@@ -14,15 +14,15 @@ Hello friend ❤️
 
 Creating your first serverless application can be intimidating. Type "serverless" into Google and you're hit with millions of results all assuming you know what you're doing.
 
-There's Serverless, the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, your friends mention lambda functions, then there's cloud functions from Netlify and Vercel, and aren't Heroku, Microsoft Azure, and DigitalOcean droplets a type of serverless too? _"CloudFlare edge workers!"_ someone shouts in the background.
+There's Serverless, the open source framework, then there's AWS Serverless, and a "serverless computing" Wikipedia article, your friends mention lambda functions, then there's cloud functions from Netlify and Vercel ... and aren't Heroku, Microsoft Azure, and DigitalOcean droplets a type of serverless? _"CloudFlare edge workers!"_ someone shouts in the background.
 
 It's all one big mess.
 
 ![](giphy:overwhelmed)
 
-That's why I created the Serverless Handbook. It's the resource I wish I had :)
+That's why I created the Serverless Handbook. The resource I wish I had :)
 
-Let's start with a short history lesson to get you a better understanding of what serverless is and what it isn't. Then you'll build your first serverless backend – an app that says Hello 👋
+Let's start with a short history lesson to get a better understanding of what serverless is and what it isn't. Then you'll build your first serverless backend – an app that says Hello 👋
 
 Don't want the intro? [Jump straight to your first app](/getting-started#your-first-serverless-backend)
 
@@ -38,13 +38,11 @@ The logical next step to platform as a service, which came from The Cloud, which
 
 You installed Linux on a computer, hooked it up to the internet, begged your internet provider for a static IP address, and let it run 24/7. Mine lived in the bedroom and I'll never forget that IP. Good ol' 193.77.212.100.
 
-_PS: An [IP address](https://en.wikipedia.org/wiki/IP_address) is how computers find each other on the internet._
-
 With a static IP address, you can tell [DNS](https://en.wikipedia.org/wiki/Domain_Name_System) servers how to find your server with a domain. People can type that domain into a URL and find your server.
 
 But a domain doesn't give you a website or a webapp.
 
-For that, you need to configure Apache or Nginx, set up a reverse proxy to talk to your application, run your application at all times, ensure that it's running and ... it gets out of hand fast. Just to put up a simple website.
+For that, you need to configure Apache or Nginx, set up a reverse proxy to talk to your application, run your application, ensure that it's running and ... it gets out of hand fast. Just to put up a simple website.
 
 ### Then came colocation
 
@@ -52,9 +50,9 @@ For that, you need to configure Apache or Nginx, set up a reverse proxy to talk 
 
 Colocation was a solution for the bedroom problem. What happens if your house catches fire? What if power goes out? Or Mom trips on the power cable and unplugs your computer?
 
-Residential hosting isn't reliable.
+Residential hosting is not reliable.
 
-Your internet is lower tier than a business would get – less reliable, more volatile, and if the provider needs to do maintenance they think nothing of shutting off your pipes during non-peak hours. Your server needs strong internet 24/7.
+Your internet is lower tier than a business would get. Less reliable and if the provider needs to do maintenance, they think nothing of shutting off your pipes during non-peak hours. Your server needs strong internet 24/7.
 
 When you go on vacation, nobody's there to care for your server. Site might go down for a week before you notice. 😱
 
@@ -72,7 +70,7 @@ It's on you to keep everything running.
 
 Colocation solved physical problems, but not the fact that your servers are bored.
 
-A typical server runs at about 30% utilization. You are wasting money.
+A typical server runs at about 30% utilization, which means you're wasting money.
 
 Reasons for low utilization vary.
 
@@ -82,7 +80,7 @@ What if we could run multiple servers on the same machine?
 
 ![](giphy:great_idea)
 
-The first type of virtualization were basic [virtual hosts](https://en.wikipedia.org/wiki/Virtual_hosting) that let you host multiple websites on the same machine. A domain maps to an application on your computer, web server knows the mapping, and voila: sites can share resources.
+The first type of virtualization were basic [virtual hosts](https://en.wikipedia.org/wiki/Virtual_hosting). They let you run multiple websites on the same machine. A domain maps to an application on your computer, web server knows the mapping, and voila: sites can share resources.
 
 Worked great but caused problems.
 
@@ -90,7 +88,7 @@ Websites on the same computer are _very_ close together. You could hack one site
 
 [Virtual private servers](https://en.wikipedia.org/wiki/Virtual_private_server) and later [containerization](https://en.wikipedia.org/wiki/OS-level_virtualisation) were the solution to that problem. Rather than multiple websites on the same machine, you can host _multiple whole computers_ on the same machine. Like a computer with many brains. 🤯
 
-The VPS – virtual private server – was born. Providers of "ssh access" became popular in the 2000's. Pay a few bucks a month and you get a real live server on the internet. No hardware required.
+The VPS – virtual private server – was born. Providers of "ssh access" became popular in the early 2000's. Pay a few bucks a month and you get a real live server on the internet. No hardware required.
 
 You're on the hook for software setup and you share the machine with other users.
 
@@ -104,25 +102,25 @@ Early VPS was a lot like The Cloud. Computers running on the internet without to
 
 Where VPS struggled was scale.
 
-Once your traffic started to grow, you'd need more servers to handle the load. There's only so much a single server can do per second.
+Once your traffic started to grow, you'd need more servers to handle the load. There's only so much a single server can do every second.
 
 And while computers are getting stronger and stronger (known as [vertical scaling](https://en.wikipedia.org/wiki/Scalability#VERTICAL-SCALING)), it's cheaper to share the load between a lot of small computers ([horizontal scaling](https://en.wikipedia.org/wiki/Scalability#VERTICAL-SCALING)).
 
-But how do you ensure your servers are all the same? How do you spin them up fast enough when traffic spikes on Black Friday?
+But how do you ensure your servers are all the same? How do you spin them up quickly when traffic spikes on Black Friday?
 
 You deal with it by hand.
 
 Set up a server, make sure it works. Create a new server. Copy configuration. Create scripts for common tasks and spend hours making sure everything's okay.
 
-Repeat for each new server.
+Repeat for each new server. 🤮
 
-Cloud solves this problem with automation and containers. [Docker containers](<https://en.wikipedia.org/wiki/Docker_(software)>) are the common choice for containerization and [kubernetes](https://en.wikipedia.org/wiki/Kubernetes) for orchestration.
+Cloud solves this problem with automation and containers. [Docker](<https://en.wikipedia.org/wiki/Docker_(software)>) for containerization, [kubernetes](https://en.wikipedia.org/wiki/Kubernetes) for orchestration.
 
-You start every new server from a core image in your cloud provider's library. Comes with basic setup and common defaults. You add tweaks and create a new image.
+You start every new server from an image in your cloud provider's library. Comes with basic setup and common defaults. You add tweaks and create a new image.
 
 The cloud provider gives you easy controls to create as many instances of that server as you'd like. Press a button, get a server. ✨
 
-Sometimes you can make it scale automatically. Scripts notice traffic rising and spin up new servers. When traffic subsides, those same scripts tear the servers back down.
+Sometimes you can make it scale automatically. Scripts notice traffic rising and create new servers. When traffic subsides, the same scripts tear the servers down.
 
 ### Platform as a Service
 
@@ -134,17 +132,17 @@ With PaaS you pay somebody else to deal with the cloud while you focus on code. 
 
 Many PaaS providers let you drop down a few levels and break everything. You get to mess with low level configs, operating system libraries, web servers, databases, etc. Empowering _and_ dangerous. I tend to get it wrong.
 
-While PaaS takes care of your servers, _you_ to take care of the "frontend". Set up domains and DNS, make your application run right for the platform, configure your own [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), deal with static files, etc.
+While PaaS takes care of your servers, _you_ have to take care of the "frontend". Set up domains and DNS, make your application run right for the platform, configure your own [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), deal with static files, and so on.
 
 The platform does servers.
 
 ### Serverless is born
 
-[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) is the logical step after PaaS.
+[Serverless](https://en.wikipedia.org/wiki/Serverless_computing) is the logical next step after PaaS.
 
-Once you have a system that uses containers to automatically scale and descale based on demand, use idiomatic configuration for replicability, and painless deploys ... that's serverless right there.
+Once you have a system that uses containers to automatically scale and descale based on demand, use repeatable configuration, and painless deploys ... that's serverless right there.
 
-Serverless's main innovation are **_tiny_** containers and the ecosystem of services and tools around that.
+Serverless's main innovation are **_tiny_** containers and the ecosystem of services and tools around it.
 
 Server containers so tiny you can spin them up and down in milliseconds. They achieve this because the code they run is:
 
@@ -154,11 +152,9 @@ Server containers so tiny you can spin them up and down in milliseconds. They ac
 
 A serverless "server" is a function responding to an API endpoint. Request comes in, server wakes up, runs for a few milliseconds, and goes back to bed.
 
-The platform takes care of optimization, configuration, and everything else. You get an input and return an output. Like a function.
+The platform takes care of optimization, configuration, and everything else. You get an input and return an output.
 
 Servers never idle because they live as long as the request they're serving.
-
-Serverless providers let you reuse containers to optimize average load times. If it takes 100ms to spin up a server and you're getting requests every 10ms you can use the same server :)
 
 Biggest benefit of this approach?
 
@@ -168,17 +164,17 @@ Biggest benefit of this approach?
 
 ![](giphy:hello_world)
 
-In the next few minutes you're going to build your first serverless backend. A small service that says Hello 👋
+In the next few minutes you're going to build your first serverless backend. A service that says Hello 👋
 
 We're using open source technologies and deploying on AWS Lambda. You can learn about other providers in the [Serverless Flavors](/serverless-flavors) chapter.
 
-You'll need a computer set up for JavaScript development: Have nodejs installed, a code editor, and a terminal.
+You'll need a computer configured for JavaScript development: Have nodejs installed, a code editor, and a terminal.
 
 ### Setup for serverless work
 
 When working with serverless I like to use the open source [Serverless](https://github.com/serverless/serverless) framework. We'll talk more about why in the [Good serverless dev experience](/serverless-dx) chapter.
 
-With the serverless framework we're going to configure servers using YAML files. Write config and the framework figures out the rest.
+With the serverless framework we're going to configure servers using YAML files. You write config, framework figures out the rest.
 
 Install it globally:
 
@@ -186,13 +182,13 @@ Install it globally:
 npm install -g serverless
 ```
 
-You'll need AWS credentials as well.
+You'll need AWS credentials too.
 
 I recommend following [Serverless's guide on AWS setup](https://serverless.com/framework/docs/providers/aws/guide/credentials/). It walks you through the necessary steps on your Amazon account and a couple terminal commands to run.
 
 ### Create a tiny project
 
-There are no special initializers for serverless projects. To start a serverless project, you create a directory and add a configuration file.
+There are no special initializers for serverless projects. You start with a directory and add a configuration file.
 
 ![](../../images/start-serverless.gif)
 
@@ -208,7 +204,7 @@ You now have a project with 2 files:
 - `serverless.yml` for configuration
 - `handler.js` for server code
 
-In future chapters you'll write backends using TypeScript, but one thing at a time :)
+In future chapters you'll write backends using TypeScript. But one thing at a time :)
 
 ### Configure your first server
 
@@ -223,11 +219,11 @@ service: hello-world
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   stage: dev
 ```
 
-Our service is called `hello-world` and there's a couple details about our provider. The `stage` helps us tell the difference between development, QA, and production deployments. More on that in the [Dev, QA, and prod](/dev-qa-prod) chapter.
+Our service is called `hello-world` and there's a couple details about our provider. The `stage` tells the difference between development, QA, and production deployments. More on that in the [Dev, QA, and prod](/dev-qa-prod) chapter.
 
 #### Let's tell our server how to run code.
 
@@ -238,7 +234,7 @@ service: hello-world
 
 provider:
     name: aws
-    runtime: nodejs10.x
+    runtime: nodejs12.x
     stage: dev
 
 functions:
@@ -290,7 +286,7 @@ To deploy, we run `serverless deploy`.
 
 And your server is up.
 
-You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it's gonna say `Hello 👋`
+You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it's going to say `Hello 👋`
 
 I'll keep it up because it's free unless somebody clicks. And when they do, current AWS pricing gives me 1,000,000 clicks per month for free 😛
 

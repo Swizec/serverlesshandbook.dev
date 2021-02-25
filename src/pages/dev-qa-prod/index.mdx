@@ -1,14 +1,14 @@
 ---
-title: "Dev, QA, and prod"
+title: "Serverless dev, QA, and prod"
 description: "How do you test and share code without breaking user experience?"
 image: "./img/dev-qa-prod.png"
 ---
 
-# Dev, QA, and prod
+# Serverless dev, QA, and prod
 
 ![Dev, QA, and prod](../../images/chapter_headers/dev-qa-prod.svg)
 
-You're building an app and want to show off to a friend. Do you ship to production?
+You're building an app and want to show a friend. Do you ship to production?
 
 You're trying a new feature that doesn't do localhost. Do you publish?
 
@@ -28,7 +28,7 @@ If nobody noticed the bug, was the bug even there?
 
 A word of caution: It's easy to fill your database with crappy data. Try to start production clean. 
 
-Thank me later when counting users isn't a 5 step process. You'd be surprised how hard it can get to answer *"How many users do we have?"*.
+Thank me later when counting users isn't a 5 step process. You'd be surprised how hard it can be to answer *"How many users do we have?"*.
 
 ## Localhost vs. Production
 
@@ -55,7 +55,13 @@ A common solution to the production vs. development problem is the 3 stage split
 
 You build and test on localhost. Get fast iteration and reasonable certainty that your code works.
 
-You then push to development. A deployed environment that's like production, but frothy. Changes frequently, data is irrelevant, used by everyone on the team.
+With the Serverless Framework, you can [run lambdas locally](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/) like this:
+
+```
+sls invoke local --function yourFunction
+```
+
+You then push to development. A deployed environment that's like production, but changes lots. Data is irrelevant, used by everyone on the team.
 
 The development environment helps you test your code with others' work. You can show off to a friend, coworker, or product manager for early feedback.
 
@@ -116,7 +122,7 @@ Deploy with `sls deploy --stage prod` to deploy to production. Defaults to `dev`
 
 Use a new stage to set up a new environment, existing stage to update. The framework figures it out for you.
 
-Make sure stage names match any [`.env.X` configuration files](/handling-secrets).
+Make sure stage names match your [`.env.X` configuration files](/handling-secrets).
 
 ## Deploy previews
 
@@ -124,11 +130,11 @@ The 3 stage split starts breaking down around the 6 to 7 engineers mark. More if
 
 You start stepping on each other's toes.
 
-Alice is working on a big feature, she'll need 3 months. During that time none of her work can go to production. She'd like to test on development.
+Alice is working on a big feature and she'll need 3 months. During that time none of her work can go to production. She'd like to test on development.
 
-Bob meanwhile is fixing bugs and keeping the lights on. He needs to merge his work into development, staging, and production daily.
+Bob meanwhile is fixing bugs and keeping the lights on. He needs to merge his work into development, staging, and production every day.
 
-How can Bob and Alice both work together?
+How can Bob and Alice work together?
 
 There's 2 solutions:
 
@@ -139,13 +145,13 @@ With infrastructure-as-code, deploy previews are the simple solution. Create a n
 
 You get an isolated environment with all the working bits and pieces. Automate it with GitHub Actions to create a new stage for every pull request.
 
-That's the model Netlify and Vercel champion. Every pull request is automatically deployed on a new copy of production with every update. 👌
+That's the model Netlify and Vercel promote. Every pull request is automatically deployed on a new copy of production with every update. 👌
 
 ## Trunk-based development
 
 A popular approach in large teams is trunk-based development.
 
-Everyone works on the main branch, deploys to production regularly, and uses feature flags to disable features before they're ready. A strong automated testing culture with good coverage is critical.
+Everyone works on the main branch, deploys to production regularly, and uses feature flags to disable features before they're ready. A strong automated testing culture is critical.
 
 [Google uses the Beyonce rule](https://www.oreilly.com/library/view/software-engineering-at/9781492082781/ch01.html):
 
@@ -155,9 +161,9 @@ Anyone can change any code at any time. Tests help you prevent accidents.
 
 Feature flags let you disable new features before they're ready. Your code hits production quickly which ensures it doesn't break. If you refactored something, others can use it. If you created new functionality, it's available.
 
-But you disable user-facing parts to avoid a broken user experience.
+But you disable user-facing parts of your feature to avoid a broken experience.
 
-Implementing feature flags can be as easy as an environment variable with a bunch of IF statements, or as complex as progressive canary deploys. Those let you reveal a feature to 1% of users, then 5%, then 10, etc.
+Implementing feature flags can be as easy as an environment variable with a bunch of IF statements, or as complex as progressive canary deploys. Those let you reveal a feature to 1% of users, then 5%, then 10, ...
 
 ## Which approach should you pick?
 
@@ -167,7 +173,7 @@ If you have a clean infrastructure-as-code approach, creating new stages is grea
 
 You can even split your project into sub-projects. Isolated areas of concern that can move and deploy independently. Known as microservices.
 
-And remember, the easier your code is to fix and deploy, the less you have to worry about any of this. Optimize for fast iteration over avoiding mistakes.
+And remember, the easier your code is to fix and deploy, the less you have to worry about any of this. **Optimize for fast iteration over avoiding mistakes**.
 
 For side projects I like to test in production. Live wild 🤘
 

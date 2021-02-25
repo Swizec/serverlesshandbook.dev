@@ -1,6 +1,6 @@
 ---
 title: "Serverless GraphQL API"
-description: "Learn why GraphQL, how GraphQL, does it replace REST, how to choose, and implement with Serverless"
+description: "Learn why GraphQL, how GraphQL, should it replace REST, how to choose, and implement it with Serverless"
 image: "./img/serverless-graphql.png"
 ---
 
@@ -149,7 +149,7 @@ fetch("https://swapi.dev/api/starships/22/")
 
 Wanna know how much JSON that dumps? Try a guess. 🙄
 
-You made **4 API requests** and transferred a shitload of data to find out that Luke Skywalker is human, has blond hair, and flies an X-Wing and an Imperial Shuttle.
+You made **4 API requests** and transferred a bunch of data to find out that Luke Skywalker is human, has blond hair, and flies an X-Wing and an Imperial Shuttle.
 
 And guess what, you didn't cache anything. How often do you think this data changes? Once a year? Twice?
 
@@ -163,7 +163,6 @@ Here's what the same process looks like with GraphQL.
 query luke {
   // id found through allPeople query
   person(id: "cGVvcGxlOjE=") {
-    name
     name
     hairColor
     species {
@@ -222,17 +221,17 @@ You can [try it on graphql.org's public playground](http://graphql.org/swapi-gra
 
 ## What _is_ GraphQL
 
-GraphQL is an open-source data query and manipulation language for APIs and a runtime for fulfilling queries with existing data. [[1]](https://en.wikipedia.org/wiki/GraphQL)
+[GraphQL](https://en.wikipedia.org/wiki/GraphQL) is an open-source data query and manipulation language for APIs and a runtime for fulfilling queries with existing data.
 
-Touted as a replacement for REST, GraphQL is really a different approach to APIs. Better common use-cases and with its own drawbacks.
+Touted as a replacement for REST, GraphQL is actually a different approach to APIs. Better for common use-cases and with its own drawbacks.
 
-Don't let the propaganda fool you 👉 you can and *should* use both REST *and* GraphQL. Depends what you're doing.
+Don't let the propaganda fool you 👉 you can and *should* use both REST *and* GraphQL. Depends on what you're doing.
 
 GraphQL's benefit is its declarative nature.
 
 On the client, you describe the shape of what you want and GraphQL figures it out. On the server, you write resolver functions for sub-queries and GraphQL combines them into the full result.
 
-REST queries can be declarative on the client, GraphQL is declarative on both ends. For reads _and_ writes.
+REST queries can be declarative on the client, while GraphQL is declarative on both ends. For reads _and_ writes.
 
 ### GraphQL queries
 
@@ -265,7 +264,7 @@ query {
 
 This is where the power and flexibility come from.
 
-With variables you can create dynamic queries and build complex filters to limit the scope of your result.
+Variables let you create dynamic queries and build complex filters to limit the scope of your result.
 
 ```graphql
 query queryName($filterProp: "value") {
@@ -292,7 +291,7 @@ mutation {
 }
 ```
 
-Like a query with arguments, you specify what you're updating and pass the update arguments. What's available depends on how mutation resolvers are implemented on the server.
+Like a query with arguments, you specify what you're updating and pass your values. What's available depends on how mutation resolvers are implemented on the server.
 
 The mutation body specifies what you'd like returned. Same as a query.
 
@@ -364,7 +363,7 @@ You follow a 4 step process:
 3. Specify your schema
 4. Add resolvers
 
-We created a [small REST API](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) in the previous chapter, now let's recreate it with GraphQL. [Full code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-graphql-example)
+We created a [small REST API](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) in the previous chapter, let's recreate it with GraphQL. [Full code on GitHub](https://github.com/Swizec/serverlesshandbook.dev/tree/master/examples/serverless-graphql-example)
 
 Apollo creates a GraphQL playground for us. You can try my implementation here:
 
@@ -396,7 +395,7 @@ functions:
           cors: true
 ```
 
-I like to use the `/graphql` endpoint for everything. You can split the API into sections and use a lambdas per section.
+The convention is to use the `/graphql` endpoint for everything. 
 
 Make sure to define both `GET` and `POST` endpoints. `GET` serves the Apollo playground, `POST` handles the queries and mutations.
 
@@ -469,7 +468,7 @@ You can use that to store serialized JSON objects.
 
 Each item will have an `id`, a `name`, and a few timestamps managed by the server. Those help with debugging.
 
-Our one `item()` query lets you retrieve items and requires an `id` to work. That's the exclamation point after `String`.
+Our `item()` query lets you retrieve items and requires an `id` to work. That's the exclamation point after `String`.
 
 Then we have a mutation for upserting items and a mutation for deleting.
 
@@ -477,7 +476,7 @@ Then we have a mutation for upserting items and a mutation for deleting.
 
 We have 1 query and 2 mutations. That means we'll need 3 resolver functions.
 
-We can copy these from the [REST implementation](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest). Only difference is how we get arguments.
+We can copy these from the [REST implementation](https://serverlesshandbook.dev/serverless-rest-api#build-a-simple-rest) and change how we get arguments.
 
 I like to put queries in a `src/queries.ts` file and mutations in a `src/mutations.ts`. You can organize this by model as your implementation grows.
 
@@ -511,13 +510,13 @@ export const item = async (_: any, args: { id: string }) => {
 }
 ```
 
-We can ignore Apollo's first resolver argument. The second argument is where query and mutation arguments come in.
+We can ignore Apollo's first resolver argument. The second argument is where query and mutation values come in.
 
 Since `id` is a required param, you don't have to check for nulls. GraphQL handles that before calling your resolver.
 
 You can call `getItem` on DynamoDB, or run a SQL query for a relational database, and return the result. GraphQL handles the rest.
 
-One niggle to note 👉 DynamoDB considers `name` and `id` reserved attributes. We remap them to `itemName` and `itemId` when saving and have to map them back to pretty GraphQL attributes when reading.
+**One niggle to note 👉** DynamoDB considers `name` and `id` reserved attributes. We remap them to `itemName` and `itemId` when saving and have to map them back when reading.
 
 This is what I meant by _"You don't want to expose raw database details to your API"_ :)
 
@@ -587,11 +586,11 @@ We take the id from arguments or create a new one with `uuidv4()`.
 
 Then we try to find the item. 
 
-If found, we change `createdAt` to the existing value. Otherwise we throw an error. Helps you avoid creating new items by accident because DynamoDB always upserts.
+If found, we change `createdAt` to the existing value. Otherwise we throw an error. That helps you avoid creating new items by accident because DynamoDB always upserts.
 
 We define the `updateValues` and build a DynamoDB UPDATE query. This can look gnarly no matter what DB you use.
 
-In the end, we return the object our database spat out and let GraphQL handle the rest.
+In the end, we return the object our database returned and let GraphQL handle the rest.
 
 #### deleteItem()
 
@@ -656,8 +655,10 @@ Make sure you change the URL inside the playground to: `https://yrqqg5l31m.execu
 
 ## GraphQL no-code services
 
-Wiring up GraphQL can get tedious. Lots of repetitive code.
+Wiring up GraphQL can get tedious with lots of repetitive code.
 
-Various no-code and low-code solutions showed up that do the work for you. Look at your database and magic a GraphQL server into existence.
+Various no-code and low-code solutions exist that do the work for you. Look at your database and magic a GraphQL server into existence.
 
 They tend to exhibit the *expose entire DB as API* problem. But they can be a good starting point.
+
+Next chapter we look at building lambda pipelines for distributed data processing.
