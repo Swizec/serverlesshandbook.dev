@@ -2,8 +2,8 @@ import React, { useState, useRef, useLayoutEffect } from "react"
 import { Global } from "@emotion/core"
 import { Box, Flex } from "theme-ui"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
+import { useAuth } from "react-use-auth"
 import {
-  EditLink,
   Footer,
   Head,
   Header,
@@ -15,8 +15,9 @@ import QuickThanks from "../../../components/quickthanks"
 
 const Paywall = ({ page }) => {
   const copyDiv = useRef(null)
+  const { isAuthorized } = useAuth()
 
-  const updateLockedContent = () => {
+  const updateLockedContent = (show) => {
     if (typeof window !== "undefined") {
       let children = document.getElementById("content").children
 
@@ -24,7 +25,7 @@ const Paywall = ({ page }) => {
       for (let child of children) {
         if (child.id === "lock") isLocked = true
         if (isLocked === true) {
-          child.style.display = "none"
+          child.style.display = show ? "block" : "none"
         }
       }
     }
@@ -33,13 +34,26 @@ const Paywall = ({ page }) => {
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
-        if (
-          window.localStorage.getItem("unlock_handbook") &&
-          window.localStorage.getItem("sale_id")
-        ) {
+        const unlocked =
+          isAuthorized(["ServerlessHandbook"]) ||
+          (window.localStorage.getItem("unlock_handbook") &&
+            window.localStorage.getItem("sale_id"))
+
+        console.log(copyDiv)
+
+        if (unlocked) {
           copyDiv.current.style = `display: none`
+          const overlay =
+            typeof window !== "undefined" &&
+            document.querySelector("#fadeout-overlay")
+
+          if (overlay) {
+            overlay.style = "display: none"
+          }
+
+          updateLockedContent(unlocked)
         } else {
-          updateLockedContent()
+          updateLockedContent(unlocked)
 
           const overlay =
             typeof window !== "undefined" && document.createElement("div")
@@ -55,6 +69,7 @@ const Paywall = ({ page }) => {
           position: absolute;
         `
           overlay.style = style
+          overlay.id = "fadeout-overlay"
 
           main.style = "position: relative;"
           main.appendChild(overlay)
@@ -69,7 +84,7 @@ const Paywall = ({ page }) => {
         }
       })
     }
-  }, [page])
+  }, [page, isAuthorized("ServerlessHandbook")])
 
   return (
     <Box id="paywall-copy" ref={copyDiv}>
