@@ -5,6 +5,10 @@ module.exports = {
     author: `@swizec`,
     siteUrl: `https://serverlesshandbook.dev/`,
     courseFirstLesson: `/getting-started`,
+    convertkit: {
+      defaultFormId: "2103715",
+    },
+    hasAuthentication: true,
   },
   plugins: [
     "@swizec/gatsby-theme-course-platform",

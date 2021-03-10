@@ -162,7 +162,7 @@ export default (props) => {
   if (props.pageContext.frontmatter) {
     props = {
       ...props,
-      ...props.pageContext.frontmatter
+      ...props.pageContext.frontmatter,
     }
   }
 
