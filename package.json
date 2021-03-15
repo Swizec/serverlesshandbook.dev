@@ -13,7 +13,7 @@
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
     },
     "dependencies": {
-        "@swizec/gatsby-theme-course-platform": "^1.4.0-8",
+        "@swizec/gatsby-theme-course-platform": "^1.4.0-15",
         "gatsby": "^2.29.2",
         "react": "^16.12.0",
         "react-dom": "^16.12.0",

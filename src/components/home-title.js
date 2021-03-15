@@ -1,7 +1,5 @@
 import React from "react"
 import { Box, Flex, Heading, Text } from "theme-ui"
-import { GumroadButton } from "@swizec/gatsby-theme-course-platform"
-import * as coverImg from "../images/cover.svg"
 
 const HomeTitle = () => (
   <Flex sx={{ flexWrap: "wrap" }}>
@@ -19,8 +17,7 @@ const HomeTitle = () => (
         <Text sx={{ fontSize: 4 }}>for frontend engineers</Text>
       </Heading>
       <Text>
-        Learn everything you need to dive into modern backend. Understand{" "}
-        <em>any</em> backend
+        Dive into modern backend. Understand <em>any</em> backend
       </Text>
 
       <Box sx={{ mt: 10 }}>

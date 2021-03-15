@@ -7,8 +7,7 @@ import {
   GumroadButton,
   GumroadOverlay,
 } from "@swizec/gatsby-theme-course-platform"
-import HomeTitle from "../components/home-title"
-import { NavGrid } from "../components/NavgGrid"
+import { NavGrid, ChapterHeading, HomeTitle } from "../components/homepage"
 
 export const pageQuery = graphql`
   query {
@@ -49,7 +48,7 @@ export const pageQuery = graphql`
 
 <Box sx={{ my: "auto" }} />
 
-<Heading sx={{ mb: 1 }}>Chapters</Heading>
+<ChapterHeading sx={{mb: 2}} />
 
 <NavGrid>
 
