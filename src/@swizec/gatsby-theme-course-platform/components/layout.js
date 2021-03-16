@@ -1,8 +1,7 @@
-import React, { useState, useRef, useLayoutEffect } from "react"
+import React, { useState, useRef } from "react"
 import { Global } from "@emotion/core"
 import { Box, Flex } from "theme-ui"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
-import { useAuth } from "react-use-auth"
 import {
   Footer,
   Head,
@@ -10,94 +9,10 @@ import {
   Reactions,
 } from "@swizec/gatsby-theme-course-platform"
 import Nav from "./nav"
-import { default as PaywallCopy } from "../../../components/paywall"
-import QuickThanks from "../../../components/quickthanks"
-
-const Paywall = ({ page }) => {
-  const copyDiv = useRef(null)
-  const { isAuthorized } = useAuth()
-
-  const updateLockedContent = (show) => {
-    if (typeof window !== "undefined") {
-      let children = document.getElementById("content").children
-
-      let isLocked = false
-      for (let child of children) {
-        if (child.id === "lock") isLocked = true
-        if (isLocked === true) {
-          child.style.display = show ? "block" : "none"
-        }
-      }
-    }
-  }
-
-  useLayoutEffect(() => {
-    if (typeof window !== "undefined") {
-      window.requestAnimationFrame(() => {
-        const unlocked =
-          isAuthorized(["ServerlessHandbook"]) ||
-          (window.localStorage.getItem("unlock_handbook") &&
-            window.localStorage.getItem("sale_id"))
-
-        console.log(copyDiv)
-
-        if (unlocked) {
-          copyDiv.current.style = `display: none`
-          const overlay =
-            typeof window !== "undefined" &&
-            document.querySelector("#fadeout-overlay")
-
-          if (overlay) {
-            overlay.style = "display: none"
-          }
-
-          updateLockedContent(unlocked)
-        } else {
-          updateLockedContent(unlocked)
-
-          const overlay =
-            typeof window !== "undefined" && document.createElement("div")
-          const main =
-            typeof window !== "undefined" &&
-            document.querySelector("main#content")
-
-          const style = `
-          background-image: linear-gradient(rgba(255, 255, 255, 0) 60%,  rgb(255, 255, 255, 1) 100%);
-          width: 100%;
-          top: 0px;
-          bottom: 0px;
-          position: absolute;
-        `
-          overlay.style = style
-          overlay.id = "fadeout-overlay"
-
-          main.style = "position: relative;"
-          main.appendChild(overlay)
-
-          const dimensions = main.getBoundingClientRect()
-
-          copyDiv.current.style = `
-          top: ${Math.round(dimensions.height * 0.2)}px;
-          width: ${Math.round(dimensions.width)}px;
-          background-color: var(--theme-ui-colors-muted,#f6f6ff);
-        `
-        }
-      })
-    }
-  }, [page, isAuthorized("ServerlessHandbook")])
-
-  return (
-    <Box id="paywall-copy" ref={copyDiv}>
-      <PaywallCopy />
-    </Box>
-  )
-}
+import { Paywall, usePaywall } from "../../../components/Paywall"
 
 const Sidebar = (props) => {
-  const showPaywall =
-    typeof window !== "undefined" &&
-    (!window.localStorage.getItem("unlock_handbook") ||
-      !window.localStorage.getItem("sale_id"))
+  const { unlocked: contentUnlocked } = usePaywall()
 
   return (
     <Flex
@@ -152,12 +67,8 @@ const Sidebar = (props) => {
         }}
       >
         {props.children}
-        {showPaywall === false && <Reactions page={props.uri} />}
-        {showPaywall ? (
-          <Paywall page={props.location.pathname} />
-        ) : (
-          <QuickThanks />
-        )}
+        {contentUnlocked ? <Reactions page={props.uri} /> : null}
+        <Paywall page={props.location.pathname} />
         <Nav
           pathname={props.location.pathname}
           components={{
