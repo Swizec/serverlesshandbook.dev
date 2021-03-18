@@ -4,6 +4,7 @@ import { Box } from "theme-ui"
 
 import { default as PaywallCopy } from "../components/paywall-copy"
 import QuickThanks from "./quickthanks"
+import { useLocalStorage } from "./useLocalStorage"
 
 function toggleLockedContent(show) {
   if (typeof window !== "undefined") {
@@ -67,14 +68,16 @@ function showPaywall(paywallDiv) {
   }
 }
 
-export function usePaywall() {
+export function usePaywall(page) {
   const paywallDiv = useRef(null)
   const { isAuthorized } = useAuth()
+  const [unlockHandbook] = useLocalStorage("unlock_handbook")
+  const [saleId] = useLocalStorage("sale_id")
+
+  console.log(page)
 
   const unlocked =
-    isAuthorized(["ServerlessHandbook"]) ||
-    (window.localStorage.getItem("unlock_handbook") &&
-      window.localStorage.getItem("sale_id"))
+    isAuthorized(["ServerlessHandbook"]) || (unlockHandbook && saleId)
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -92,7 +95,7 @@ export function usePaywall() {
 }
 
 export const Paywall = ({ page }) => {
-  const { unlocked, paywallDiv } = usePaywall()
+  const { unlocked, paywallDiv } = usePaywall(page)
 
   if (unlocked) {
     return <QuickThanks />
