@@ -1,5 +1,5 @@
 exports.hello = async (event) => {
-  const { name } = event.queryStringParameters
+  const { name = '' } = event.queryStringParameters || {}
 
   return {
     statusCode: 200,
