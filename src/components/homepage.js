@@ -1,7 +1,7 @@
 import React from "react"
 import { useAuth } from "react-use-auth"
 import { Heading, Flex, Box, Text } from "theme-ui"
-import { GumroadButton, FormCK } from "@swizec/gatsby-theme-course-platform"
+import { GumroadButton, TinyFormCK } from "@swizec/gatsby-theme-course-platform"
 // import * as coverImg from "../images/cover.svg"
 import * as coverImg from "../images/cover.png"
 
@@ -68,15 +68,39 @@ export const HomeTitle = () => (
         Serverless Handbook
         <Text sx={{ fontSize: 4 }}>for frontend engineers</Text>
       </Heading>
-      <Text>
-        Dive into modern backend. Understand <em>any</em> backend
-      </Text>
+      <Text>Dive into modern backend. Understand any backend</Text>
 
-      {/* <FormCK copyBefore="" submitText="Get my free chapter 💌">
-        Hai
-      </FormCK> */}
+      <Heading sx={{ fontSize: 3, pt: 1 }}>
+        <em>Available wherever books are sold, Mar 31st</em>
+      </Heading>
 
-      <Box sx={{ mt: 10 }}>
+      <Box
+        sx={{
+          p: 3,
+          minWidth: 250,
+          flex: 1,
+          textAlign: "center",
+          display: ["block", "none"],
+        }}
+      >
+        <img
+          src={coverImg}
+          alt="Serverless Handbook Cover"
+          style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
+        />
+      </Box>
+
+      <Box sx={{ mt: 3 }}>
+        <TinyFormCK copyBefore="" submitText="Send it to me! 💌">
+          <Heading sx={{ fontSize: 4, pt: 2 }}>Get your free chapter!</Heading>
+          <p>
+            Wanna see what’s in Serverless Handbook, but not ready to buy the
+            full book? Start with a free chapter.
+          </p>
+        </TinyFormCK>
+      </Box>
+
+      {/* <Box sx={{ mt: 10 }}>
         <GumroadButton>
           <a
             className="gumroad-button"
@@ -86,10 +110,18 @@ export const HomeTitle = () => (
             rel="noopener noreferrer"
           >{`Get Serverless Handbook`}</a>
         </GumroadButton>
-      </Box>
+      </Box> */}
     </Box>
 
-    <Box sx={{ p: 3, minWidth: 250, flex: 1, textAlign: "center" }}>
+    <Box
+      sx={{
+        p: 3,
+        minWidth: 250,
+        flex: 1,
+        textAlign: "center",
+        display: ["none", "block"],
+      }}
+    >
       <img
         src={coverImg}
         alt="Serverless Handbook Cover"

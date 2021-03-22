@@ -25,11 +25,14 @@ function hidePaywall(paywallDiv) {
     paywallDiv.current.style = `display: none`
   }
 
-  const overlay =
-    typeof window !== "undefined" && document.querySelector("#fadeout-overlay")
+  const overlays =
+    typeof window !== "undefined" &&
+    document.querySelectorAll(".fadeout-overlay")
 
-  if (overlay) {
-    overlay.style = "display: none"
+  if (overlays) {
+    for (let overlay of overlays) {
+      overlay.style = "display: none"
+    }
   }
 
   // show content
@@ -52,7 +55,7 @@ function showPaywall(paywallDiv) {
             position: absolute;
           `
   overlay.style = style
-  overlay.id = "fadeout-overlay"
+  overlay.className = "fadeout-overlay"
 
   main.style = "position: relative;"
   main.appendChild(overlay)
@@ -73,11 +76,16 @@ export function usePaywall(page) {
   const { isAuthorized } = useAuth()
   const [unlockHandbook] = useLocalStorage("unlock_handbook")
   const [saleId] = useLocalStorage("sale_id")
+  const [unlockedPages, setUnlockedPages] = useLocalStorage(
+    "unlocked_pages",
+    []
+  )
   const hasLock =
     typeof window !== "undefined" && document.querySelector("#lock")
 
   const unlocked =
     !hasLock ||
+    (page && unlockedPages.includes(page)) ||
     isAuthorized(["ServerlessHandbook"]) ||
     (unlockHandbook && saleId)
 
@@ -93,18 +101,22 @@ export function usePaywall(page) {
     }
   }, [unlocked])
 
-  return { unlocked, paywallDiv }
+  function unlockCurrentPage() {
+    setUnlockedPages((unlockedPages) => [...unlockedPages, page])
+  }
+
+  return { unlocked, paywallDiv, unlockCurrentPage }
 }
 
 export const Paywall = ({ page }) => {
-  const { unlocked, paywallDiv } = usePaywall(page)
+  const { unlocked, paywallDiv, unlockCurrentPage } = usePaywall(page)
 
   if (unlocked) {
     return <QuickThanks />
   } else {
     return (
       <Box id="paywall-copy" ref={paywallDiv}>
-        <PaywallCopy />
+        <PaywallCopy unlockCurrentPage={unlockCurrentPage} />
       </Box>
     )
   }

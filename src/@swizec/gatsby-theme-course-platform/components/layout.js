@@ -12,7 +12,7 @@ import Nav from "./nav"
 import { Paywall, usePaywall } from "../../../components/Paywall"
 
 const Sidebar = (props) => {
-  const { unlocked: contentUnlocked } = usePaywall()
+  const { unlocked: contentUnlocked } = usePaywall(props.location.pathname)
 
   return (
     <Flex
@@ -67,7 +67,7 @@ const Sidebar = (props) => {
         }}
       >
         {props.children}
-        {contentUnlocked ? <Reactions page={props.uri} /> : null}
+        {contentUnlocked ? <Reactions page={props.href} /> : null}
         <Paywall page={props.location.pathname} />
         <Nav
           pathname={props.location.pathname}

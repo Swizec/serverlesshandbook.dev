@@ -2,6 +2,7 @@ import { Box, Flex, Button } from "theme-ui"
 import {
   GumroadOverlay,
   GumroadButton,
+  TinyFormCK,
 } from "@swizec/gatsby-theme-course-platform"
 
 <Box sx={{
@@ -13,59 +14,26 @@ import {
 
 Hi,👋
 
-**Serverless Handbook** is a digital + paperback book over a year in development. To keep reading, unlock below :)
+**Serverless Handbook** is a digital + paperback book over a year in development – **available wherever books are sold, Mar 31st**. To keep reading this chapter, unlock below :)
 
-<Box sx={{ width: "100%", margin: "0 auto", minHeight: "250px" }}>
-  <Box
-    sx={{
-      width: "100%",
-      height: 0,
-      paddingBottom: 900 / 16 + "%",
-      position: "relative",
-      overflow: "hidden",
-      "& > iframe": {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        border: 0,
-      },
-    }}
-  >
-    <iframe
-      width="100%"
-      height="100%"
-      src="https://www.youtube.com/embed/zwi2mxGJgIc"
-      frameborder="0"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    ></iframe>
-  </Box>
-</Box>
+### Unlock your free chapter!
 
-## Learn everything you need to dive into modern backend. Understand _any_ backend
+Access to this chapter immediately, extra free chapter and Serverless crash course in your email ✌️
+
+<TinyFormCK
+  copyBefore=""
+  submitText="Send it to me! 💌"
+  onSuccess={() => setTimeout(props.unlockCurrentPage, 2000)}
+/>
+<br />
+
+## Dive into modern backend. Understand any backend
 
 I spent a lot of time digging through the internet learning Serverless. Random StackOverflow answers, even comments, GitHub issues, sporadic blogs ... everyone assumes you've been a backend engineer for 20 years. It's a mess.
 
 **Serverless Handbook** is the resource I wish I had.
 
 If you're new to serverless, or completely new to backend, Serverless Handbook is for you. We'll cover everything from the basic definitions of queues and lambdas and databases, to optimizing for cost, building robust architectures for scale, and cost optimization.
-
-**Unlock digital access immediately, get the paperback end of February**
-
-<Box sx={{ textAlign: "center" }}>
-  <GumroadButton>
-    <a
-      className="gumroad-button"
-      href="https://gum.co/NsUlA"
-      data-gumroad-single-product="true"
-      target="_blank"
-      rel="noopener noreferrer"
-    >{`Unlock Serverless Handbook`}</a>
-  </GumroadButton>
-</Box>
 
 Cheers,<br/>
 ~Swizec

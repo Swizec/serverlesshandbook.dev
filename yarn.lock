@@ -2205,10 +2205,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^1.4.0-15":
-  version "1.4.0-15"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-1.4.0-15.tgz#4bce1485d9a76dfe2dba685d9be8a0551d4273ac"
-  integrity sha512-rGcRaoVn6Coh856WzsCUySCoVdw3thrpy14ZIj2nvBLjJzhAXrzvoWJgf4xQQXObTlDcLvFhF3aAgRty9RuZVQ==
+"@swizec/gatsby-theme-course-platform@^1.4.0-29":
+  version "1.4.0-29"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-1.4.0-29.tgz#8bc28b20890345946df162912a807870b1745a1a"
+  integrity sha512-FfwE4Wu597tIJjieLrvXEZmUWnS+eHGN/rdq7UNRb7c57BLIjYwgNGeSdxTbIZM1HdG9zGeKsvSO0lLePBEoxQ==
   dependencies:
     "@jxnblk/react-live" "2.1.2-1"
     "@mdx-js/mdx" "^1.6.22"
