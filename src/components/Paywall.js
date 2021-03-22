@@ -73,11 +73,13 @@ export function usePaywall(page) {
   const { isAuthorized } = useAuth()
   const [unlockHandbook] = useLocalStorage("unlock_handbook")
   const [saleId] = useLocalStorage("sale_id")
-
-  console.log(page)
+  const hasLock =
+    typeof window !== "undefined" && document.querySelector("#lock")
 
   const unlocked =
-    isAuthorized(["ServerlessHandbook"]) || (unlockHandbook && saleId)
+    !hasLock ||
+    isAuthorized(["ServerlessHandbook"]) ||
+    (unlockHandbook && saleId)
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
