@@ -4,6 +4,8 @@ description: "What is REST and how does it work? How do you build a serverless A
 image: "./img/serverless-rest-api.png"
 ---
 
+import { TestCloudFunction } from "../../components/TestCloudFunctions.js"
+
 # Creating a REST API
 
 ![](../../images/chapter_headers/serverless-rest-api.svg)
@@ -73,7 +75,7 @@ Here are tips I've picked up over the past 14 years of building and using RESTfu
 
 ### URL schema
 
-Your URL schema exists to solve *one* problem: Create a uniform way to identify resources and endpoints on your server.
+Your URL schema exists to solve _one_ problem: Create a uniform way to identify resources and endpoints on your server.
 
 Keep it consistent, otherwise don't sweat it.
 
@@ -287,6 +289,11 @@ function response(statusCode: number, body: any) {
 
 **You can try it out in your terminal like this:**
 
+<TestCloudFunction
+  serviceName="serverless-rest-example"
+  urlPlaceholder="https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/0769413a-b306-46cb-a03c-5a8d5e29aa3e"
+/>
+
 ```
 curl https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/0769413a-b306-46cb-a03c-5a8d5e29aa3e
 ```
@@ -426,7 +433,7 @@ export const deleteItem = async (
 
 We get `itemId` from the URL props and call a `deleteItem` method on DynamoDB. The API returns the item as it was before deletion.
 
-*PS: in a production system you'll want to use soft deletes – mark as deleted and keep the data*
+_PS: in a production system you'll want to use soft deletes – mark as deleted and keep the data_
 
 ## Fin ✌️
 

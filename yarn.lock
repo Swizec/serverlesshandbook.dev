@@ -2205,10 +2205,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^1.4.0-29":
-  version "1.4.0-29"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-1.4.0-29.tgz#8bc28b20890345946df162912a807870b1745a1a"
-  integrity sha512-FfwE4Wu597tIJjieLrvXEZmUWnS+eHGN/rdq7UNRb7c57BLIjYwgNGeSdxTbIZM1HdG9zGeKsvSO0lLePBEoxQ==
+"@swizec/gatsby-theme-course-platform@^1.4.0-32":
+  version "1.4.0-32"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-1.4.0-32.tgz#5f0699c678a6d755d58ce77c8426e13682b6121f"
+  integrity sha512-D3Q5/skfIiJ75tRKWikYVVgmODxIQwsmB3CYqv/KQedAx4BeN8PQxRXxm3EnHMyNNFg5uEwNXOW8zA2Qa/80zQ==
   dependencies:
     "@jxnblk/react-live" "2.1.2-1"
     "@mdx-js/mdx" "^1.6.22"
@@ -2240,6 +2240,7 @@
     gatsby-plugin-theme-ui "^0.3.5"
     gatsby-plugin-twitter "^2.7.0"
     gatsby-remark-copy-linked-files "^2.7.0"
+    gatsby-remark-copy-relative-linked-files "^1.3.0"
     gatsby-remark-embedder "^4.1.0"
     gatsby-remark-giphy "^1.1.2"
     gatsby-remark-images "^3.8.1"
@@ -5997,6 +5998,11 @@ domelementtype@^2.0.1:
   resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-2.0.2.tgz#f3b6e549201e46f588b59463dd77187131fe6971"
   integrity sha512-wFwTwCVebUrMgGeAwRL/NhZtHAUyT9n9yg4IMDwf10+6iCMxSkVq9MGCVEH+QZWo1nNidy8kNvwmv4zWHDTqvA==
 
+domelementtype@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-2.1.0.tgz#a851c080a6d1c3d94344aed151d99f669edf585e"
+  integrity sha512-LsTgx/L5VpD+Q8lmsXSHW2WpA+eBlZ9HPf3erD1IoPF00/3JKHZ3BknUVA2QGDNu69ZNmyFmCWBSO45XjYKC5w==
+
 domhandler@^2.3.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.2.tgz#8805097e933d65e85546f726d60f5eb88b44f803"
@@ -6010,6 +6016,13 @@ domhandler@^3.0.0, domhandler@^3.3.0:
   integrity sha512-J1C5rIANUbuYK+FuFL98650rihynUOEzRLxW+90bKZRWB6A1X1Tf82GxR1qAWLyfNPRvjqfip3Q5tdYlmAa9lA==
   dependencies:
     domelementtype "^2.0.1"
+
+domhandler@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-4.0.0.tgz#01ea7821de996d85f69029e81fa873c21833098e"
+  integrity sha512-KPTbnGQ1JeEMQyO1iYXoagsI6so/C96HZiFyByU3T6iAzpXn8EGEvct6unm1ZGoed8ByO2oirxgwxBmqKF9haA==
+  dependencies:
+    domelementtype "^2.1.0"
 
 domutils@1.5.1:
   version "1.5.1"
@@ -6035,6 +6048,15 @@ domutils@^2.0.0:
     dom-serializer "^1.0.1"
     domelementtype "^2.0.1"
     domhandler "^3.3.0"
+
+domutils@^2.4.2:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/domutils/-/domutils-2.5.0.tgz#42f49cffdabb92ad243278b331fd761c1c2d3039"
+  integrity sha512-Ho16rzNMOFk2fPwChGh3D2D9OEHAfG19HgmRR2l+WLSsIstNsAYBzePH412bL0y5T44ejABIVfTHQ8nqi/tBCg==
+  dependencies:
+    dom-serializer "^1.0.1"
+    domelementtype "^2.0.1"
+    domhandler "^4.0.0"
 
 dot-case@^1.1.0:
   version "1.1.2"
@@ -7796,6 +7818,15 @@ gatsby-remark-copy-linked-files@^2.7.0:
     probe-image-size "^5.0.0"
     unist-util-visit "^1.4.1"
 
+gatsby-remark-copy-relative-linked-files@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/gatsby-remark-copy-relative-linked-files/-/gatsby-remark-copy-relative-linked-files-1.3.0.tgz#21c001121c2bdae5d2c6d1437e02e8508f86a531"
+  integrity sha512-ZSRtiSu0GV6ue2r/O+fmcP3LoN4oqp8kevehbeKjOXou6fhlOYNaCqYb2/V91iiGnU6YMgOBnwEOSLKC7lyT/A==
+  dependencies:
+    fs-extra "^9.0.1"
+    htmlparser2 "^5.0.0"
+    unist-util-visit "^2.0.3"
+
 gatsby-remark-embedder@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/gatsby-remark-embedder/-/gatsby-remark-embedder-4.1.0.tgz#3c08c33e09625fde3b0fa4c6c1a55e36fd5c9b1c"
@@ -8957,6 +8988,16 @@ htmlparser2@^4.1.0:
     domelementtype "^2.0.1"
     domhandler "^3.0.0"
     domutils "^2.0.0"
+    entities "^2.0.0"
+
+htmlparser2@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-5.0.1.tgz#7daa6fc3e35d6107ac95a4fc08781f091664f6e7"
+  integrity sha512-vKZZra6CSe9qsJzh0BjBGXo8dvzNsq/oGvsjfRdOrrryfeD9UOBEEQdeoqCRmKZchF5h2zOBMQ6YuQ0uRUmdbQ==
+  dependencies:
+    domelementtype "^2.0.1"
+    domhandler "^3.3.0"
+    domutils "^2.4.2"
     entities "^2.0.0"
 
 http-cache-semantics@3.8.1:

@@ -4,6 +4,8 @@ description: "How to setup your project for a pleasant developer experience with
 image: "./img/good-dx.png"
 ---
 
+import { TestCloudFunction } from "../../components/TestCloudFunctions.js"
+
 # Create a good serverless developer experience
 
 ![](../../images/chapter_headers/good-dx.svg)
@@ -12,7 +14,7 @@ What makes a good developer experience?
 
 I asked twitter and it was all over the place. A theme emerged:
 
-> Good developer experience is when tools make your job easier, get out of the way, and let you focus on *your* code
+> Good developer experience is when tools make your job easier, get out of the way, and let you focus on _your_ code
 
 https://twitter.com/Swizec/status/1195742841877610496
 
@@ -30,7 +32,7 @@ https://twitter.com/muditameta/status/1195783892512444417
 
 As mentioned in the [Getting Started](https://serverlesshandbook.dev/getting-started#setup-for-serverless-work) chapter, I like to use the open source [Serverless Framework](https://en.wikipedia.org/wiki/Serverless_Framework) with AWS. When using Netlify and Vercel you don't need Serverless because config-as-code is baked into their philosophies.
 
-You write a configuration file, add it to version control, and that's your infrastructure. *Nothing* happens outside that configuration file.
+You write a configuration file, add it to version control, and that's your infrastructure. _Nothing_ happens outside that configuration file.
 
 This means that:
 
@@ -44,7 +46,7 @@ This means that:
 
 https://twitter.com/CodingDive/status/1195776781921464321
 
-The shorter your feedback cycle, the faster you can work. 
+The shorter your feedback cycle, the faster you can work.
 
 On the frontend we have local dev servers and hot reloading. You see the result almost as fast as you write the code.
 
@@ -56,7 +58,7 @@ All great.
 
 ![](https://media.giphy.com/media/WO74HAtUC9I40/giphy.gif)
 
-But unit tests can't tell you your *system* works. That's where bugs come from – systems complexity.
+But unit tests can't tell you your _system_ works. That's where bugs come from – systems complexity.
 
 You can simulate the environment and run your tests. That works to an extent, but it's never perfect.
 
@@ -72,7 +74,7 @@ Here's how the flow works:
 1. **Compile your code locally** on your fast developer machine. Since your code is small, it compiles in seconds.
 2. **Compile your infrastructure** the serverless framework compiles your infrastructure into a config file for the target platform. With AWS that's [SAM](https://aws.amazon.com/serverless/sam/).
 3. **Upload your bundle** this is the slowest part.
-4. **Infrastructure sets itself up** using your config the platform sets itself up. Servers appear, queues go up, etc. Takes a few seconds 
+4. **Infrastructure sets itself up** using your config the platform sets itself up. Servers appear, queues go up, etc. Takes a few seconds
 5. **You're ready to go**
 
 <div id="lock" />
@@ -237,7 +239,12 @@ To deploy, we run `serverless deploy`.
 
 And your server is up.
 
-You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it's going to say `Hello 👋`
+You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it says `Hello 👋`
+
+<TestCloudFunction
+  serviceName="serverless-hello-world"
+  urlPlaceholder="https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello"
+/>
 
 I'll keep it up because it's free unless somebody clicks. And when they do, current AWS pricing gives me 1,000,000 clicks per month for free 😛
 
