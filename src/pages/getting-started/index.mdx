@@ -4,6 +4,8 @@ description: "Your first introduction to serverless and why you should use it"
 image: "./img/getting-started.png"
 ---
 
+import { TestCloudFunction } from "../../components/TestCloudFunctions"
+
 # Getting Started with Serverless
 
 ![](../../images/chapter_headers/getting-started.svg)
@@ -287,6 +289,12 @@ To deploy, we run `serverless deploy`.
 And your server is up.
 
 You get a URL for your lambda and some debugging output. My URL is `https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello`, if you open it in your browser, it's going to say `Hello 👋`
+
+<TestCloudFunction
+  serviceName="serverless-hello-world"
+  urlPlaceholder="https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello"
+  defaults
+/>
 
 I'll keep it up because it's free unless somebody clicks. And when they do, current AWS pricing gives me 1,000,000 clicks per month for free 😛
 

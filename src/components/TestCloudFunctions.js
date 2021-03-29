@@ -1,13 +1,16 @@
 import React, { useState } from "react"
 import { Box, Button, Heading, Input, Label } from "theme-ui"
+import prettier from "prettier/standalone"
+import parserBabel from "prettier/parser-babel"
 
 export const TestCloudFunction = ({
   serviceName,
   urlPlaceholder,
   jsonPlaceholder,
+  defaults = false,
 }) => {
-  const [url, setUrl] = useState("")
-  const [payload, setPayload] = useState("")
+  const [url, setUrl] = useState(defaults ? urlPlaceholder : "")
+  const [payload, setPayload] = useState(defaults ? jsonPlaceholder : "")
   const [result, setResult] = useState("")
   const [error, setError] = useState(null)
 
@@ -18,7 +21,7 @@ export const TestCloudFunction = ({
     if (!url) {
       setError(`Paste the URL you got from ${serviceName}`)
     } else {
-      const corsUrl = `https://cors-anywhere.herokuapp.com/${url}`
+      const corsUrl = `https://cors.bridged.cc/${url}`
 
       try {
         let res
@@ -68,7 +71,12 @@ export const TestCloudFunction = ({
       {result ? (
         <>
           <Heading as="h4">Result:</Heading>
-          <pre>{result}</pre>
+          <pre>
+            {prettier.format(result, {
+              parser: "json",
+              plugins: [parserBabel],
+            })}
+          </pre>
         </>
       ) : null}
       {error ? (

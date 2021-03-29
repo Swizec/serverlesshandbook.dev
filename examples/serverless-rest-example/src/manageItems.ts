@@ -53,7 +53,7 @@ export const updateItem = async (
     } else {
       return response(404, {
         status: "error",
-        error: "Item not found",
+        error: `Item not found ${event.pathParameters.itemId}`,
       })
     }
   }

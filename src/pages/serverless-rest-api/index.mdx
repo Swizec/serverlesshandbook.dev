@@ -287,16 +287,13 @@ function response(statusCode: number, body: any) {
 }
 ```
 
-**You can try it out in your terminal like this:**
+**You can try it out here:**
 
 <TestCloudFunction
   serviceName="serverless-rest-example"
   urlPlaceholder="https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/0769413a-b306-46cb-a03c-5a8d5e29aa3e"
+  defaults
 />
-
-```
-curl https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/0769413a-b306-46cb-a03c-5a8d5e29aa3e
-```
 
 Or paste that URL into a browser.
 
@@ -384,19 +381,25 @@ Adding `createdAt` and `lastUpdatedAt` timestamps is helpful when debugging thes
 
 You can find the `db.*` helper methods in my [`dynamodb.ts` file](https://github.com/Swizec/serverlesshandbook.dev/blob/master/examples/serverless-rest-example/src/dynamodb.ts)
 
-**You can try it out in your terminal like this:**
+**You can try it out here:**
 
-```
-curl -d '{"hello_world": "this is a json item", "params": "It can have multiple params", "customNumber": 4}' https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item
-```
+Create an item 👇
 
-To create an item.
+<TestCloudFunction
+  serviceName="serverless-rest-example"
+  urlPlaceholder="https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item"
+  jsonPlaceholder={`{"hello_world": "this is a json item", "params": "It can have multiple params", "customNumber": 4}`}
+  defaults
+/>
 
-```
-curl -d '{"hello_world": "this is a json item", "params": "It can have multiple params", "customNumber": 4}' https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/e76e46f4-296d-4fef-a349-a1bb5717f2ac
-```
+Update an item, try using the ID from before 👇
 
-To update an item.
+<TestCloudFunction
+  serviceName="serverless-rest-example"
+  urlPlaceholder="https://4sklrwb1jg.execute-api.us-east-1.amazonaws.com/dev/item/e76e46f4-296d-4fef-a349-a1bb5717f2ac"
+  jsonPlaceholder={`{"hello_world": "this is a json item", "params": "It can have multiple params", "customNumber": 4}`}
+  defaults
+/>
 
 ### deleteItem
 

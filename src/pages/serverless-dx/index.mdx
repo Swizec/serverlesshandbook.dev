@@ -4,7 +4,7 @@ description: "How to setup your project for a pleasant developer experience with
 image: "./img/good-dx.png"
 ---
 
-import { TestCloudFunction } from "../../components/TestCloudFunctions.js"
+import { TestCloudFunction } from "../../components/TestCloudFunctions"
 
 # Create a good serverless developer experience
 
@@ -244,6 +244,7 @@ You get a URL for your lambda and some debugging output. My URL is `https://z7pc
 <TestCloudFunction
   serviceName="serverless-hello-world"
   urlPlaceholder="https://z7pc0lqnw9.execute-api.us-east-1.amazonaws.com/dev/hello"
+  defaults
 />
 
 I'll keep it up because it's free unless somebody clicks. And when they do, current AWS pricing gives me 1,000,000 clicks per month for free 😛
