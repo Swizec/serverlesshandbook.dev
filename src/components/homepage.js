@@ -6,9 +6,9 @@ import { GumroadButton, TinyFormCK } from "@swizec/gatsby-theme-course-platform"
 import * as coverImg from "../images/cover.png"
 
 export const ChapterHeading = ({ sx }) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthorized } = useAuth()
 
-  if (isAuthenticated()) {
+  if (isAuthorized(["ServerlessHandbook"])) {
     return <Heading sx={sx}>Chapters</Heading>
   } else {
     return <Heading sx={sx}>Preview Chapters</Heading>

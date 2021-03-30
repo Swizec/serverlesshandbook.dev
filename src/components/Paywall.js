@@ -85,7 +85,7 @@ export function usePaywall(page) {
 
   const unlocked =
     !hasLock ||
-    (page && unlockedPages.includes(page)) ||
+    (page && unlockedPages.filter((p) => p !== "/downloads").includes(page)) ||
     isAuthorized(["ServerlessHandbook"]) ||
     (unlockHandbook && saleId)
 
