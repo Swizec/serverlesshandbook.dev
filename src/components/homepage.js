@@ -11,7 +11,7 @@ export const ChapterHeading = ({ sx }) => {
   if (isAuthorized(["ServerlessHandbook"])) {
     return <Heading sx={sx}>Chapters</Heading>
   } else {
-    return <Heading sx={sx}>Preview Chapters</Heading>
+    return <Heading sx={sx}>Chapter Previews</Heading>
   }
 }
 
