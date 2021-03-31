@@ -1,6 +1,6 @@
 import React from "react"
 import { useAuth } from "react-use-auth"
-import { Heading, Flex, Box, Text } from "theme-ui"
+import { Heading, Flex, Box, Text, Button } from "theme-ui"
 import { GumroadButton, TinyFormCK } from "@swizec/gatsby-theme-course-platform"
 // import * as coverImg from "../images/cover.svg"
 import * as coverImg from "../images/cover.png"
@@ -70,9 +70,14 @@ export const HomeTitle = () => (
       </Heading>
       <Text>Dive into modern backend. Understand any backend</Text>
 
-      <Heading sx={{ fontSize: 3, pt: 1 }}>
-        <em>Available wherever books are sold, Mar 31st</em>
-      </Heading>
+      <Button
+        variant="buy-shiny"
+        sx={{ my: 2 }}
+        as="a"
+        href="https://geni.us/serverless-handbook"
+      >
+        Buy now on Amazon
+      </Button>
 
       <Box
         sx={{
@@ -83,11 +88,13 @@ export const HomeTitle = () => (
           display: ["block", "none"],
         }}
       >
-        <img
-          src={coverImg}
-          alt="Serverless Handbook Cover"
-          style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
-        />
+        <a href="https://geni.us/serverless-handbook">
+          <img
+            src={coverImg}
+            alt="Serverless Handbook Cover"
+            style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
+          />
+        </a>
       </Box>
 
       <Box sx={{ mt: 3 }}>
@@ -122,11 +129,13 @@ export const HomeTitle = () => (
         display: ["none", "block"],
       }}
     >
-      <img
-        src={coverImg}
-        alt="Serverless Handbook Cover"
-        style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
-      />
+      <a href="https://geni.us/serverless-handbook">
+        <img
+          src={coverImg}
+          alt="Serverless Handbook Cover"
+          style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
+        />
+      </a>
     </Box>
   </Flex>
 )

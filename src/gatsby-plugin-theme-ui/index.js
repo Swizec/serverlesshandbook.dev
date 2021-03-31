@@ -22,6 +22,13 @@ const theme = merge(
         textIndent: "-1000%",
         width: 240,
       },
+      "buy-shiny": {
+        cursor: "pointer",
+        fontWeight: "heading",
+        bg: "highlight",
+        borderRadius: 35,
+        "&:hover": { bg: "secondary" },
+      },
     },
   },
   toTheme(typography),

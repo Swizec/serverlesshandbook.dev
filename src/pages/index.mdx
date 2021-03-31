@@ -6,41 +6,9 @@ import {
   Grid,
   GumroadButton,
   GumroadOverlay,
+  TinyFormCK,
 } from "@swizec/gatsby-theme-course-platform"
 import { NavGrid, ChapterHeading, HomeTitle } from "../components/homepage"
-
-export const pageQuery = graphql`
-  query {
-    man1: file(relativePath: { eq: "man1.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 120, maxHeight: 120) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    man2: file(relativePath: { eq: "man2.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 120, maxHeight: 120) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    man3: file(relativePath: { eq: "man3.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 120, maxHeight: 120) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-    woman1: file(relativePath: { eq: "woman1.png" }) {
-      childImageSharp {
-        fluid(maxWidth: 120, maxHeight: 120) {
-          ...GatsbyImageSharpFluid
-        }
-      }
-    }
-  }
-`
 
 <Banner>
 
@@ -77,9 +45,13 @@ export const pageQuery = graphql`
 
 </Banner>
 
-<Container sx={{py: 3, maxWidth: 1280}}>
+<Container sx={{py: 3}}>
 
-<Box sx={{ width: ["100%", "100%", "50%"], margin: "0 auto" }}>
+Hello! 👋
+
+Are you a frontend engineer diving into backend? Do you have just that one bit of code that can't run in the browser? Something that deals with secrets and APIs?
+
+<Box sx={{ width: ["100%", "100%", "70%"], margin: "0 auto", mb: 3 }}>
   <Box
     sx={{
       width: "100%",
@@ -101,13 +73,78 @@ export const pageQuery = graphql`
     <iframe
       width="100%"
       height="100%"
-      src="https://www.youtube.com/embed/zwi2mxGJgIc"
+      src="https://www.youtube.com/embed/udqyBqCgLrU"
       frameborder="0"
       allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen
     ></iframe>
   </Box>
 </Box>
+
+That's what cloud functions are for my friend. You take a JavaScript function, run it on serverless, get a URL, and voila.
+
+But that's easy mode. Any tutorial can teach you that.
+
+**What happens when you wanna build a real backend?** When you want to understand what's going on? Have opinions on REST vs GraphQL, NoSQL vs. SQL, databases, queues, talk about performance, cost, data processing, deployment strategies, developer experience?
+
+🤯
+
+## Get your free chapter!
+
+Access to this chapter immediately, extra free chapter and Serverless crash course in your email ✌️
+
+<TinyFormCK
+  copyBefore=""
+  submitText="Send crash course! 💌"
+  onSuccess={() => setTimeout(props.unlockCurrentPage, 2000)}
+/>
+<br />
+
+[![](../images/buy-now-amazon.png)](https://geni.us/serverless-handbook)
+
+## Dive into modern backend. Understand any backend
+
+<p style={{ fontSize: "1.1em" }}>
+  <strong>Serverless Handbook</strong> shows you how with{" "}
+  <strong>360 pages</strong> for people like you getting into backend
+  programming.
+</p>
+
+With **digital + paperback content** Serverless Handbook has been more than 1 year in development. Lessons learned from 14 years of building production grade websites and webapps.
+
+> With Serverless Handbook, Swiz teaches the truths of distributed systems – things will fail – but he also gives you insight on how to architect projects using reliability and resilience perspectives so you can monitor and recover.
+
+> ~ Thai Wood, author of Resilience Roundup
+
+If you want to understand backends, grok serverless, or just get a feel for modern backend development, this is the book for you.
+
+Serverless Handbook full of **color illustrations**, **code you can try**, and **insights you can learn**. But it's not a cookbook and it's not a tutorial.
+
+[![Serverless Handbook on your bookshelf](../images/serverless-handbook-bookshelf.jpg)](https://geni.us/serverless-handbook)
+
+Yes, there's a couple tutorials to get you started, to show you how it fits together, but the focus is on high-level concepts.
+
+<p style={{ fontSize: "1.1em" }}>
+  <strong>Ideas</strong>, <strong>tactics</strong>, and{" "}
+  <strong>mindsets</strong> that you need. Because every project is different.
+</p>
+
+The Serverless Handbook takes you _from your very first cloud function to modern backend mastery_. In the words of an early reader:
+
+> Serverless Handbook taught me high-leveled topics. I don't like recipe courses and these chapters helped me to feel like I'm not a total noob anymore.
+
+> The hand-drawn diagrams and high-leveled descriptions gave me the feeling that I don't have any critical "knowledge gaps" anymore.
+
+> ~ Marek C, engineer
+
+If you can JavaScript, you can backend.
+
+Plus it looks great on your bookshelf 😉
+
+[![](../images/buy-now-amazon.png)](https://geni.us/serverless-handbook)
+
+Cheers,<br/>
+~Swizec
 
 <Grid gap={2} sx={{ fontWeight: 'bold', py: 3 }}>
 
@@ -119,37 +156,24 @@ export const pageQuery = graphql`
 - Support your apps with functions in the cloud
 - A reference handbook that stands by your side as you work
 - Pick and choose, read the chapters you need right now
-- Access yours forever, get notified as new chapters come out
-- Get a new chapter every week until done :)
+- Access yours forever
+- Live digital version with your Kindle or Paperback
+- Available wherever Amazon sends books
 
 </Grid>
 
-<Grid sx={{ py: 5}} gap={2}>
+[![](../images/buy-now-amazon.png)](https://geni.us/serverless-handbook)
 
-- > “I work with React but I want to learn the other technologies and how to use them with react”
+> This handbook is a fantastic overview of what it means to embrace serverless technology. After explaining what the heck "serverless" really means, the book digs deep into the core elements of serverless in an easy-to-follow illustrative manner with ready deployable code!
 
-  - dado90
+> After learning about all the primitives (functions/queues/s3/etc.) you'd need as a serverless dev, the book also covers other critical operational aspects like observability, multi-staged deployments & handling secrets.
 
-  - <Avatar img={props.data.man1.childImageSharp.fluid.src} />
+> It's a great book on using infrastructure-as-code tools like the serverless framework to achieve more with less.
 
-- > “I'm a React Dev, I wanted to get a boost further”
+> I'm highly impressed by Swizecs's approach to teaching devs how to adopt new serverless technology.
 
-  - Samer
+> ~ David Wells, Serverless Framework core contributor
 
-  - <Avatar img={props.data.woman1.childImageSharp.fluid.src} />
-
-- > “I want to learn the full process of building a web app from start to finish using React and Serverless Technologies (could it be with AWS?)”
-
-  - Ricardo Respo
-
-  - <Avatar img={props.data.man2.childImageSharp.fluid.src} />
-
-- > “I'm interested in the JAM stack and in AWS Serverless, but all of the examples for tutorials I found are boring.”
-
-  - Rui
-
-  - <Avatar img={props.data.man3.childImageSharp.fluid.src} />
-
-</Grid>
+[![](../images/buy-now-amazon.png)](https://geni.us/serverless-handbook)
 
 </Container>
