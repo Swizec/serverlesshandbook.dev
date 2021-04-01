@@ -70,14 +70,17 @@ export const HomeTitle = () => (
       </Heading>
       <Text>Dive into modern backend. Understand any backend</Text>
 
-      <Button
-        variant="buy-shiny"
-        sx={{ my: 2 }}
-        as="a"
-        href="https://geni.us/serverless-handbook"
-      >
-        Buy now on Amazon
-      </Button>
+      <Box sx={{ my: 3 }}>
+        <Button
+          variant="buy-shiny"
+          as="a"
+          sx={{ mb: 1 }}
+          href="https://geni.us/serverless-handbook"
+        >
+          Buy now on Amazon
+        </Button>
+        <Text sx={{ fontSize: 0 }}>#1 new release in Software Development</Text>
+      </Box>
 
       <Box
         sx={{
