@@ -1,9 +1,30 @@
 import React from "react"
 import { useEmailForm } from "@swizec/gatsby-theme-course-platform/src/components/FormCK"
 import BouncingLoader from "@swizec/gatsby-theme-course-platform/src/components/BouncingLoader"
-import { Flex, Label, Input, Box, Button, Text, Heading } from "theme-ui"
+import { Flex, Label, Input, Box, Button, Text, Heading, Image } from "theme-ui"
+import emailRobot from "@swizec/gatsby-theme-course-platform/src/images/email-robot.gif"
+import { useLocalStorage } from "./useLocalStorage"
+
+async function createUser({ name, email }) {
+  const res = await fetch(
+    "https://tq43ps6oh2.execute-api.us-east-1.amazonaws.com/dev/gumroadPing",
+    {
+      method: "POST",
+      mode: "no-cors",
+      body: new URLSearchParams({
+        product_permalink: "https://gum.co/NsUlA",
+        email,
+        full_name: name,
+      }).toString(),
+    }
+  )
+  console.log(res)
+}
 
 export const ClaimForm = () => {
+  const [unlockHandbook, setUnlockHandbook] = useLocalStorage("unlock_handbook")
+  const [saleId, setSaleId] = useLocalStorage("sale_id")
+
   const {
     formSuccess,
     onSubmit,
@@ -12,7 +33,12 @@ export const ClaimForm = () => {
     errors,
     formState,
     submitError,
-  } = useEmailForm("claim", () => console.log("done"))
+  } = useEmailForm("claim", async (formData) => {
+    await createUser(formData)
+    setUnlockHandbook(true)
+    setSaleId("came-from-a-claim")
+    window.location.href = "/thanks"
+  })
 
   if (formSuccess) {
     return (
@@ -28,6 +54,7 @@ export const ClaimForm = () => {
           account. Redirecting you to the first chapter with a temporary unlock.
         </p>
         <p>Finish setting up your account and you can login from any device.</p>
+        <Image src={emailRobot} />
       </Flex>
     )
   }
@@ -88,7 +115,7 @@ export const ClaimForm = () => {
         ref={register({
           required: "⚠️ Share link is required",
         })}
-        placeholder="Where did you share? I'd love to see"
+        placeholder="Where did you share? I'd love to see your post"
       />
       {errors.share_link && <span>{errors.share_link.message}</span>}
 
