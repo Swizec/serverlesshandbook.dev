@@ -2255,10 +2255,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^1.4.0-32":
-  version "1.4.0-32"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-1.4.0-32.tgz#5f0699c678a6d755d58ce77c8426e13682b6121f"
-  integrity sha512-D3Q5/skfIiJ75tRKWikYVVgmODxIQwsmB3CYqv/KQedAx4BeN8PQxRXxm3EnHMyNNFg5uEwNXOW8zA2Qa/80zQ==
+"@swizec/gatsby-theme-course-platform@^1.4.0-40":
+  version "1.4.0-40"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-1.4.0-40.tgz#007f700c2cc45c5d895bd84d6787c009c41c26be"
+  integrity sha512-VeMpyw0wRwr9rRziF7nbSTYADeoLhXAeekxaGQ0jc0ojvKYpUZIABx6H4cZ2ik06uYRiAIgzF6Ofp9ulsn/X3Q==
   dependencies:
     "@jxnblk/react-live" "2.1.2-1"
     "@mdx-js/mdx" "^1.6.22"
@@ -2302,6 +2302,7 @@
     generate-password "^1.5.1"
     isomorphic-fetch "^3.0.0"
     lodash.merge "^4.6.2"
+    lodash.omit "^4.5.0"
     minimatch "^3.0.4"
     node "^12.16.3"
     react-collapse "^5.0.1"
@@ -10651,6 +10652,11 @@ lodash.merge@^4.4.0, lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash.omit@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.omit/-/lodash.omit-4.5.0.tgz#6eb19ae5a1ee1dd9df0b969e66ce0b7fa30b5e60"
+  integrity sha1-brGa5aHuHdnfC5aeZs4Lf6MLXmA=
 
 lodash.once@^4.0.0:
   version "4.1.1"

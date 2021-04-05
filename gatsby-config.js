@@ -7,6 +7,7 @@ module.exports = {
     courseFirstLesson: `/getting-started`,
     convertkit: {
       defaultFormId: "2103715",
+      claimFormId: "2175932",
     },
     hasAuthentication: true,
   },
