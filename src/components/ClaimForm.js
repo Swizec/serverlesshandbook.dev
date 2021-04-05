@@ -6,7 +6,7 @@ import emailRobot from "@swizec/gatsby-theme-course-platform/src/images/email-ro
 import { useLocalStorage } from "./useLocalStorage"
 
 async function createUser({ name, email }) {
-  const res = await fetch(
+  await fetch(
     "https://tq43ps6oh2.execute-api.us-east-1.amazonaws.com/dev/gumroadPing",
     {
       method: "POST",
@@ -18,7 +18,6 @@ async function createUser({ name, email }) {
       }).toString(),
     }
   )
-  console.log(res)
 }
 
 export const ClaimForm = () => {
