@@ -3,7 +3,7 @@ import { useAuth } from "react-use-auth"
 import { Heading, Flex, Box, Text, Button } from "theme-ui"
 import { GumroadButton, TinyFormCK } from "@swizec/gatsby-theme-course-platform"
 // import * as coverImg from "../images/cover.svg"
-import * as coverImg from "../images/cover.png"
+import coverImg from "../images/cover.png"
 
 export const ChapterHeading = ({ sx }) => {
   const { isAuthorized } = useAuth()
@@ -66,7 +66,9 @@ export const HomeTitle = () => (
     >
       <Heading sx={{ fontSize: 6 }}>
         Serverless Handbook
-        <Text sx={{ fontSize: 4 }}>for frontend engineers</Text>
+        <Text sx={{ fontSize: 4, display: "block" }}>
+          for frontend engineers
+        </Text>
       </Heading>
       <Text>Dive into modern backend. Understand any backend</Text>
 
@@ -79,7 +81,9 @@ export const HomeTitle = () => (
         >
           Buy now on Amazon
         </Button>
-        <Text sx={{ fontSize: 0 }}>#1 new release in Software Development</Text>
+        <Text sx={{ fontSize: 0, display: "block" }}>
+          #1 new release in Software Development
+        </Text>
       </Box>
 
       <Box

@@ -13,13 +13,14 @@
         "card": "npx repng src/components/twitter-card.js -d static -f card.png -w 1024 -h 512"
     },
     "dependencies": {
-        "@swizec/gatsby-theme-course-platform": "^1.4.0",
+        "@swizec/gatsby-theme-course-platform": "^2.0.0-7",
         "@theme-ui/color": "^0.6.1",
-        "gatsby": "^2.29.2",
-        "react": "^16.12.0",
-        "react-dom": "^16.12.0",
+        "gatsby": "^3.2.1",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
         "typeface-lato": "^1.1.13",
         "typeface-neuton": "^1.1.13",
+        "typescript": "^4.2.4",
         "typography-theme-stow-lake": "^0.16.19"
     },
     "engines": {

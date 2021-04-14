@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react"
-import { Global } from "@emotion/core"
 import { Box, Flex } from "theme-ui"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
 import {
@@ -98,11 +97,6 @@ export default (props) => {
         variant: "styles.root",
       }}
     >
-      <Global
-        styles={{
-          body: { margin: 0 },
-        }}
-      />
       <Header
         siteTitle="Serverless Handbook"
         courseFirstLesson={props.courseFirstLesson}
