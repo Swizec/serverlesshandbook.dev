@@ -29,7 +29,6 @@ export const ClaimForm = () => {
     onSubmit,
     uniqueId,
     register,
-    errors,
     formState,
     submitError,
   } = useEmailForm("claim", async (formData) => {
@@ -58,6 +57,8 @@ export const ClaimForm = () => {
     )
   }
 
+  console.log(formState)
+
   return (
     <Flex
       as="form"
@@ -73,17 +74,13 @@ export const ClaimForm = () => {
         id={`${uniqueId}-name`}
         type="text"
         name="name"
-        ref={register({ required: true })}
+        {...register("name", {
+          required: "⚠️ Name is required",
+          message: "⚠️ Name is required",
+        })}
         placeholder="Your name"
       />
-      {errors.name && (
-        <span>
-          <span role="img" aria-label="danger">
-            ⚠️
-          </span>{" "}
-          Name is required
-        </span>
-      )}
+      {formState.errors.name && <span>{formState.errors.name.message}</span>}
 
       <Label htmlFor={`${uniqueId}-email`} sx={{ mt: 2 }}>
         Your Email
@@ -92,7 +89,7 @@ export const ClaimForm = () => {
         id={`${uniqueId}-email`}
         type="email"
         name="email"
-        ref={register({
+        {...register("email", {
           required: "⚠️ E-mail is required",
           pattern: {
             value:
@@ -102,7 +99,7 @@ export const ClaimForm = () => {
         })}
         placeholder="Your email address"
       />
-      {errors.email && <span>{errors.email.message}</span>}
+      {formState.errors.email && <span>{formState.errors.email.message}</span>}
 
       <Label htmlFor={`${uniqueId}-sharelink`} sx={{ mt: 2 }}>
         Share link
@@ -111,12 +108,15 @@ export const ClaimForm = () => {
         id={`${uniqueId}-sharelink`}
         type="text"
         name="share_link"
-        ref={register({
+        {...register("share_link", {
           required: "⚠️ Share link is required",
+          message: "⚠️ Share link is required",
         })}
         placeholder="Where did you share? I'd love to see your post"
       />
-      {errors.share_link && <span>{errors.share_link.message}</span>}
+      {formState.errors.share_link && (
+        <span>{formState.errors.share_link.message}</span>
+      )}
 
       <Box className="address">
         <Label htmlFor={`${uniqueId}-address`} className="required">
@@ -128,7 +128,7 @@ export const ClaimForm = () => {
           type="text"
           id={`${uniqueId}-address`}
           name="address"
-          ref={register}
+          {...register}
           placeholder="Your address here"
         />
       </Box>
