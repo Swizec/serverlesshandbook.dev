@@ -7,8 +7,46 @@ import {
   GumroadButton,
   GumroadOverlay,
   TinyFormCK,
+  Testimonial,
 } from "@swizec/gatsby-theme-course-platform"
 import { NavGrid, ChapterHeading, HomeTitle } from "../components/homepage"
+
+export const pageQuery = graphql`
+  query {
+    ThaiWood: file(relativePath: { eq: "testimonial-avatars/thaiwood.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 300, maxHeight: 300) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    MarekC: file(relativePath: { eq: "testimonial-avatars/MarekC.png" }) {
+      childImageSharp {
+        fluid(maxWidth: 300, maxHeight: 300) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    AdamRackis: file(
+      relativePath: { eq: "testimonial-avatars/adamrackis.jpeg" }
+    ) {
+      childImageSharp {
+        fluid(maxWidth: 300, maxHeight: 300) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    DavidWells: file(
+      relativePath: { eq: "testimonial-avatars/davidwells.jpeg" }
+    ) {
+      childImageSharp {
+        fluid(maxWidth: 300, maxHeight: 300) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+  }
+`
 
 <Banner>
 
@@ -88,6 +126,27 @@ But that's easy mode. Any tutorial can teach you that.
 
 🤯
 
+<Testimonial
+  quote={
+    <>
+      <p>
+        Serverless Handbook is a wonderfully written introduction to serverless.
+        It walks through serverless design principles and constraints, and
+        discusses the various providers, and their tradeoffs. It moves on to
+        cover a broad overview of the most common aws services, and how to use
+        them with the Serverless framework.
+      </p>
+      <p>
+        This book is a must-read for anyone new to serverless tech, looking to
+        get up to speed.
+      </p>
+    </>
+  }
+  image={props.data.AdamRackis.childImageSharp.fluid.src}
+  name="Adam Rackis"
+  company="engineer at Spotify"
+/>
+
 ## Get your free chapter!
 
 Access to this chapter immediately, extra free chapter and Serverless crash course in your email ✌️
@@ -111,9 +170,12 @@ Access to this chapter immediately, extra free chapter and Serverless crash cour
 
 With **digital + paperback content** Serverless Handbook has been more than 1 year in development. Lessons learned from 14 years of building production grade websites and webapps.
 
-> With Serverless Handbook, Swiz teaches the truths of distributed systems – things will fail – but he also gives you insight on how to architect projects using reliability and resilience perspectives so you can monitor and recover.
-
-> ~ Thai Wood, author of Resilience Roundup
+<Testimonial
+  quote="With Serverless Handbook, Swiz teaches the truths of distributed systems – things will fail – but he also gives you insight on how to architect projects using reliability and resilience perspectives so you can monitor and recover."
+  image={props.data.ThaiWood.childImageSharp.fluid.src}
+  name="Thai Wood"
+  company="author of Resilience Roundup"
+/>
 
 If you want to understand backends, grok serverless, or just get a feel for modern backend development, this is the book for you.
 
@@ -130,11 +192,26 @@ Yes, there's a couple tutorials to get you started, to show you how it fits toge
 
 The Serverless Handbook takes you _from your very first cloud function to modern backend mastery_. In the words of an early reader:
 
-> Serverless Handbook taught me high-leveled topics. I don't like recipe courses and these chapters helped me to feel like I'm not a total noob anymore.
+<Testimonial
+  quote={
+    <>
+      <p>
+        Serverless Handbook taught me high-leveled topics. I don't like recipe
+        courses and these chapters helped me to feel like I'm not a total noob
+        anymore.
+      </p>
+      <p>
+        The hand-drawn diagrams and high-leveled descriptions gave me the
+        feeling that I don't have any critical "knowledge gaps" anymore.
+      </p>
+    </>
+  }
+  image={props.data.MarekC.childImageSharp.fluid.src}
+  name="Marek C."
+  company="frontend engineer"
+/>
 
-> The hand-drawn diagrams and high-leveled descriptions gave me the feeling that I don't have any critical "knowledge gaps" anymore.
-
-> ~ Marek C, engineer
+>
 
 If you can JavaScript, you can backend.
 
@@ -163,15 +240,35 @@ Cheers,<br/>
 
 [![](../images/buy-now-amazon.png)](https://geni.us/serverless-handbook)
 
-> This handbook is a fantastic overview of what it means to embrace serverless technology. After explaining what the heck "serverless" really means, the book digs deep into the core elements of serverless in an easy-to-follow illustrative manner with ready deployable code!
-
-> After learning about all the primitives (functions/queues/s3/etc.) you'd need as a serverless dev, the book also covers other critical operational aspects like observability, multi-staged deployments & handling secrets.
-
-> It's a great book on using infrastructure-as-code tools like the serverless framework to achieve more with less.
-
-> I'm highly impressed by Swizecs's approach to teaching devs how to adopt new serverless technology.
-
-> ~ David Wells, Serverless Framework core contributor
+<Testimonial
+  quote={
+    <>
+      <p>
+        This handbook is a fantastic overview of what it means to embrace
+        serverless technology. After explaining what the heck "serverless"
+        really means, the book digs deep into the core elements of serverless in
+        an easy-to-follow illustrative manner with ready deployable code!
+      </p>
+      <p>
+        After learning about all the primitives (functions/queues/s3/etc.) you'd
+        need as a serverless dev, the book also covers other critical
+        operational aspects like observability, multi-staged deployments &
+        handling secrets.
+      </p>
+      <p>
+        It's a great book on using infrastructure-as-code tools like the
+        serverless framework to achieve more with less.
+      </p>
+      <p>
+        I'm highly impressed by Swizecs's approach to teaching devs how to adopt
+        new serverless technology.
+      </p>
+    </>
+  }
+  image={props.data.DavidWells.childImageSharp.fluid.src}
+  name="David Wells"
+  company="Serverless Framework core contributor"
+/>
 
 [![](../images/buy-now-amazon.png)](https://geni.us/serverless-handbook)
 

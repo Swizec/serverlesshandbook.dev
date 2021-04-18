@@ -79,7 +79,7 @@ const Sidebar = (props) => {
   )
 }
 
-export default (props) => {
+const Layout = (props) => {
   const fullwidth = props.location.pathname === "/"
   const [menu, setMenu] = useState(false)
   const nav = useRef(null)
@@ -121,3 +121,5 @@ export default (props) => {
     </Box>
   )
 }
+
+export default Layout
