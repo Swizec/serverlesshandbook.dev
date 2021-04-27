@@ -95,35 +95,7 @@ Hello! 👋
 
 Are you a frontend engineer diving into backend? Do you have just that one bit of code that can't run in the browser? Something that deals with secrets and APIs?
 
-<Box sx={{ width: ["100%", "100%", "70%"], margin: "0 auto", mb: 3 }}>
-  <Box
-    sx={{
-      width: "100%",
-      height: 0,
-      paddingBottom: 900 / 16 + "%",
-      position: "relative",
-      overflow: "hidden",
-      "& > iframe": {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        border: 0,
-      },
-    }}
-  >
-    <iframe
-      width="100%"
-      height="100%"
-      src="https://www.youtube.com/embed/udqyBqCgLrU"
-      frameborder="0"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    ></iframe>
-  </Box>
-</Box>
+<lite-youtube videoid="udqyBqCgLrU" autoload></lite-youtube>
 
 That's what cloud functions are for my friend. You take a JavaScript function, run it on serverless, get a URL, and voila.
 
@@ -285,35 +257,7 @@ Cheers,<br/>
 
 Watch the walkthrough or keep reading.
 
-<Box sx={{ width: ["100%", "100%", "70%"], margin: "0 auto", mb: 3 }}>
-  <Box
-    sx={{
-      width: "100%",
-      height: 0,
-      paddingBottom: 900 / 16 + "%",
-      position: "relative",
-      overflow: "hidden",
-      "& > iframe": {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        border: 0,
-      },
-    }}
-  >
-    <iframe
-      width="100%"
-      height="100%"
-      src="https://www.youtube.com/embed/WC-mEf4K9as?start=1772"
-      frameborder="0"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    ></iframe>
-  </Box>
-</Box>
+<lite-youtube videoid="WC-mEf4K9as" autoload videoStartAt="1772"></lite-youtube>
 
 **Getting Started** walks you through the history of servers and _why_ serverless exists.
 

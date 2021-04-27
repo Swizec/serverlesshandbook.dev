@@ -1949,6 +1949,11 @@
   dependencies:
     core-js "^2.5.7"
 
+"@justinribeiro/lite-youtube@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@justinribeiro/lite-youtube/-/lite-youtube-0.9.1.tgz#c9f83861daad361d58de76b2a5e078de6fe6b751"
+  integrity sha512-IgcpHnovzZGxU4Ec+0c7sSLhrJWflvYliQUmdcwBgyVkGw0ZL9Y8IU/m09NPk9EzIk2HAOWUGLywTVpB785egA==
+
 "@mdx-js/mdx@^1.6.22":
   version "1.6.22"
   resolved "https://registry.yarnpkg.com/@mdx-js/mdx/-/mdx-1.6.22.tgz#8a723157bf90e78f17dc0f27995398e6c731f1ba"
@@ -7315,7 +7320,7 @@ gatsby-plugin-simple-analytics@^1.0.3:
   resolved "https://registry.yarnpkg.com/gatsby-plugin-simple-analytics/-/gatsby-plugin-simple-analytics-1.0.3.tgz#8a051604c1f73cedf62ca4f8412bad2e396aaad2"
   integrity sha512-CAKVfAlN8EbOoNThXeDwC4Neh7G8V7zTBzrdZpO0S1k60rcr0gXjI1V8QS5QJ5TYQ9yRTSjSXYhL4q3oM04jIg==
 
-"gatsby-plugin-slug@github:Swizec/gatsby-plugin-slug#gatsbyv3-support":
+gatsby-plugin-slug@Swizec/gatsby-plugin-slug#gatsbyv3-support:
   version "1.1.1"
   resolved "https://codeload.github.com/Swizec/gatsby-plugin-slug/tar.gz/723e5e86a1affd398c84026be75351ab5b56a0a7"
 
