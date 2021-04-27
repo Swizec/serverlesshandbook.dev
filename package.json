@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@justinribeiro/lite-youtube": "^0.9.1",
-        "@swizec/gatsby-theme-course-platform": "^2.0.0",
+        "@swizec/gatsby-theme-course-platform": "^2.0.2-1",
         "@theme-ui/color": "^0.6.1",
         "gatsby": "^3.2.1",
         "react": "^17.0.1",

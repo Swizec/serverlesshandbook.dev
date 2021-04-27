@@ -2,8 +2,7 @@ import React from "react"
 import { useAuth } from "react-use-auth"
 import { Heading, Flex, Box, Text, Button } from "theme-ui"
 import { GumroadButton, TinyFormCK } from "@swizec/gatsby-theme-course-platform"
-// import * as coverImg from "../images/cover.svg"
-import coverImg from "../images/cover.png"
+import { StaticImage } from "gatsby-plugin-image"
 
 export const ChapterHeading = ({ sx }) => {
   const { isAuthorized } = useAuth()
@@ -53,6 +52,20 @@ export const NavGrid = (props) => (
   />
 )
 
+const CoverImage = () => {
+  return (
+    <a href="https://geni.us/serverless-handbook">
+      <StaticImage
+        src="../images/cover.png"
+        alt="Serverless Handbook cover"
+        loading="eager"
+        objectFit="cover"
+        objectPosition="50% 50%"
+      />
+    </a>
+  )
+}
+
 export const HomeTitle = () => (
   <Flex sx={{ flexWrap: "wrap" }}>
     <Box
@@ -95,13 +108,7 @@ export const HomeTitle = () => (
           display: ["block", "none"],
         }}
       >
-        <a href="https://geni.us/serverless-handbook">
-          <img
-            src={coverImg}
-            alt="Serverless Handbook Cover"
-            style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
-          />
-        </a>
+        <CoverImage />
       </Box>
 
       <Box sx={{ mt: 3 }}>
@@ -136,13 +143,7 @@ export const HomeTitle = () => (
         display: ["none", "block"],
       }}
     >
-      <a href="https://geni.us/serverless-handbook">
-        <img
-          src={coverImg}
-          alt="Serverless Handbook Cover"
-          style={{ margin: "auto auto", maxWidth: "650px", width: "100%" }}
-        />
-      </a>
+      <CoverImage />
     </Box>
   </Flex>
 )
