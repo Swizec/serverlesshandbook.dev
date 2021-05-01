@@ -2187,11 +2187,12 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^2.0.2-1":
-  version "2.0.2-1"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.0.2-1.tgz#218f0f025dac24ef4e129186d16e2da1f57d429a"
-  integrity sha512-nYASvkjyBLg+VOBDiyQsE0BSdesHXzpMS6UuneCwX4W6VdM8hvYt6K4GqSTpAuVY1apGpGIJlJ88i1flB5cHPg==
+"@swizec/gatsby-theme-course-platform@^2.1.0-2":
+  version "2.1.0-2"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.1.0-2.tgz#b92a036a2a19f5422229206256c3a6b69fcc3e03"
+  integrity sha512-11MKJSKtYnXwIuvxBKkKZOgnxyvVPmc1C8Vx8qccXQy3vb7wFsyHyL5XVd4zp6pyObDbXoUD654NXfjJedzkdA==
   dependencies:
+    "@justinribeiro/lite-youtube" "^0.9.1"
     "@mdx-js/mdx" "^1.6.22"
     "@mdx-js/react" "^1.6.22"
     "@theme-ui/presets" "^0.6.2"
@@ -2224,7 +2225,7 @@
     gatsby-plugin-twitter "^3.2.0"
     gatsby-remark-copy-linked-files "^3.2.0"
     gatsby-remark-copy-relative-linked-files "^1.3.0"
-    gatsby-remark-embedder "^4.1.0"
+    gatsby-remark-embedder "^5.0.0"
     gatsby-remark-giphy "^1.1.2"
     gatsby-remark-images "^4.2.0"
     gatsby-remark-relative-images "^2.0.2"
@@ -7493,10 +7494,10 @@ gatsby-remark-copy-relative-linked-files@^1.3.0:
     htmlparser2 "^5.0.0"
     unist-util-visit "^2.0.3"
 
-gatsby-remark-embedder@^4.1.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/gatsby-remark-embedder/-/gatsby-remark-embedder-4.2.0.tgz#d381f451ba15403c87a4fe6138a4a4193739b29f"
-  integrity sha512-i3iCe3SSnr0afZ+HHJtDPmH+kCN1OvbiYPTLRp6/YVX36EBZ5xnBHdTNhAL21wlnS/XKjzP7BN8gi+mrz4Yhdg==
+gatsby-remark-embedder@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/gatsby-remark-embedder/-/gatsby-remark-embedder-5.0.0.tgz#87863c546816863bb3161897788433d5d85995c4"
+  integrity sha512-frNy0DEEo5dgGtBokNPmDbX7PWSA76UFkLzSfqpwKAAL4zKm5++F4uDeRujYEdbbj5/yoXUMbUHQIxyplaw1oQ==
   dependencies:
     "@babel/runtime" "^7.13.10"
     fetch-retry "^4.1.1"
