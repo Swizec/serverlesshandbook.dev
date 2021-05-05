@@ -86,11 +86,18 @@ export const HomeTitle = () => (
       <Text>Dive into modern backend. Understand any backend</Text>
 
       <Box sx={{ my: 3 }}>
-        <Flex sx={{ alignItems: "center", justifyContent: "center", mb: 1 }}>
+        <Flex
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            mb: 1,
+            flexDirection: ["column", "row"],
+          }}
+        >
           <Button
             variant="buy-shiny"
             as="a"
-            sx={{ mr: 2 }}
+            sx={{ mr: [0, 2], mb: [1, 0] }}
             href="https://geni.us/serverless-handbook"
           >
             Buy now on Amazon
