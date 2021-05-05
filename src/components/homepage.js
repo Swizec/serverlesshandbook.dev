@@ -86,16 +86,27 @@ export const HomeTitle = () => (
       <Text>Dive into modern backend. Understand any backend</Text>
 
       <Box sx={{ my: 3 }}>
-        <Button
-          variant="buy-shiny"
-          as="a"
-          sx={{ mb: 1 }}
-          href="https://geni.us/serverless-handbook"
-        >
-          Buy now on Amazon
-        </Button>
+        <Flex sx={{ alignItems: "center", justifyContent: "center", mb: 1 }}>
+          <Button
+            variant="buy-shiny"
+            as="a"
+            sx={{ mr: 2 }}
+            href="https://geni.us/serverless-handbook"
+          >
+            Buy now on Amazon
+          </Button>
+          <a
+            className="gumroad-button"
+            href="https://gum.co/NsUlA"
+            data-gumroad-single-product="true"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Buy Digital for $15
+          </a>
+        </Flex>
         <Text sx={{ fontSize: 0, display: "block" }}>
-          #1 new release in Software Development
+          #1 new release in Web Development
         </Text>
       </Box>
 
@@ -120,18 +131,6 @@ export const HomeTitle = () => (
           </p>
         </TinyFormCK>
       </Box>
-
-      {/* <Box sx={{ mt: 10 }}>
-        <GumroadButton>
-          <a
-            className="gumroad-button"
-            href="https://gum.co/NsUlA"
-            data-gumroad-single-product="true"
-            target="_blank"
-            rel="noopener noreferrer"
-          >{`Get Serverless Handbook`}</a>
-        </GumroadButton>
-      </Box> */}
     </Box>
 
     <Box

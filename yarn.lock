@@ -2187,10 +2187,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.1.1.tgz#480be029cc817db26216993b53fda0130dc6bf3b"
-  integrity sha512-IyLTDPA9fc1zG26CXyumrlqE3JIwKFSyyS40t7KGKumEY3iFo98ww6uPcP/Or1uKOghrJjnWLbfsJ2+w4OA1+A==
+"@swizec/gatsby-theme-course-platform@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.1.2.tgz#8967aee8b7cc4b7eed4df0fa674f4780bbcfe5b5"
+  integrity sha512-j0KPZYhn3wJEdDmwUgMVJ0i9TmlZgIJSY+qxTBBmgWTpYVpzOk5rrWJJ5fymviBAilUDbamFb6SMltYCiMW/cQ==
   dependencies:
     "@justinribeiro/lite-youtube" "^0.9.1"
     "@mdx-js/mdx" "^1.6.22"
@@ -7314,7 +7314,7 @@ gatsby-plugin-simple-analytics@^1.0.3:
   resolved "https://registry.yarnpkg.com/gatsby-plugin-simple-analytics/-/gatsby-plugin-simple-analytics-1.0.3.tgz#8a051604c1f73cedf62ca4f8412bad2e396aaad2"
   integrity sha512-CAKVfAlN8EbOoNThXeDwC4Neh7G8V7zTBzrdZpO0S1k60rcr0gXjI1V8QS5QJ5TYQ9yRTSjSXYhL4q3oM04jIg==
 
-gatsby-plugin-slug@Swizec/gatsby-plugin-slug#gatsbyv3-support:
+"gatsby-plugin-slug@github:Swizec/gatsby-plugin-slug#gatsbyv3-support":
   version "1.1.1"
   resolved "https://codeload.github.com/Swizec/gatsby-plugin-slug/tar.gz/723e5e86a1affd398c84026be75351ab5b56a0a7"
 
