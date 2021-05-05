@@ -22,14 +22,21 @@ export const pageQuery = graphql`
   query {
     ThaiWood: file(relativePath: { eq: "testimonial-avatars/thaiwood.png" }) {
       childImageSharp {
-        fluid(maxWidth: 300, maxHeight: 300) {
+        fluid(maxWidth: 110, maxHeight: 110) {
+          ...GatsbyImageSharpFluid
+        }
+      }
+    }
+    AlNotara: file(relativePath: { eq: "testimonial-avatars/alnotara.jpg" }) {
+      childImageSharp {
+        fluid(maxWidth: 110, maxHeight: 110) {
           ...GatsbyImageSharpFluid
         }
       }
     }
     MarekC: file(relativePath: { eq: "testimonial-avatars/MarekC.png" }) {
       childImageSharp {
-        fluid(maxWidth: 300, maxHeight: 300) {
+        fluid(maxWidth: 110, maxHeight: 110) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -38,7 +45,7 @@ export const pageQuery = graphql`
       relativePath: { eq: "testimonial-avatars/adamrackis.jpeg" }
     ) {
       childImageSharp {
-        fluid(maxWidth: 300, maxHeight: 300) {
+        fluid(maxWidth: 110, maxHeight: 110) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -47,7 +54,7 @@ export const pageQuery = graphql`
       relativePath: { eq: "testimonial-avatars/davidwells.jpeg" }
     ) {
       childImageSharp {
-        fluid(maxWidth: 300, maxHeight: 300) {
+        fluid(maxWidth: 110, maxHeight: 110) {
           ...GatsbyImageSharpFluid
         }
       }
@@ -90,6 +97,20 @@ export const pageQuery = graphql`
 </Banner>
 
 <Container sx={{py: 3}}>
+
+<Testimonial
+  quote={
+    <>
+      I have really enjoyed the approach you've taken with the book. It's got me
+      thinking practically about Serverless as a whole, but more specifically
+      each aspect that contributes to a robust implementation of Serverless for
+      production. <b>I read a third of the book the first night I had it!</b>
+    </>
+  }
+  image={props.data.AlNotara.childImageSharp.fluid.src}
+  name="Al Notara"
+  company="freelance web developer"
+/>
 
 Hello! 👋
 
@@ -392,5 +413,7 @@ https://twitter.com/LukyVJ/status/1384835578932387841
 https://twitter.com/mikedubcurry/status/1387920478166265857
 
 https://twitter.com/AdamRackis/status/1388192278884331530
+
+https://twitter.com/grepliz/status/1389677853013286913
 
 </ThemeUIGrid>

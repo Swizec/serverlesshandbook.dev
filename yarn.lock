@@ -7314,7 +7314,7 @@ gatsby-plugin-simple-analytics@^1.0.3:
   resolved "https://registry.yarnpkg.com/gatsby-plugin-simple-analytics/-/gatsby-plugin-simple-analytics-1.0.3.tgz#8a051604c1f73cedf62ca4f8412bad2e396aaad2"
   integrity sha512-CAKVfAlN8EbOoNThXeDwC4Neh7G8V7zTBzrdZpO0S1k60rcr0gXjI1V8QS5QJ5TYQ9yRTSjSXYhL4q3oM04jIg==
 
-"gatsby-plugin-slug@github:Swizec/gatsby-plugin-slug#gatsbyv3-support":
+gatsby-plugin-slug@Swizec/gatsby-plugin-slug#gatsbyv3-support:
   version "1.1.1"
   resolved "https://codeload.github.com/Swizec/gatsby-plugin-slug/tar.gz/723e5e86a1affd398c84026be75351ab5b56a0a7"
 
