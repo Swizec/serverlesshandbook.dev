@@ -2187,10 +2187,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^2.2.0-11":
-  version "2.2.0-11"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.2.0-11.tgz#2a359ef3424557b8a08c8ebbe4cec6e1a2790d15"
-  integrity sha512-a2OreRyGhyUahQqHNVUyjLa/wA44QfHrXyn/PCQ7CROpLrGTmULEfIlnDPTEzOw5AU5RpM/U+c2kLbQdcPmNWw==
+"@swizec/gatsby-theme-course-platform@^2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.1.3.tgz#ef188ab0ab7270af7bfebc161e22c41afb63d421"
+  integrity sha512-GNaflzp7ivzM1RpZLx7W6vzTfLOXhLjfuM9DINr0mMwzL8mQNWRvSm/Q5XyeCGHGYGhDYxY4bBNOl8vv7V5xng==
   dependencies:
     "@justinribeiro/lite-youtube" "^0.9.1"
     "@mdx-js/mdx" "^1.6.22"
@@ -2250,7 +2250,6 @@
     remark-slug "^6.0.0"
     slugify "^1.4.6"
     theme-ui "^0.6.2"
-    twitter-lite "^1.1.0"
     typeface-merriweather "^1.1.13"
     typeface-merriweather-sans "^1.1.13"
     typography-theme-parnassus "^0.16.19"
@@ -4973,13 +4972,6 @@ cross-fetch@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.1.tgz#a7ed5a9201d46223d805c5e9ecdc23ea600219eb"
   integrity sha512-eIF+IHQpRzoGd/0zPrwQmHwDC90mdvjk+hcbYhKoaRrEk4GEIDqdjs/MljmdPPoHTQudbmWS+f0hZsEpFaEvWw==
-  dependencies:
-    node-fetch "2.6.1"
-
-cross-fetch@^3.0.0:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.4.tgz#9723f3a3a247bf8b89039f3a380a9244e8fa2f39"
-  integrity sha512-1eAtFWdIubi6T4XPy6ei9iUFoKpUkIF971QLN8lIvvvwueI65+Nw5haMNKUwfJxabqlIIDODJKGrQ66gxC0PbQ==
   dependencies:
     node-fetch "2.6.1"
 
@@ -11230,11 +11222,6 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-oauth-1.0a@^2.2.4:
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/oauth-1.0a/-/oauth-1.0a-2.2.6.tgz#eadbccdb3bceea412d24586e6f39b2b412f0e491"
-  integrity sha512-6bkxv3N4Gu5lty4viIcIAnq5GbxECviMBeKR3WX/q87SPQ8E8aursPZUtsXDnxCs787af09WPRBLqYrf/lwoYQ==
-
 object-assign@^4, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
@@ -15037,14 +15024,6 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
-
-twitter-lite@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/twitter-lite/-/twitter-lite-1.1.0.tgz#77f250cc73f14ecc5a493ddb81ff0a3e9ae72680"
-  integrity sha512-v37I0zyYXjn3/zdm/ii+1RiBFZ2SCB3wLl1N5nfW8TUqoNDYBR66oXBFbQavKEvjg5WqcTUzNhAhe6FkgylPsw==
-  dependencies:
-    cross-fetch "^3.0.0"
-    oauth-1.0a "^2.2.4"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
