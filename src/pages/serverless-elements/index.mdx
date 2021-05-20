@@ -49,7 +49,7 @@ Your functions should follow functional programming principles:
 
 - **idempotent** – multiple calls with the same inputs produce the same result
 - **pure** – rely on the arguments you're given and nothing else. Your environment does not persist, data in local memory might vanish.
-- **light on side-effects** – you need side-effects to make changes like writing to a database. Make sure those come in the form of calling other functions and services. *State inside your lambda does not persist*
+- **light on side-effects** – you need side-effects to make changes like writing to a database. Make sure those come in the form of calling other functions and services. _State inside your lambda does not persist_
 - **do one thing and one thing only** – small functions focused on one task are easiest to understand and combine
 
 Small functions work together to produce extraordinary results. Like this example of [combining Twilio and AWS Lambda to answer the door](https://swizec.com/blog/how-i-answer-the-door-with-aws-lambda-and-twilio/swizec/9255).
@@ -60,13 +60,13 @@ In the open source Serverless Framework, you define lambda functions with `serve
 
 ```yaml
 functions:
-    helloworld:
-        handler: dist/helloworld.handler
-        events:
-            - http:
-                  path: helloworld
-                  method: GET
-                  cors: true
+  helloworld:
+    handler: dist/helloworld.handler
+    events:
+      - http:
+          path: helloworld
+          method: GET
+          cors: true
 ```
 
 Define a `helloworld` function and say it maps to the `handler` method exported from `dist/helloworld`. We're using a build step for TypeScript – the code is in `src/`, we run it from `dist/`.
@@ -77,7 +77,7 @@ Other typical triggers include Queues, S3 changes, CloudWatch events, and Dynamo
 
 ## Queue
 
-Queue is short for [message queue](https://en.wikipedia.org/wiki/Message_queue) – a service built on top of [queue, the data structure](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)). Software engineers aren't that inventive with names 🤷‍♂️
+Queue is short for [message queue](https://en.wikipedia.org/wiki/Message_queue) – a service built on top of [queue, the data structure](<https://en.wikipedia.org/wiki/Queue_(abstract_data_type)>). Software engineers aren't that inventive with names 🤷‍♂️
 
 You can think of the queue data structure as a list of items.
 
@@ -87,16 +87,16 @@ You can think of the queue data structure as a list of items.
 
 <div id="lock" />
 
-**A messaging queue takes this data structure and scales it into a service.** 
+**A messaging queue takes this data structure and scales it into a service.**
 
 Different implementations exist and they all share these core properties:
 
 - **persistent storage** – queues have to be reliable and store messages in a database. Most queues prioritize speed and use in-memory storage like Redis.
-- **a worker process** – once you have messages, you need to process them. A process periodically checks, if there's something new [(polling)](https://en.wikipedia.org/wiki/Polling_(computer_science)). Another approach is to trigger this check every time a message arrives.
+- **a worker process** – once you have messages, you need to process them. A process periodically checks, if there's something new [(polling)](<https://en.wikipedia.org/wiki/Polling_(computer_science)>). Another approach is to trigger this check every time a message arrives.
 - **a trigger API** – when the queue sees a new message, it runs your code. In serverless that means running your lambda, in traditional environments it's another worker process.
 - **a retry/error policy** – queues help you deal with errors. When you fail to process a message, it goes back on the queue and gets retried later.
 
-Many modern queues add time to the mix. You can *schedule* messages for later. 2 seconds, 2 minutes, 2 days, ... Some queues limit how long messages can stick around.
+Many modern queues add time to the mix. You can _schedule_ messages for later. 2 seconds, 2 minutes, 2 days, ... Some queues limit how long messages can stick around.
 
 ### Time helps with errors
 
@@ -110,22 +110,22 @@ I've seen corrupt messages, known as poison pills, backing off days into the fut
 
 AWS SimpleQueueService is a great queue service for the AWS serverless ecosystem. More powerful alternatives exist, but require more setup, more upkeep, and have features you might not need.
 
-> Always use the simplest and smallest service that solves your problem until you know *why* you need more ✌️
+> Always use the simplest and smallest service that solves your problem until you know _why_ you need more ✌️
 
 Using the serverless framework, you define an SQS queue in the `resources` section like this:
 
 ```yaml
 resources:
-    Resources:
-        MyQueue:
-            Type: "AWS::SQS::Queue"
-            Properties:
-                QueueName: "MyQueue-${self:provider.stage}"
+  Resources:
+    MyQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "MyQueue-${self:provider.stage}"
 ```
 
 A resource named `MyQueue` of the SQS Queue type with a queue name of `MyQueue-{stage}`. Adding the stage to your queue name allows different logical environments without collisions. More on that in [the Dev, QA, and Prod chapter](/dev-qa-prod)
 
-Make sure you use correct capitalization. The second `Resources` must be capitalized, so do `Type`, `Properties`, and `QueueName`. 
+Make sure you use correct capitalization. The second `Resources` must be capitalized, so do `Type`, `Properties`, and `QueueName`.
 
 Capitalization matters because you're dropping a layer below Serverless and writing AWS's native Serverless Application Model (SAM) configuration. It's what your config compiles to before deploying.
 
@@ -135,37 +135,37 @@ You need a lambda to process messages on `MyQueue`.
 
 ```yaml
 functions:
-    myQueueProcess:
-        handler: dist/lambdas/myQueue.handler
-        events:
-            - sqs:
-                  arn:
-                      Fn::GetAtt:
-                          - MyQueue
-                          - Arn
-                  batchSize: 1
+  myQueueProcess:
+    handler: dist/lambdas/myQueue.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MyQueue
+              - Arn
+          batchSize: 1
 ```
 
 A lambda that runs each time `MyQueue` has a new message to process. With a `batchSize` of 1, each message runs its own lambda – a good practice for initial implementations. More about batch sizes in the [Lambda Workflows](/lambda-workflows) and [Robust Backend Design](/robust-backend-design) chapters.
 
-The strange yaml syntax reads as: *an SQS event fired by a queue with the ARN identifier of getAttribute(Arn) from MyQueue*. Amazon Resource Names, ARN, are unique identifiers for each resource in your AWS account.
+The strange yaml syntax reads as: _an SQS event fired by a queue with the ARN identifier of getAttribute(Arn) from MyQueue_. Amazon Resource Names, ARN, are unique identifiers for each resource in your AWS account.
 
 The `myQueue.handler` lambda would look like this:
 
 ```typescript
-import { SQSEvent, SQSRecord } from "aws-lambda";
+import { SQSEvent, SQSRecord } from "aws-lambda"
 
 export const handler = async (event: SQSEvent) => {
-    // N depends on batchSize setting
-    const messages: string[] = event.Records.map(
-        (record: SQSRecord) => record.body
-    );
+  // N depends on batchSize setting
+  const messages: string[] = event.Records.map(
+    (record: SQSRecord) => record.body
+  )
 
-    // do something with each message
-    // throw Error() on fail
+  // do something with each message
+  // throw Error() on fail
 
-    return true;
-};
+  return true
+}
 ```
 
 An async function that accepts an `SQSEvent`, which contains multiple messages depending on `batchSize`. Never assume the total number because that setting might change.
@@ -174,9 +174,9 @@ Extract messages into an array of strings and process with a loop. Throw an err
 
 ### SNS
 
-A useful alternative to SQS is the Simple Notification Service – SQS. Similar behavior, except you can't store messages on the queue.
+A useful alternative to SQS is the Simple Notification Service – SNS. Similar behavior, except you can't store messages on the queue.
 
-With SNS each message sends *once*. If you don't catch it, it's gone.
+With SNS each message sends _once_. If you don't catch it, it's gone.
 
 But unlike SQS, each message can trigger multiple services.
 
@@ -201,7 +201,7 @@ Validating requests can involve checking for denial of service attacks, verifyin
 
 Once verified the request goes to an instance of your application server. This is where [horizontal scaling](https://en.wikipedia.org/wiki/Scalability#HORIZONTAL-SCALING) comes into play.
 
-Amazon calls their reverse proxy service API Gateway. 
+Amazon calls their reverse proxy service API Gateway.
 
 Other providers might have different names and they all perform the same function: Take request from the internet and pass it on to your lambda.
 
@@ -211,7 +211,7 @@ The serverless world is ephemeral which means you can't save files just anywhere
 
 Adding large files to your code makes starting new containers slow. You can't save locally because your server disappears after each request.
 
-Static file storage services solve that problem. 
+Static file storage services solve that problem.
 
 AWS S3 is the most common. Other hosting services often act as an S3 abstraction. Pundits have called S3 the 8th wonder of the world.
 
@@ -233,11 +233,11 @@ Configuration on your end goes like this:
 
 1. Point the CDN to your static file URL
 2. The CDN gives you a new URL
-3. Use *that* URL in your client-side code
+3. Use _that_ URL in your client-side code
 
 You can automate this part with build tools. Netlify and Vercel both handle it for you.
 
-Now when a browser requests a file, the URL resolves to the nearest server. Request goes to that server and if the file is there, it's served. If there's no file, the CDN goes to your original source, caches the file, and *then* sends it back to the user.
+Now when a browser requests a file, the URL resolves to the nearest server. Request goes to that server and if the file is there, it's served. If there's no file, the CDN goes to your original source, caches the file, and _then_ sends it back to the user.
 
 And now your JavaScript, HTML, images, fonts, and CSS are fast to load anywhere in the world. 👌
 
