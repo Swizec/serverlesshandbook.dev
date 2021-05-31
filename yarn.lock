@@ -2224,10 +2224,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.2.1.tgz#5098206cba9edc0b3a308ffd13ce8d4015908e4b"
-  integrity sha512-g4qSO/XojNMAATBO6AuGtdfYEX96Gx/zvX3gvs/IxZUTsN9Qyctgn33szwBrGk6ZMz6tMYO+OWvbGtwZP3XMiw==
+"@swizec/gatsby-theme-course-platform@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.2.2.tgz#47e51e515a749a5058cb413c07f0ad145b7c2a81"
+  integrity sha512-cl98wPV86uIAI4hpUUhJPmigF4WasC3kD2CAF0IflVuWr7YmctJLlAisqDwfnOFaD/pOLuDq/l+CFoTvlvm3Wg==
   dependencies:
     "@justinribeiro/lite-youtube" "^0.9.1"
     "@mdx-js/mdx" "^1.6.22"
@@ -2253,7 +2253,6 @@
     gatsby-plugin-manifest "^3.2.0"
     gatsby-plugin-mdx "^2.2.0"
     gatsby-plugin-react-helmet "^4.2.0"
-    gatsby-plugin-remove-fingerprints "^0.0.2"
     gatsby-plugin-remove-serviceworker "^1.0.0"
     gatsby-plugin-sharp "^3.2.1"
     gatsby-plugin-simple-analytics "^1.0.3"
@@ -7259,11 +7258,6 @@ gatsby-plugin-react-helmet@^4.2.0:
   integrity sha512-QDddKLz2aVDVIAttdQot4S/5H+KP6yUTkZySWyNsvClPovZ+XXgsrmav/Dt0w/6dAzIJA7RXqGvFwOJRHIKncQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
-
-gatsby-plugin-remove-fingerprints@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/gatsby-plugin-remove-fingerprints/-/gatsby-plugin-remove-fingerprints-0.0.2.tgz#ef21a184e2f5deffe644aebd16b8d67f46a7d51b"
-  integrity sha512-af1zbr0+cr3fcjEAVAbUia/On6GJbrxoLVNZf7TxLqKzPMfMlDNXf6hDXAJy0dzxE6qrqD2oyGZpk1rOdgUQ0Q==
 
 gatsby-plugin-remove-serviceworker@^1.0.0:
   version "1.0.0"
