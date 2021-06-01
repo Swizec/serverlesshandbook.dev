@@ -19,12 +19,6 @@ const Sidebar = (props) => {
     '<div id="lock"></div>'
   )[0]
 
-  //   console.log(
-  //     ReactDOMServer.renderToString(props.children[1].children).split(
-  //       '<div id="lock"></div>'
-  //     )[0]
-  //   )
-
   return (
     <Flex
       sx={{
@@ -78,7 +72,7 @@ const Sidebar = (props) => {
         }}
       >
         {contentUnlocked ? (
-          props.children
+          <main id="content">{props.children}</main>
         ) : (
           <main id="content" dangerouslySetInnerHTML={{ __html: html }} />
         )}
