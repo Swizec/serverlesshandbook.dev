@@ -64,14 +64,37 @@ function showPaywall(paywallDiv) {
 
   if (paywallDiv.current) {
     paywallDiv.current.style = `
-            top: ${Math.round(dimensions.height * 0.2)}px;
+            top: ${Math.round(dimensions.height * 0.1)}px;
             width: ${Math.round(dimensions.width)}px;
             background-color: var(--theme-ui-colors-muted,#f6f6ff);
           `
   }
 }
 
-export function usePaywall(page) {
+const LOCKED_PAGES = [
+  "/getting-started",
+  "/serverless-pros-cons",
+  "/serverless-flavors",
+  "/serverless-dx",
+  "/serverless-architecture-principles",
+  "/serverless-elements",
+  "/robust-backend-design",
+  "/databases",
+  "/serverless-rest-api",
+  "/serverless-graphql",
+  "/lambda-pipelines",
+  "/serverless-monitoring",
+  "/dev-qa-prod",
+  "/serverless-performance",
+  "/serverless-chrome-puppeteer",
+  "/handling-secrets",
+  "/serverless-authentication",
+  "/glossary",
+  "/appendix-more-databases",
+  "/downloads",
+]
+
+export function usePaywall(pagePath) {
   const paywallDiv = useRef(null)
   const { isAuthorized } = useAuth()
   const [unlockHandbook] = useLocalStorage("unlock_handbook")
@@ -80,12 +103,12 @@ export function usePaywall(page) {
     "unlocked_pages",
     []
   )
-  const hasLock =
-    typeof window !== "undefined" && document.querySelector("#lock")
+  const hasLock = LOCKED_PAGES.includes(pagePath)
 
   const unlocked =
     !hasLock ||
-    (page && unlockedPages.filter((p) => p !== "/downloads").includes(page)) ||
+    (pagePath &&
+      unlockedPages.filter((p) => p !== "/downloads").includes(pagePath)) ||
     isAuthorized(["ServerlessHandbook"]) ||
     (unlockHandbook && saleId)
 
@@ -102,14 +125,14 @@ export function usePaywall(page) {
   }, [unlocked])
 
   function unlockCurrentPage() {
-    setUnlockedPages((unlockedPages) => [...unlockedPages, page])
+    setUnlockedPages((unlockedPages) => [...unlockedPages, pagePath])
   }
 
   return { unlocked, paywallDiv, unlockCurrentPage }
 }
 
-export const Paywall = ({ page }) => {
-  const { unlocked, paywallDiv, unlockCurrentPage } = usePaywall(page)
+export const Paywall = ({ pagePath }) => {
+  const { unlocked, paywallDiv, unlockCurrentPage } = usePaywall(pagePath)
 
   if (unlocked) {
     return <QuickThanks />
