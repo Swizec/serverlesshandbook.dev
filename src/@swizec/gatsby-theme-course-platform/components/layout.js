@@ -15,9 +15,13 @@ const Sidebar = (props) => {
   const { unlocked: contentUnlocked } = usePaywall(props.location.pathname)
 
   // NOT GENERALIZABLE, very hacky
-  const html = ReactDOMServer.renderToString(props.children).split(
-    '<div id="lock"></div>'
-  )[0]
+  let html
+
+  if (!contentUnlocked) {
+    html = ReactDOMServer.renderToString(props.children).split(
+      '<div id="lock"></div>'
+    )[0]
+  }
 
   return (
     <Flex
