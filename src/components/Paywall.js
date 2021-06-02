@@ -103,7 +103,7 @@ export function usePaywall(pagePath) {
     "unlocked_pages",
     []
   )
-  const hasLock = LOCKED_PAGES.includes(pagePath)
+  const hasLock = LOCKED_PAGES.includes(pagePath.replace(/\/$/, ""))
 
   const unlocked =
     !hasLock ||

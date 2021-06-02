@@ -120,16 +120,16 @@ const Layout = (props) => {
         setMenu={setMenu}
         nav={nav}
       />
-      {!fullwidth ? (
-        <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
-          <Head {...props} />
-          {props.children}
-        </Sidebar>
-      ) : (
+      {fullwidth ? (
         <>
           <Head {...props} />
           <main id="content">{props.children}</main>
         </>
+      ) : (
+        <Sidebar {...props} nav={nav} open={menu} setMenu={setMenu}>
+          <Head {...props} />
+          {props.children}
+        </Sidebar>
       )}
       <Footer />
     </Box>
