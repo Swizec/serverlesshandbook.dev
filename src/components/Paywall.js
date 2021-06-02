@@ -1,6 +1,8 @@
-import React, { useRef, useLayoutEffect } from "react"
+import React, { useRef, useEffect } from "react"
+import ReactDOMServer from "react-dom/server"
 import { useAuth } from "react-use-auth"
 import { Box } from "theme-ui"
+import { WrapRootElement } from "@swizec/gatsby-theme-course-platform"
 
 import { default as PaywallCopy } from "../components/paywall-copy"
 import QuickThanks from "./quickthanks"
@@ -48,7 +50,7 @@ function showPaywall(paywallDiv) {
     typeof window !== "undefined" && document.querySelector("main#content")
 
   const style = `
-            background-image: linear-gradient(rgba(255, 255, 255, 0) 60%,  rgb(255, 255, 255, 1) 100%);
+            background-image: linear-gradient(rgba(255, 255, 255, 0) 80%,  rgb(255, 255, 255, 1) 100%);
             width: 100%;
             top: 0px;
             bottom: 0px;
@@ -112,7 +114,8 @@ export function usePaywall(pagePath) {
     isAuthorized(["ServerlessHandbook"]) ||
     (unlockHandbook && saleId)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    // doesn't run during on-page navigation for some reason
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
         if (unlocked) {
@@ -128,7 +131,22 @@ export function usePaywall(pagePath) {
     setUnlockedPages((unlockedPages) => [...unlockedPages, pagePath])
   }
 
-  return { unlocked, paywallDiv, unlockCurrentPage }
+  return { unlocked, paywallDiv, unlockCurrentPage, SnipContent }
+}
+
+export function SnipContent({ children }) {
+  const html = ReactDOMServer.renderToString(children).split(
+    '<div id="lock"></div>'
+  )[0]
+
+  //   console.log(WrapRootElement)
+  return <div dangerouslySetInnerHTML={{ __html: html }} />
+
+  //   return (
+  //     <WrapRootElement
+  //       element={<div dangerouslySetInnerHTML={{ __html: html }} />}
+  //     />
+  //   )
 }
 
 export const Paywall = ({ pagePath }) => {

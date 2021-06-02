@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react"
-import ReactDOMServer from "react-dom/server"
 import { Box, Flex } from "theme-ui"
 import { Sidenav, Pagination } from "@theme-ui/sidenav"
 import {
@@ -9,19 +8,10 @@ import {
   Reactions,
 } from "@swizec/gatsby-theme-course-platform"
 import Nav from "./nav"
-import { Paywall, usePaywall } from "../../../components/Paywall"
+import { Paywall, SnipContent, usePaywall } from "../../../components/Paywall"
 
 const Sidebar = (props) => {
   const { unlocked: contentUnlocked } = usePaywall(props.location.pathname)
-
-  // NOT GENERALIZABLE, very hacky
-  let html
-
-  if (!contentUnlocked) {
-    html = ReactDOMServer.renderToString(props.children).split(
-      '<div id="lock"></div>'
-    )[0]
-  }
 
   return (
     <Flex
@@ -78,7 +68,9 @@ const Sidebar = (props) => {
         {contentUnlocked ? (
           <main id="content">{props.children}</main>
         ) : (
-          <main id="content" dangerouslySetInnerHTML={{ __html: html }} />
+          <main id="content">
+            <SnipContent>{props.children}</SnipContent>
+          </main>
         )}
         {contentUnlocked ? <Reactions page={props.href} /> : null}
         <Paywall pagePath={props.location.pathname} />
