@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react"
 import ReactDOMServer from "react-dom/server"
 import { useAuth } from "react-use-auth"
 import { Box } from "theme-ui"
-import { WrapRootElement } from "@swizec/gatsby-theme-course-platform"
+import { wrapRootElement } from "gatsby-plugin-theme-ui/gatsby-browser"
 
 import { default as PaywallCopy } from "../components/paywall-copy"
 import QuickThanks from "./quickthanks"
@@ -139,7 +139,14 @@ export function SnipContent({ children }) {
     '<div id="lock"></div>'
   )[0]
 
-  //   console.log(WrapRootElement)
+  //   return wrapRootElement({
+  //     element: children,
+  //   })
+
+  //   return wrapRootElement({
+  //     element: <div dangerouslySetInnerHTML={{ __html: html }} />,
+  //   })
+
   return <div dangerouslySetInnerHTML={{ __html: html }} />
 
   //   return (
