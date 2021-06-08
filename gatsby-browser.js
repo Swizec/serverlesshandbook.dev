@@ -11,7 +11,7 @@ export const onClientEntry = () => {
     ["qdNn", "NsUlA"].includes(query.get("product_permalink")) &&
     query.has("sale_id")
   ) {
-    window.localStorage.setItem("unlock_handbook", true)
-    window.localStorage.setItem("sale_id", query.get("sale_id"))
+    window.localStorage.setItem("unlock_handbook", JSON.stringify(true))
+    window.localStorage.setItem("sale_id", JSON.stringify(query.get("sale_id")))
   }
 }
