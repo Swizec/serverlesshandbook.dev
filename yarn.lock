@@ -2224,10 +2224,10 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
-"@swizec/gatsby-theme-course-platform@^2.2.5":
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.2.5.tgz#783c5da58b9a7029f4e4386db0167e74dbc06855"
-  integrity sha512-Z0OpGsrYEy5JmazuNGF0g9T6qK+Sk4j60fSzD93ZUnL6po4SGWbusGBKF7Y5A4eCZlLqWnph1hDZA6IXxP6rWw==
+"@swizec/gatsby-theme-course-platform@^2.2.8-8":
+  version "2.2.8-8"
+  resolved "https://registry.yarnpkg.com/@swizec/gatsby-theme-course-platform/-/gatsby-theme-course-platform-2.2.8-8.tgz#110e1f29b7e6758c3855c05a40cdeed30403d716"
+  integrity sha512-vtsGHXr5856QDhptH94ShxCIutFZajBWF45pBoTZwBN3ad6xPJkKE/FUP0rU5HGOmPL2E//PgLjT0TsFFxP4Ew==
   dependencies:
     "@justinribeiro/lite-youtube" "^0.9.1"
     "@mdx-js/mdx" "^1.6.22"
@@ -2256,7 +2256,7 @@
     gatsby-plugin-remove-serviceworker "^1.0.0"
     gatsby-plugin-sharp "^3.2.1"
     gatsby-plugin-simple-analytics "^1.0.3"
-    gatsby-plugin-slug Swizec/gatsby-plugin-slug#gatsbyv3-support
+    gatsby-plugin-slug "^2.0.0"
     gatsby-plugin-theme-ui "^0.6.2"
     gatsby-plugin-twitter "^3.2.0"
     gatsby-remark-copy-linked-files "^3.2.0"
@@ -7295,9 +7295,10 @@ gatsby-plugin-simple-analytics@^1.0.3:
   resolved "https://registry.yarnpkg.com/gatsby-plugin-simple-analytics/-/gatsby-plugin-simple-analytics-1.0.3.tgz#8a051604c1f73cedf62ca4f8412bad2e396aaad2"
   integrity sha512-CAKVfAlN8EbOoNThXeDwC4Neh7G8V7zTBzrdZpO0S1k60rcr0gXjI1V8QS5QJ5TYQ9yRTSjSXYhL4q3oM04jIg==
 
-"gatsby-plugin-slug@github:Swizec/gatsby-plugin-slug#gatsbyv3-support":
-  version "1.1.1"
-  resolved "https://codeload.github.com/Swizec/gatsby-plugin-slug/tar.gz/723e5e86a1affd398c84026be75351ab5b56a0a7"
+gatsby-plugin-slug@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-slug/-/gatsby-plugin-slug-2.0.0.tgz#1da65ac4277b8122c221273e9071d15e7af7cb25"
+  integrity sha512-nBfp/3s8gLcuNSN7WN7a5r+T8F0ySxEeShYEWxLn+9yBeijKnItNv5YnS+kxUl23Y2/fnaj752L/w0OJeK+mQg==
 
 gatsby-plugin-theme-ui@^0.6.2:
   version "0.6.2"
