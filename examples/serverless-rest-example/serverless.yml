@@ -3,6 +3,7 @@ service: serverless-rest-example
 provider:
   name: aws
   runtime: nodejs12.x
+  region: us-east-1
   stage: dev
   environment:
     ITEM_TABLE: ${self:service}-items-${self:provider.stage}
